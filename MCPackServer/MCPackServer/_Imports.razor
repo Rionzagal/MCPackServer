@@ -6,5 +6,13 @@
 @using Microsoft.AspNetCore.Components.Web
 @using Microsoft.AspNetCore.Components.Web.Virtualization
 @using Microsoft.JSInterop
+@using MudBlazor
 @using MCPackServer
 @using MCPackServer.Shared
+@using MCPackServer.Pages
+@using MCPackServer.Services.Interfaces
+@using MCPackServer.Entities
+
+@inject ISnackbar Snackbar
+@inject IDialogService Dialogs
+@inject IBaseService _service

@@ -1,0 +1,242 @@
+﻿@page "/Clients"
+@inject IClientsService _clientsService
+@inject IContactsService _contactsService
+
+<MudText Typo="Typo.h3" Align="Align.Center">GESTIÓN Y MANEJO DE CLIENTES</MudText>
+
+<MudTable Dense="true" Hover="true" Striped="true" CustomHeader="true" FixedHeader="true" Height="400px"
+          T="Clients" @ref="@ClientsTable" OnRowClick="@OnSelectedClientRow"
+          ServerData="@(new Func<TableState, Task<TableData<Clients>>>(ClientsServerReload))">
+    <ToolBarContent>
+        <MudText Typo="Typo.h6">Clientes registrados</MudText>
+        <MudSpacer />
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="mx-1"
+                   OnClick="AddClient"> @*Disabled="!CanCreateClient">*@
+            Añadir
+        </MudButton>
+        <MudButton Variant="Variant.Filled" OnClick="DeleteClientFilters" Class="mx-1">
+            Borrar criterios de búsqueda
+        </MudButton>
+        <MudButton Variant="Variant.Outlined" Class="ml-1"
+                   OnClick="FilterClients">
+            <MudIcon Icon="@Icons.Material.Filled.Search" /> Buscar
+        </MudButton>
+    </ToolBarContent>
+    <HeaderContent>
+        <MudTHeadRow>
+            <MudTh><MudTableSortLabel SortLabel="MarketName" T="Clients">Nombre comercial</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortLabel="LegalName" T="Clients">Razón social</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortLabel="City" T="Clients">Ciudad</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortLabel="Province" T="Clients">Provincia/Estado</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortLabel="PhoneNumber" T="Clients">Número de teléfono</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortLabel="Website" T="Clients">Sitio web</MudTableSortLabel></MudTh>
+        </MudTHeadRow>
+        <MudTHeadRow>
+            <MudTh>
+                <MudTextField T="string" @bind-Value="MarketNameFilter" Placeholder="Buscar por nombre comercial" />
+            </MudTh>
+            <MudTh>
+                <MudTextField T="string" @bind-Value="LegalNameFilter" Placeholder="Buscar por razón social" />
+            </MudTh>
+            <MudTh>
+                <MudTextField T="string" @bind-Value="CityFilter" Placeholder="Buscar por ciudad" />
+            </MudTh>
+            <MudTh>
+                <MudTextField T="string" @bind-Value="ProvinceFilter" Placeholder="Buscar por provincia/estado" />
+            </MudTh>
+            <MudTh>
+                <MudTextField T="string" @bind-Value="PhoneNumberFilter" Placeholder="Buscar por número de teléfono" />
+            </MudTh>
+            <MudTh>
+                <MudTextField T="string" @bind-Value="WebsiteFilter" Placeholder="Buscar por sitio web" />
+            </MudTh>
+        </MudTHeadRow>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="Nombre comercial">@context.MarketName</MudTd>
+        <MudTd DataLabel="Razón social">@context.LegalName</MudTd>
+        <MudTd DataLabel="Ciudad">@context.City</MudTd>
+        <MudTd DataLabel="Provincia/Estado">@context.Province</MudTd>
+        <MudTd DataLabel="Teléfono">@context.PhoneNumber</MudTd>
+        <MudTd DataLabel="Sitio web">@context.Website</MudTd>
+    </RowTemplate>
+    <NoRecordsContent>
+        <MudText>Sin clientes encontrados</MudText>
+    </NoRecordsContent>
+    <LoadingContent>
+        <MudText>Cargando clientes...</MudText>
+    </LoadingContent>
+    <PagerContent>
+        <MudTablePager />
+    </PagerContent>
+</MudTable>
+
+@if (VisibleClientInformation)
+{
+    <MudPaper Class="my-3" Elevation="0">
+        <MudText Typo="@Typo.h6" Align="Align.Center">PRESENTANDO INFORMACIÓN PARA CLIENTE: @ClientsTable.SelectedItem.MarketName</MudText>
+        <MudTabs @ref="ClientInformationTabs" Elevation="2" Rounded="true" ApplyEffectsToContainer="true" Color="Color.Primary">
+            <Header>
+                <MudTooltip Text="Cerrar cliente">
+                    <MudIconButton Icon="@Icons.Material.Filled.Close" 
+                                   OnClick="(_) => { SelectedClient = new(); VisibleClientInformation = false; }" />
+                </MudTooltip>
+                <MudTooltip Text="Editar información de cliente">
+                    <MudIconButton Icon="@Icons.Material.Filled.Edit" OnClick="EditClient" Disabled="!CanEditClient" />
+                </MudTooltip>
+                <MudTooltip Text="Eliminar cliente">
+                    <MudIconButton Icon="@Icons.Material.Filled.Delete" OnClick="DeleteClient" Disabled="!CanDeleteClient" />
+                </MudTooltip>
+            </Header>
+            <TabPanelHeader>
+                @if (context.Text.StartsWith("Contacto:"))
+                {
+                    <MudTooltip Text="Cerrar contacto">
+                        <MudIconButton Class="ml-2 pa-1" Icon="@Icons.Material.Filled.Close"
+                                       Color="Color.Error" OnClick="(_) => RemoveTab(context)" />
+                    </MudTooltip>
+                }
+            </TabPanelHeader>
+            <ChildContent>
+                <MudTabPanel Text="Información General">
+                    <MudPaper Elevation="0" Class="m-3" Style="height:500px; overflow-y:scroll;">
+                        <div class="form-group">
+                            <MudText Typo="Typo.subtitle2" Align="Align.Left">Nombre comercial:</MudText>
+                            <MudTextField T="string" @bind-Text="@SelectedClient.MarketName" ReadOnly="true" />
+                        </div>
+                        <div class="form-group">
+                            <MudText Typo="Typo.subtitle2" Align="Align.Left">Razón social:</MudText>
+                            <MudTextField T="string" @bind-Text="@SelectedClient.LegalName" ReadOnly="true" />
+                        </div>
+                        <div class="form-group">
+                            <MudText Typo="Typo.subtitle2" Align="Align.Left">Sitio Web:</MudText>
+                            <MudTextField T="string" @bind-Text="@SelectedClient.Website" ReadOnly="true" />
+                        </div>
+                        <div class="form-group">
+                            <MudText Typo="Typo.subtitle2" Align="Align.Left">Condición de pago:</MudText>
+                            <MudTextField T="string" @bind-Text="@SelectedClient.PaymentCondition" ReadOnly="true" />
+                        </div>
+                    </MudPaper>
+                </MudTabPanel>
+                <MudTabPanel Text="Localización">
+                    <MudPaper Elevation="0" Class="m-3" Style="height:500px; overflow-y:scroll;">
+                        <div class="form-group">
+                            <MudText Typo="Typo.subtitle2" Align="Align.Left">Número de teléfono:</MudText>
+                            <MudTextField T="string" @bind-Text="@SelectedClient.PhoneNumber" ReadOnly="true" />
+                        </div>
+                        <div class="form-group">
+                            <MudText Typo="Typo.subtitle2" Align="Align.Left">Domicilio fiscal:</MudText>
+                            <MudTextField T="string" @bind-Text="@SelectedClient.FiscalAddress" ReadOnly="true" />
+                        </div>
+                        <div class="form-group">
+                            <MudText Typo="Typo.subtitle2" Align="Align.Left">Ciudad:</MudText>
+                            <MudTextField T="string" @bind-Text="@SelectedClient.City" ReadOnly="true" />
+                        </div>
+                        <div class="form-group">
+                            <MudText Typo="Typo.subtitle2" Align="Align.Left">Provincia/Estado:</MudText>
+                            <MudTextField T="string" @bind-Text="@SelectedClient.Province" ReadOnly="true" />
+                        </div>
+                        <div class="form-group">
+                            <MudText Typo="Typo.subtitle2" Align="Align.Left">País:</MudText>
+                            <MudTextField T="string" @bind-Text="@SelectedClient.Country" ReadOnly="true" />
+                        </div>
+                        <div class="form-group">
+                            <MudText Typo="Typo.subtitle2" Align="Align.Left">Código postal:</MudText>
+                            <MudTextField T="string" @bind-Text="@SelectedClient.PostalCode" ReadOnly="true" />
+                        </div>
+                    </MudPaper>
+                </MudTabPanel>
+                <MudTabPanel Text="Contactos asociados">
+                    <MudPaper Elevation="0" Class="m-3" Style="height:500px; overflow-y:scroll;">
+                        <MudTable Dense="true" Hover="true" T="Contacts" @ref="@ContactsTable" CustomHeader="true"
+                                  FixedHeader="true" Height="400px"
+                                  ServerData="@(new Func<TableState, Task<TableData<Contacts>>>(ContactsServerReload))"
+                                  OnRowClick="OnSelectedContactRow" Striped="true">
+                            <ToolBarContent>
+                                <MudText Typo="Typo.h6">Contactos registrados</MudText>
+                                <MudSpacer />
+                                <MudButton Variant="Variant.Filled" Color="Color.Primary"
+                                           OnClick="CreateContact" Disabled="!CanCreateContact">
+                                    Añadir contacto
+                                </MudButton>
+                            </ToolBarContent>
+                            <HeaderContent>
+                                <MudTh><MudTableSortLabel SortLabel="FullName" T="Contacts">Nombre</MudTableSortLabel></MudTh>
+                                <MudTh><MudTableSortLabel SortLabel="Position" T="Contacts">Puesto</MudTableSortLabel></MudTh>
+                                <MudTh><MudTableSortLabel SortLabel="EmailAddress" T="Contacts">Correo electrónico</MudTableSortLabel></MudTh>
+                                <MudTh><MudTableSortLabel SortLabel="MobilePhone" T="Contacts">Teléfono celular</MudTableSortLabel></MudTh>
+                            </HeaderContent>
+                            <RowTemplate>
+                                <MudTd DataLabel="Nombre">@context.FullName</MudTd>
+                                <MudTd DataLabel="Puesto">@context.Position</MudTd>
+                                <MudTd DataLabel="Correo electrónico">@context.EmailAddress</MudTd>
+                                <MudTd DataLabel="Teléfono celular">@context.MobilePhone</MudTd>
+                            </RowTemplate>
+                            <NoRecordsContent>
+                                <MudText>No se encontraron contactos asociados al cliente.</MudText>
+                            </NoRecordsContent>
+                            <LoadingContent>
+                                <MudText>Cargando contactos...</MudText>
+                            </LoadingContent>
+                            <PagerContent>
+                                <MudTablePager />
+                            </PagerContent>
+                        </MudTable>
+                    </MudPaper>
+                </MudTabPanel>
+                @foreach (var contact in SelectedContacts)
+                {
+                    <MudTabPanel Text="@($"Contacto: {contact.FullName}")" Tag="@contact.Id" ID="@contact.Id">
+                        <MudCard Class="m-3" Elevation="0">
+                            <MudCardHeader Style="height:100px;">
+                                <CardHeaderContent>
+                                    <MudText Typo="Typo.subtitle1">
+                                        Nombre de contacto: @contact.FullName
+                                    </MudText>
+                                </CardHeaderContent>
+                            </MudCardHeader>
+                            <MudCardContent Style="height:300px; overflow-y:scroll;">
+                                <div class="form-group">
+                                    <MudText Typo="Typo.subtitle2" Align="Align.Left">Puesto:</MudText>
+                                    <MudTextField T="string" @bind-Text="@contact.Position" ReadOnly="true" />
+                                </div>
+                                <div class="form-group">
+                                    <MudText Typo="Typo.subtitle2" Align="Align.Left">Correo electrónico:</MudText>
+                                    <MudTextField T="string" @bind-Text="@contact.EmailAddress" ReadOnly="true" />
+                                </div>
+                                <div class="form-group">
+                                    <MudText Typo="Typo.subtitle2" Align="Align.Left">Número de teléfono:</MudText>
+                                    <MudTextField T="string" @bind-Text="@contact.MobilePhone" ReadOnly="true" />
+                                </div>
+                            </MudCardContent>
+                            <MudCardActions Style="height:100px;">
+                                <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="mx-1"
+                                           OnClick="async (_) => await EditContact(contact)" Disabled="!CanEditContact">
+                                    Editar
+                                </MudButton>
+                                <MudButton Variant="Variant.Filled" Color="Color.Error" Class="mx-1"
+                                           OnClick="(_) => DeleteContact(contact)" Disabled="!CanDeleteContact">
+                                    Eliminar
+                                </MudButton>
+                            </MudCardActions>
+                        </MudCard>
+                    </MudTabPanel>
+                }
+            </ChildContent>
+        </MudTabs>
+    </MudPaper>
+}
+
+<style>
+    .selected {
+        background-color: #1E88E5 !important;
+    }
+
+        .selected > td {
+            color: white !important;
+        }
+
+            .selected > td .mud-input {
+                color: white !important;
+            }
+</style>

@@ -8,21 +8,36 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Remove="Shared\CompanyLogo.razor" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Dapper" Version="2.0.123" />
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="6.0.2" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="6.0.2" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="6.0.2" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.2" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.2" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="6.0.2" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="6.0.2" />
+    <PackageReference Include="MudBlazor" Version="6.0.7" />
+    <PackageReference Include="MySql.Data" Version="8.0.28" />
     <PackageReference Include="MySql.EntityFrameworkCore" Version="6.0.0" />
+    <PackageReference Include="System.Data.Common" Version="4.3.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\DataAccess\DataAccess.csproj" />
+    <UpToDateCheckInput Remove="Shared\CompanyLogo.razor" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="EntityServices\Interfaces\" />
+    <_ContentIncludedByDefault Remove="Shared\CompanyLogo.razor" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Pages\ClientsModule\ClientsDialog.razor" />
+    <None Include="Pages\ClientsModule\ClientsPage.razor" />
+    <None Include="Shared\CompanyLogo.razor" />
   </ItemGroup>
 
 </Project>
