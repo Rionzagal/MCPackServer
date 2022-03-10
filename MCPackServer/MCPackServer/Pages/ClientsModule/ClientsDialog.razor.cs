@@ -119,7 +119,7 @@ namespace MCPackServer.Pages.ClientsModule
                     }
                 }
                 _processing = false;
-                Dialog.Close(DialogResult.Ok(JsonSerializer.Serialize(response)));
+                Dialog.Close(DialogResult.Ok(response));
             }
             else
             {

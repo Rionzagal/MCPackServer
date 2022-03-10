@@ -147,8 +147,7 @@ namespace MCPackServer.Pages.ClientsModule
             var result = await dialog.Result;
             if (!result.Cancelled)
             {
-                JObject element = JObject.Parse(result.Data.ToString());
-                ActionResponse<Clients> Response = JsonSerializer.Deserialize<ActionResponse<Clients>>(element.ToString());
+                ActionResponse<Clients> Response = (ActionResponse<Clients>)result.Data;
                 if (Response.IsSuccessful)
                     Snackbar.Add("Cliente añadido con éxito.", Severity.Success);
                 else
@@ -172,8 +171,7 @@ namespace MCPackServer.Pages.ClientsModule
             var result = await dialog.Result;
             if (!result.Cancelled)
             {
-                JObject element = JObject.Parse(result.Data.ToString());
-                ActionResponse<Clients> Response = JsonSerializer.Deserialize<ActionResponse<Clients>>(element.ToString());
+                ActionResponse<Clients> Response = (ActionResponse<Clients>)result.Data;
                 if (Response.IsSuccessful)
                     Snackbar.Add("Cliente editado con éxito", Severity.Success);
                 else
@@ -197,8 +195,7 @@ namespace MCPackServer.Pages.ClientsModule
             var result = await dialog.Result;
             if (!result.Cancelled)
             {
-                JObject element = JObject.Parse(result.Data.ToString());
-                ActionResponse<Clients> Response = JsonSerializer.Deserialize<ActionResponse<Clients>>(element.ToString());
+                ActionResponse<Clients> Response = (ActionResponse<Clients>)result.Data;
                 if (Response.IsSuccessful)
                 {
                     VisibleClientInformation = false;
@@ -227,8 +224,10 @@ namespace MCPackServer.Pages.ClientsModule
                 Take = state.PageSize,
                 Skip = state.PageSize * state.Page
             };
-            var items = await _service.GetForGridAsync<Contacts>(request, state.SortLabel);
-            int? count = await _service.GetTotalCountAsync<Contacts>(request);
+            string field = state.SortLabel ?? "Id";
+            string order = state.SortDirection == SortDirection.Ascending ? "ASC" : "DESC";
+            var items = await _clientsService.GetContacts(SelectedClient.Id, request, field, order);
+            int? count = await _clientsService.CountContacts(SelectedClient.Id, request);
             return new TableData<Contacts>()
             {
                 Items = items,

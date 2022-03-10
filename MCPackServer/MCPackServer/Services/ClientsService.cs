@@ -14,7 +14,7 @@ namespace MCPackServer.Services
         {
         }
 
-        public async Task<IEnumerable<Contacts>> GetContacts(string clientId, DataManagerRequest request, string sortField = "Id", string order = "")
+        public async Task<IEnumerable<Contacts>> GetContacts(object clientId, DataManagerRequest request, string sortField = "Id", string order = "")
         {
             using IDbConnection conn = Connection;
             DynamicParameters parameters = new();
@@ -35,7 +35,7 @@ namespace MCPackServer.Services
             return await conn.QueryAsync<Contacts>(query, parameters);
         }
 
-        public async Task<int?> CountContacts(string clientId, DataManagerRequest request)
+        public async Task<int?> CountContacts(object clientId, DataManagerRequest request)
         {
             using IDbConnection conn = Connection;
             DynamicParameters parameters = new();
@@ -55,7 +55,7 @@ namespace MCPackServer.Services
             return await conn.ExecuteScalarAsync<int?>(query, parameters);
         }
 
-        public async Task<IEnumerable<Contacts>> GetAvailableContacts(string clientId, DataManagerRequest request, string sortField = "Id", string order = "")
+        public async Task<IEnumerable<Contacts>> GetAvailableContacts(object clientId, DataManagerRequest request, string sortField = "Id", string order = "")
         {
             using IDbConnection conn = Connection;
             DynamicParameters parameters = new();
