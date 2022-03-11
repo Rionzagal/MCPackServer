@@ -3,6 +3,8 @@
 @inject IQuotesService _quotesService
 @inject IProvidersService _providersService
 
+@attribute [Authorize]
+
 <MudText Typo="Typo.h3" Align="Align.Center">GESTIÓN DE ARTÍCULOS DE COMPRA Y COTIZACIONES</MudText>
 
 <MudExpansionPanels MultiExpansion="true">

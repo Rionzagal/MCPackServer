@@ -2,6 +2,8 @@
 @inject IProvidersService _providersService
 @inject IContactsService _contactsService
 
+@attribute [Authorize]
+
 <MudText Typo="Typo.h3" Align="Align.Center">GESTIÓN Y MANEJO DE PROVEEDORES</MudText>
 
 <MudTable @ref="ProvidersTable" T="Providers" Dense Hover FixedHeader Height="400px" CustomHeader Striped

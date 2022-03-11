@@ -2,6 +2,8 @@
 @inject IProjectsService _projectsService
 @inject IProjectProductsService _productsService
 
+@attribute [Authorize]
+
 <MudText Typo="Typo.h3" Align="Align.Center">GESTIÓN DE PROYECTOS</MudText>
 
 <MudTable @ref="ProjectsTable" T="Projects" Dense="true" Hover="true" FixedHeader="true" Height="400px"

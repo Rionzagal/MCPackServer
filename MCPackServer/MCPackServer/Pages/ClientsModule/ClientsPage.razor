@@ -2,6 +2,8 @@
 @inject IClientsService _clientsService
 @inject IContactsService _contactsService
 
+@attribute [Authorize]
+
 <MudText Typo="Typo.h3" Align="Align.Center">GESTIÓN Y MANEJO DE CLIENTES</MudText>
 
 <MudTable Dense="true" Hover="true" Striped="true" CustomHeader="true" FixedHeader="true" Height="400px"
