@@ -106,6 +106,9 @@ namespace MCPackServer.Services
             ActionResponse<T> response = new("Insert");
             try
             {
+                var properties = entity.GetType().GetProperties()
+                    .Where(x => !x.GetAccessors()[0].IsFinal && x.GetAccessors()[0].IsVirtual).ToList();
+                properties.ForEach(x => x.SetValue(entity, null));
                 await _context.AddAsync(entity);
                 await _context.SaveChangesAsync();
                 _context.Entry(entity).State = EntityState.Detached;
@@ -124,6 +127,9 @@ namespace MCPackServer.Services
             ActionResponse<T> response = new("Edit");
             try
             {
+                var properties = entity.GetType().GetProperties()
+                    .Where(x => !x.GetAccessors()[0].IsFinal && x.GetAccessors()[0].IsVirtual).ToList();
+                properties.ForEach(x => x.SetValue(entity, null));
                 _context.Update(entity);
                 _context.Entry(entity).State = EntityState.Modified;
                 await _context.SaveChangesAsync();

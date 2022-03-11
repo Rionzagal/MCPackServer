@@ -6,11 +6,11 @@
     </MudCardHeader>
 </MudCard>
 <MudNavMenu>
-    <AuthorizeView>
-        <MudNavLink Href="Users" Icon="@Icons.Material.Filled.Person">Usuarios</MudNavLink>
-    </AuthorizeView>
-    <AuthorizeView>
-        <MudNavLink Href="Roles" Icon="@Icons.Material.Filled.PanTool">Puestos de seguridad</MudNavLink>
+    <AuthorizeView Roles="Admin, Developer">
+        <MudNavGroup Icon="@Icons.Material.Filled.SupervisedUserCircle" Title="Seguridad y usuarios">
+            <MudNavLink Href="Users" Icon="@Icons.Material.Filled.Person">Usuarios</MudNavLink>
+            <MudNavLink Href="Roles" Icon="@Icons.Material.Filled.PanTool">Roles de usuario</MudNavLink>
+        </MudNavGroup>
     </AuthorizeView>
     <AuthorizeView>
         <MudNavLink Href="Clients" Icon="@Icons.Material.Filled.AttachMoney">Clientes</MudNavLink>
