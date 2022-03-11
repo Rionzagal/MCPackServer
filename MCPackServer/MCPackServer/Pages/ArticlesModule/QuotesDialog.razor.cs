@@ -70,6 +70,7 @@ namespace MCPackServer.Pages.ArticlesModule
             await Form.Validate();
             if (Form.IsValid)
             {
+                if (States.Delete != State) Model.DateUpdated = DateTime.Now;
                 if (States.Add == State) response = await _quotesService.AddAsync(Model);
                 else if (States.Edit == State) response = await _quotesService.UpdateAsync(Model);
                 else if (States.Delete == State) response = await _quotesService.RemoveAsync(Model);

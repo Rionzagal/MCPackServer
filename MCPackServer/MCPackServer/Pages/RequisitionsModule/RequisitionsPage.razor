@@ -13,10 +13,10 @@
     <ToolBarContent>
         <MudText Typo="Typo.h6">Requisiciones registradas</MudText>
         <MudSpacer />
-        @if (CanCreate)
+        @if (true)
         {
             <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="mx-1"
-                       OnClick="CreateRequisition" Disabled="!CanCreate">
+                       OnClick="CreateRequisition">
                 Añadir
             </MudButton>
         }
@@ -56,7 +56,8 @@
     </PagerContent>
 </MudTable>
 
-<MudHidden Invert="true" IsHidden="!VisibleRequisitionInformation">
+@if (VisibleRequisitionInformation)
+{
     <MudPaper Class="my-3" Elevation="0">
         <MudText Typo="Typo.h6" Align="Align.Center" Class="mt-3">
             PRESENTANDO INFORMACIÓN PARA REQUISICIÓN: @SelectedRequisition.RequisitionNumber
@@ -73,14 +74,14 @@
                                                 VisibleRequisitionInformation = false;
                                             }" />
                 </MudTooltip>
-                @if (CanEdit)
+                @if (true)
                 {
                     <MudTooltip Text="Editar Proyecto">
                         <MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Secondary"
                                        OnClick="async () => await EditRequisition(SelectedRequisition)" />
                     </MudTooltip>
                 }
-                @if (CanDelete)
+                @if (true)
                 {
                     <MudTooltip Text="Eliminar proyecto">
                         <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error"
@@ -132,7 +133,7 @@
                             <MudText Typo="Typo.h6">Productos del proyecto</MudText>
                             <MudSpacer />
                             <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="mx-1"
-                                       OnClick="AddProduct" Disabled="!CanEdit">
+                                       OnClick="AddProduct" >
                                 Añadir
                             </MudButton>
                         </ToolBarContent>
@@ -197,13 +198,11 @@
                             </MudCardContent>
                             <MudCardActions Style="height: 100px">
                                 <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="mx-1"
-                                           OnClick="async (_) => await EditProduct(product)"
-                                           Disabled="!CanEdit">
+                                           OnClick="async (_) => await EditProduct(product)">
                                     Editar
                                 </MudButton>
                                 <MudButton Variant="Variant.Filled" Color="Color.Error" Class="mx-1"
-                                           OnClick="async (_) => await DeleteProduct(product)"
-                                           Disabled="!CanEdit">
+                                           OnClick="async (_) => await DeleteProduct(product)">
                                     Eliminar
                                 </MudButton>
                             </MudCardActions>
@@ -213,4 +212,4 @@
             </ChildContent>
         </MudTabs>
     </MudPaper>
-</MudHidden>
+}

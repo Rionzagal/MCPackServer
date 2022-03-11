@@ -12,9 +12,8 @@
         <MudCard Class="my-2" Elevation="0">
             <MudCardHeader>
                 <CardHeaderContent>
-                    <MudAutocomplete T="ArticleGroups" Label="Seleccionar grupo" @bind-Value="SelectedGroup"
-                                     SearchFunc="GroupsServerReload" ToStringFunc="@(e => e.Name)" Clearable
-                                     Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" />
+                    <MudAutocomplete T="ArticleGroups" Label="Seleccionar grupo" @bind-Value="SelectedGroup" Clearable
+                                     SearchFunc="GroupsServerReload" ToStringFunc="new Func<ArticleGroups, string>(GroupName)" />
                 </CardHeaderContent>
                 <CardHeaderActions>
                     @if (true)
@@ -55,9 +54,8 @@
         <MudCard Class="my-2" Elevation="0">
             <MudCardHeader>
                 <CardHeaderContent>
-                    <MudAutocomplete T="ArticleFamilies" Label="Seleccionar familia" @bind-Value="SelectedFamily"
-                                     SearchFunc="FamiliesServerReload" ToStringFunc="@(e => e.Name)" Clearable
-                                     Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.Search" />
+                    <MudAutocomplete T="ArticleFamilies" Label="Seleccionar familia" @bind-Value="SelectedFamily" Clearable
+                                     SearchFunc="FamiliesServerReload" ToStringFunc="new Func<ArticleFamilies, string>(FamilyName)" />
                 </CardHeaderContent>
                 <CardHeaderActions>
                     @if (true)
@@ -245,8 +243,8 @@
                                     <MudTh>
                                         <MudAutocomplete T="int" Label="Buscar por proveedor" @bind-Value="ProviderFilter"
                                                          SearchFunc="f => ProvidersServerReload(f, false)" Clearable
-                                                         ToStringFunc="@(e => ProvidersList.FirstOrDefault(p => e == p.Id).MarketName)"
-                                                         OnClearButtonClick="(_) => ProviderFilter = 0" />
+                                                         ToStringFunc="new Func<int, string>(GetProviderName)"
+                                                         OnClearButtonClick="() => ProviderFilter = 0" />
                                     </MudTh>
                                     <MudTh />
                                     <MudTh />
@@ -259,9 +257,9 @@
                             <RowTemplate>
                                 <MudTd DataLabel="Proveedor">@context.Provider.MarketName.</MudTd>
                                 <MudTd DataLabel="SKU">@context.SKU</MudTd>
-                                <MudTd DataLabel="Precio">@context.Price</MudTd>
+                                <MudTd DataLabel="Precio">$ @context.Price.ToString("n2")</MudTd>
                                 <MudTd DataLabel="Divisa">@context.Currency</MudTd>
-                                <MudTd DataLabel="Fecha de actualización">@context.DateUpdated</MudTd>
+                                <MudTd DataLabel="Fecha de actualización">@context.DateUpdated.ToShortDateString()</MudTd>
                             </RowTemplate>
                             <NoRecordsContent>
                                 <MudText>Sin cotizaciones encontradas</MudText>
@@ -308,13 +306,13 @@
                             </MudCardContent>
                             <MudCardActions Style="height:100px;">
                                 <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="mx-1"
-                                           OnClick="async (_) => await EditQuote(quote)" >
+                                           OnClick="async () => await EditQuote(quote)" >
                                     Actualizar
                                 </MudButton>
                                 @if (CanDeleteQuote)
                                 {
                                     <MudButton Variant="Variant.Filled" Color="Color.Error" Class="mx-1"
-                                               OnClick="async (_) => await DeleteQuote(quote)" >
+                                               OnClick="async () => await DeleteQuote(quote)" >
                                         Eliminar
                                     </MudButton>
                                 }

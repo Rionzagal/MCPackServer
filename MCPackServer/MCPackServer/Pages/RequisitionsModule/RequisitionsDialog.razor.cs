@@ -84,7 +84,7 @@ namespace MCPackServer.Pages.RequisitionsModule
                 if (States.Add == State) response = await _requisitionsService.AddAsync(Model);
                 else if (States.Edit == State) response = await _requisitionsService.UpdateAsync(Model);
                 else if (States.Delete == State) response = await _requisitionsService.RemoveAsync(Model);
-                Dialog.Close(DialogResult.Ok(JsonSerializer.Serialize(response)));
+                Dialog.Close(DialogResult.Ok(response));
             }
             else
             {
@@ -111,6 +111,17 @@ namespace MCPackServer.Pages.RequisitionsModule
                 users.ForEach(x => result.Add(x.Id));
             }
             return result;
+        }
+
+        private string GetUserName(string Id)
+        {
+            string userName = string.Empty;
+            if (!string.IsNullOrEmpty(Id))
+            {
+                var match = users.SingleOrDefault(u => u.Id == Id);
+                if (null != match) userName = match.UserName;
+            }
+            return userName;
         }
 
         private IEnumerable<string> ValidateRequisitionsNumber(string number)

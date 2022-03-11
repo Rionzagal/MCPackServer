@@ -10,13 +10,6 @@ namespace MCPackServer.Pages.ProductsModule
 {
     public partial class ProductsPage
     {
-        #region Dependency Injection
-        [Inject]
-        public IAuthorizationService _authorizationService { get; set; }
-        [Inject]
-        public NavigationManager _navigationManager { get; set; }
-        #endregion
-
         #region Permission State
         private bool CanCreate, CanEdit, CanDelete = true;
         #region Visible Flags

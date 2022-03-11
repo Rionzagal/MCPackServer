@@ -1,0 +1,256 @@
+﻿@page "/PurchaseOrders"
+@inject IPurchaseOrdersService _ordersService
+@inject IArticlesToPurchaseService _articlesService
+
+<MudText Typo="Typo.h3" Align="Align.Center">GESTIÓN DE ÓRDENES DE COMPRA</MudText>
+
+<MudTable @ref="OrdersTable" T="PurchaseOrders" Dense Hover FixedHeader Height="400px"
+          CustomHeader Striped ServerData="PurchaseOrdersServerReload" 
+          OnRowClick="async (args) => await OnSelectedPurchaseOrder(args)">
+    <ToolBarContent>
+        <MudText Typo="Typo.h6">Órdenes de compra registradas</MudText>
+        <MudSpacer />
+        @if (true)
+        {
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="mx-1"
+                       OnClick="async () => await AddOrder()" >
+                Añadir órden de compra
+            </MudButton>
+        }
+        <MudButton Variant="Variant.Filled" Class="mx-1">
+            Borrar filtros de búsqueda
+        </MudButton>
+        <MudButton Variant="Variant.Outlined" Class="ml-1"
+                   OnClick="() => OrdersTable.ReloadServerData()">
+            <MudIcon Icon="@Icons.Material.Filled.Search" /> Buscar
+        </MudButton>
+    </ToolBarContent>
+    <HeaderContent>
+        <MudTHeadRow>
+            <MudTh><MudTableSortLabel SortLabel="Id" T="PurchaseOrders">Número de órden</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortLabel="IssuedDate" T="PurchaseOrders">Fecha de emisión</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortLabel="ProviderId" T="PurchaseOrders">Proveedor</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortLabel="ProjectId" T="PurchaseOrders">Proyecto</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortLabel="Status" T="PurchaseOrders">Estatus</MudTableSortLabel></MudTh>
+        </MudTHeadRow>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="Número de órden">@context.Id</MudTd>
+        <MudTd DataLabel="Fecha de emisión">@(context.IssuedDate.HasValue ? context.IssuedDate.Value.ToShortDateString() : "N/A")</MudTd>
+        <MudTd DataLabel="Proveedor">@context.Provider.LegalName</MudTd>
+        <MudTd DataLabel="Proyecto">@context.ProjectId</MudTd>
+        <MudTd DataLabel="Estatus">@context.Status</MudTd>
+    </RowTemplate>
+    <NoRecordsContent>
+        <MudText>Sin órdenes encontradas</MudText>
+    </NoRecordsContent>
+    <LoadingContent>
+        <MudText>Cargando órdenes de compra...</MudText>
+    </LoadingContent>
+    <PagerContent>
+        <MudTablePager />
+    </PagerContent>
+</MudTable>
+
+<MudHidden Invert IsHidden="!VisibleOrderInformation">
+    <MudPaper Elevation="0" Class="m-3">
+        <MudText Typo="Typo.h6" Align="Align.Center">MOSTRANDO INFORMACIÓN PARA ORDEN DE COMPRA: @SelectedOrder.Id</MudText>
+        <MudTabs @ref="OrderInformationTabs" Elevation="2" Rounded ApplyEffectsToContainer Color="Color.Primary">
+            <Header>
+                <MudTooltip Text="Cerrar órden">
+                    <MudIconButton Icon="@Icons.Material.Filled.Close" Color="Color.Warning"
+                                   OnClick="() => { SelectedOrder = new(); VisibleOrderInformation = false; }" />
+                </MudTooltip>
+                @if (true)
+                {
+                    <MudTooltip Text="Editar órden">
+                        <MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Secondary"
+                                       OnClick="() => EditOrder()" />
+                    </MudTooltip>
+                }
+                <MudTooltip Text="Ver reporte">
+                    <MudIconButton Icon="@Icons.Material.Filled.Report" Color="Color.Tertiary"
+                                   OnClick="VewReport"/>
+                </MudTooltip>
+                @if (true)
+                {
+                    <MudTooltip Text="Eliminar órden">
+                        <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error"
+                                       OnClick="() => DeleteOrder()" />
+                    </MudTooltip>
+                }
+            </Header>
+            <TabPanelHeader>
+                @if (context.Text.StartsWith("Artículo de compra:"))
+                {
+                    <MudTooltip Text="Cerrar producto">
+                        <MudIconButton Class="ml-2 pa-1" Icon="@Icons.Material.Filled.Close"
+                                       Color="Color.Error" OnClick="() => RemoveTab(tabPanel: context)" />
+                    </MudTooltip>
+                }
+            </TabPanelHeader>
+            <ChildContent>
+                <MudTabPanel Text="Información general" ID="@Guid.NewGuid()" Tag="@Guid.NewGuid()">
+                    <MudButton Class="mx-3" Color="Color.Primary" Variant="Variant.Filled"
+                               OnClick="MarkOrderAsReceived">
+                        Marcar como entregada
+                    </MudButton>
+                    <MudGrid Class="m-3" Style="height:500px; overflow-y:scroll; width: inherit">
+                        <MudItem xs="12">
+                            <MudText Typo="Typo.subtitle1">Número de orden</MudText>
+                            <MudTextField Value="SelectedOrder.Id" ReadOnly />
+                        </MudItem>
+                        <MudItem xs="6">
+                            <MudText Typo="Typo.subtitle1">Fecha de emisión</MudText>
+                            <MudTextField Value="SelectedOrder.IssuedDate" Format="dddd, MMM dd yyyy" ReadOnly />
+                        </MudItem>
+                        <MudItem xs="6">
+                            <MudText Typo="Typo.subtitle1">Fecha de entrega</MudText>
+                            <MudTextField Value="SelectedOrder.DeliveryDate" Format="dddd, MMM dd yyyy" ReadOnly />
+                        </MudItem>
+                        <MudItem xs="6">
+                            <MudText Typo="Typo.subtitle1">Proveedor</MudText>
+                            <MudTextField Value="SelectedOrder.Provider.LegalName" ReadOnly />
+                        </MudItem>
+                        <MudItem xs="6">
+                            <MudText Typo="Typo.subtitle1">Moneda de cotización</MudText>
+                            <MudTextField Value="SelectedOrder.Currency" ReadOnly />
+                        </MudItem>
+                        <MudItem xs="6">
+                            <MudText Typo="Typo.subtitle1">Proyecto</MudText>
+                            <MudTextField Value="SelectedOrder.ProjectId" ReadOnly />
+                        </MudItem>
+                        <MudItem xs="6">
+                            <MudText Typo="Typo.subtitle1">Cliente</MudText>
+                            <MudTextField @bind-Value="SelectedOrder.Project.Client.MarketName" ReadOnly />
+                        </MudItem>
+                        <MudItem xs="6">
+                            <MudText Typo="Typo.subtitle1">Número de requisición</MudText>
+                            <MudTextField Value="SelectedOrder.Requisition.RequisitionNumber" ReadOnly />
+                        </MudItem>
+                        <MudItem xs="6">
+                            <MudText Typo="Typo.subtitle1">Fecha de requisición</MudText>
+                            <MudTextField Value="SelectedOrder.Requisition.IssuedDate" Format="dddd, MMM dd yyyy" ReadOnly />
+                        </MudItem>
+                        <MudItem xs="3">
+                            <MudText Typo="Typo.subtitle1">Descuento</MudText>
+                            <MudTextField Value="@($"$ {discount.ToString("n2")} {SelectedOrder.Currency}")" ReadOnly />
+                        </MudItem>
+                        <MudItem xs="3">
+                            <MudText Typo="Typo.subtitle1">Subtotal</MudText>
+                            <MudTextField Value="@($"$ {subtotal.ToString("n2")} {SelectedOrder.Currency}")" ReadOnly />
+                        </MudItem>
+                        <MudItem xs="3">
+                            <MudText Typo="Typo.subtitle1">IVA</MudText>
+                            <MudTextField Value="@($"$ {tax.ToString("n2")} {SelectedOrder.Currency}")" ReadOnly />
+                        </MudItem>
+                        <MudItem xs="3">
+                            <MudText Typo="Typo.subtitle1">Total</MudText>
+                            <MudTextField Value="@($"$ {(total).ToString("n2")} {SelectedOrder.Currency}")" ReadOnly />
+                        </MudItem>
+                        <MudItem xs="12">
+                            <MudText Typo="Typo.subtitle1">Observaciones</MudText>
+                            <MudTextField Value="SelectedOrder.Observations" Lines="5" ReadOnly />
+                        </MudItem>
+                    </MudGrid>
+                </MudTabPanel>
+                <MudTabPanel Text="Artículos de orden" ID="@Guid.NewGuid()" Tag="@Guid.NewGuid()">
+                    <MudTable @ref="ArticlesTable" T="ArticlesToPurchase" Hover FixedHeader Height="400px"
+                              Items="SelectedOrder.ArticlesToPurchase" OnRowClick="OnSelectedArticle">
+                        <ToolBarContent>
+                            <MudText Typo="Typo.h6">Artículos cotizados</MudText>
+                            <MudSpacer />
+                            <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="mx-1"
+                                       OnClick="async () => await AddArticles()">
+                                Añadir artículos
+                            </MudButton>
+                        </ToolBarContent>
+                        <HeaderContent>
+                            <MudTh><MudTableSortLabel SortBy="new Func<ArticlesToPurchase, object>(x => x.Quote.Article.Code)" />Código</MudTh>
+                            <MudTh><MudTableSortLabel SortBy="new Func<ArticlesToPurchase, object>(x => x.Quote.Article.Name)" />Nombre</MudTh>
+                            <MudTh><MudTableSortLabel SortBy="new Func<ArticlesToPurchase, object>(x => x.Quote.SKU)" />SKU</MudTh>
+                            <MudTh><MudTableSortLabel SortBy="new Func<ArticlesToPurchase, object>(x => x.Quote.DateUpdated)" />Fecha de cotización</MudTh>
+                            <MudTh><MudTableSortLabel SortBy="new Func<ArticlesToPurchase, object>(x => x.Quote.Price)" />Precio</MudTh>
+                            <MudTh><MudTableSortLabel SortBy="new Func<ArticlesToPurchase, object>(x => x.Quantity)" />Cantidad</MudTh>
+                        </HeaderContent>
+                        <RowTemplate>
+                            <MudTd DataLabel="Código">@context.Quote.Article.Code</MudTd>
+                            <MudTd DataLabel="Nombre">@context.Quote.Article.Name</MudTd>
+                            <MudTd DataLabel="SKU">@(context.Quote.SKU ?? "N/A")</MudTd>
+                            <MudTd DataLabel="Fecha de cotización">@context.Quote.DateUpdated.Date.ToShortDateString()</MudTd>
+                            <MudTd DataLabel="Precio">@($"$ {context.Quote.Price.ToString("n2")} {SelectedOrder.Currency}")</MudTd>
+                            <MudTd DataLabel="Cantidad">@($"{context.Quantity} {context.Quote.Article.Unit}")</MudTd>
+                        </RowTemplate>
+                        <PagerContent>
+                            <MudTablePager />
+                        </PagerContent>
+                        <LoadingContent>
+                            Cargando artículos cotizados...
+                        </LoadingContent>
+                        <NoRecordsContent>
+                            No se encontraron artículos cotizados.
+                        </NoRecordsContent>
+                    </MudTable>
+                </MudTabPanel>
+                @foreach (var article in SelectedArticles)
+                {
+                    <MudTabPanel Text="@($"Artículo de compra: {article.Quote.Article.Code}")" ID="article.QuoteId"
+                                 Tag="article.QuoteId">
+                        <MudCard Class="m-3" Elevation="0">
+                            <MudCardHeader Style="height: 100px;">
+                                <CardHeaderContent>
+                                    <MudText Typo="Typo.subtitle1">
+                                        <b>Nombre de artículo:</b> @(article.Quote.Article.Name)
+                                    </MudText>
+                                </CardHeaderContent>
+                            </MudCardHeader>
+                            <MudCardContent Style="height:300px; overflow-y:scroll;">
+                                <MudGrid Class="m-3" Style="width: inherit">
+                                    <MudItem xs="6">
+                                        <MudText Typo="Typo.subtitle1">Grupo</MudText>
+                                        <MudTextField Value="article.Quote.Article.Family.Group.Name" ReadOnly />
+                                    </MudItem>
+                                    <MudItem xs="6">
+                                        <MudText Typo="Typo.subtitle1">Familia</MudText>
+                                        <MudTextField Value="article.Quote.Article.Family.Name" ReadOnly />
+                                    </MudItem>
+                                    <MudItem xs="12">
+                                        <MudText Typo="Typo.subtitle1">Descripcíon</MudText>
+                                        <MudTextField Value="article.Quote.Article.Description" ReadOnly />
+                                    </MudItem>
+                                    <MudItem xs="6">
+                                        <MudText Typo="Typo.subtitle1">Marca</MudText>
+                                        <MudTextField Value="@(article.Quote.Article.TradeMark ?? "N/A")" ReadOnly />
+                                    </MudItem>
+                                    <MudItem xs="6">
+                                        <MudText Typo="Typo.subtitle1">Modelo</MudText>
+                                        <MudTextField Value="@(article.Quote.Article.Model ?? "N/A")" ReadOnly />
+                                    </MudItem>
+                                    <MudItem xs="6">
+                                        <MudText Typo="Typo.subtitle1">Precio unitario</MudText>
+                                        <MudTextField Value="@($"$ {article.SalePrice.ToString("n2")} {article.Quote.Currency}")" ReadOnly />
+                                    </MudItem>
+                                    <MudItem xs="6">
+                                        <MudText Typo="Typo.subtitle1">Cantidad</MudText>
+                                        <MudTextField Value="@($"{article.Quantity} {article.Quote.Article.Unit}")" ReadOnly />
+                                    </MudItem>
+                                </MudGrid>
+                            </MudCardContent>
+                            <MudCardActions Style="height: 100px">
+                                <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="mx-1"
+                                           OnClick="async () => await EditArticle(article)">
+                                    Editar
+                                </MudButton>
+                                <MudButton Variant="Variant.Filled" Color="Color.Error" Class="mx-1"
+                                           OnClick="async () => await DeleteArticle(article)">
+                                    Eliminar
+                                </MudButton>
+                            </MudCardActions>
+                        </MudCard>
+                    </MudTabPanel>
+                }
+            </ChildContent>
+        </MudTabs>
+    </MudPaper>
+</MudHidden>
+ 

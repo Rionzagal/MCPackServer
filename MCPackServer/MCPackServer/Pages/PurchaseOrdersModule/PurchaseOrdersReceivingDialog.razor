@@ -1,0 +1,88 @@
+﻿@inject IPurchaseOrdersService _ordersService
+@inject IArticlesToPurchaseService _articlesService
+
+<MudDialog>
+    <TitleContent>
+        <MudText Typo="Typo.h6">
+            <MudIcon Icon="@TitleIcon" /> @Title
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        @if (_processing)
+        {
+            <MudProgressCircular Class="m-sm-n1" Size="Size.Large" Indeterminate="true" />
+            <MudText Class="m-sm-2">Esperando respuesta de servidor...</MudText>
+        }
+        else
+        {
+    <MudContainer Style="max-height: 500px; overflow-y: scroll;">
+        <MudForm Model="Model" @ref="Form">
+            <MudGrid>
+                <MudItem xs="6">
+                    <MudText Typo="Typo.subtitle1">Número de orden</MudText>
+                    <MudTextField Variant="Variant.Outlined" Value="@Model.Id" ReadOnly />
+                </MudItem>
+                <MudItem xs="6">
+                    <MudText Typo="Typo.subtitle1">Proyecto</MudText>
+                    <MudTextField Variant="Variant.Outlined" Value="@Model.ProjectId" ReadOnly />
+                </MudItem>
+                <MudItem xs="6">
+                    <MudText Typo="Typo.subtitle1">Fecha de emisión</MudText>
+                    <MudTextField Variant="Variant.Outlined" Value="@Model.IssuedDate"
+                                  Format="dddd, MMM dd yyyy" ReadOnly />
+                </MudItem>
+                <MudItem xs="6">
+                    <MudText Typo="Typo.subtitle1">Proveedor</MudText>
+                    <MudTextField Variant="Variant.Outlined" Value="@Model.Provider.LegalName" ReadOnly />
+                </MudItem>
+                <MudItem xs="6">
+                    <MudText Typo="Typo.subtitle1">Número de requisición</MudText>
+                    <MudTextField Variant="Variant.Outlined" Value="@Model.Requisition.RequisitionNumber"
+                                  ReadOnly />
+                </MudItem>
+                <MudItem xs="6">
+                    <MudText Typo="Typo.subtitle1">Fecha de recepción</MudText>
+                    <MudDatePicker Label="Fecha de entrega" @bind-Date="Model.ReceptionDate" Required
+                                   RequiredError="Inserte fecha de entrega"
+                                   ReadOnly="@Disabled" />
+                </MudItem>
+                <MudItem xs="12">
+                    <MudTable Items="Model.ArticlesToPurchase" FixedHeader Dense Striped Height="300px">
+                        <ToolBarContent>
+                            <MudText Typo="Typo.subtitle1">
+                                Artículos cotizados en orden de compra
+                            </MudText>
+                        </ToolBarContent>
+                        <HeaderContent>
+                            <MudTh>Código</MudTh>
+                            <MudTh>Nombre</MudTh>
+                            <MudTh>Precio unitario</MudTh>
+                            <MudTh>Cantidad</MudTh>
+                        </HeaderContent>
+                        <RowTemplate>
+                            <MudTd DataLabel="Código">@context.Quote.Article.Code</MudTd>
+                            <MudTd DataLabel="Nombre">@context.Quote.Article.Name</MudTd>
+                            <MudTd DataLabel="Precio unitario">@($"${context.SalePrice.ToString("n2")} {Model.Currency}")</MudTd>
+                            <MudTd DataLabel="Cantidad">@($"{context.Quantity} {context.Quote.Article.Unit}")</MudTd>
+                        </RowTemplate>
+                        <PagerContent>
+                            <MudTablePager />
+                        </PagerContent>
+                    </MudTable>
+                </MudItem>
+            </MudGrid>
+        </MudForm>
+    </MudContainer>
+        }
+        </DialogContent>
+    <DialogActions>
+        <MudButton Variant="Variant.Text" Class="mx-1"
+                   OnClick="() => Dialog.Cancel()" Disabled="_processing">
+            Cerrar
+        </MudButton>
+        <MudButton Variant="Variant.Filled" Color="@ButtonColor" Class="mx-1"
+                   OnClick="async () => await Submit()" Disabled="_processing">
+            Confirmar
+        </MudButton>
+    </DialogActions>
+</MudDialog>

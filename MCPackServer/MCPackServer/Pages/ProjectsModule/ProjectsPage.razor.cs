@@ -10,9 +10,6 @@ namespace MCPackServer.Pages.ProjectsModule
 {
     public partial class ProjectsPage
     {
-        #region Dependency Injection
-        #endregion
-
         #region Permissions and Flags
         #region Permissions
         private bool CanCreateProjects = true;

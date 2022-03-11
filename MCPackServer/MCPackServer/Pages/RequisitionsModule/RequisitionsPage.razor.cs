@@ -8,10 +8,7 @@ namespace MCPackServer.Pages.RequisitionsModule
 {
     public partial class RequisitionsPage
     {
-        #region Dependency Injection
-        [Inject]
-        public IAuthorizationService _authorizationService { get; set; }
-        #endregion
+        
 
         #region Permissions and Flags
         #region Permissions
@@ -50,13 +47,23 @@ namespace MCPackServer.Pages.RequisitionsModule
         #region Entities and models
         AspNetUsers CurrentUser = new();
         Requisitions SelectedRequisition = new();
+        List<Requisitions> RequisitionsTableItems = new();
         List<RequisitionArticles> SelectedArticles = new();
         List<Clients> ClientsList = new();
         #endregion
 
         protected override async Task OnInitializedAsync()
         {
-            CurrentUser = new();
+            var AuthenticationState = await _authenticationStateProvider.GetAuthenticationStateAsync();
+            var user = AuthenticationState.User;
+            try
+            {
+                CurrentUser = await _service.GetByKeyAsync<AspNetUsers>(user.Identity.Name, "UserName");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
             
         }
 
@@ -82,10 +89,11 @@ namespace MCPackServer.Pages.RequisitionsModule
             string field = state.SortLabel ?? "Id";
             string order = state.SortDirection == SortDirection.Ascending ? "ASC" : "DESC";
             var items = await _requisitionsService.GetForGridAsync<Requisitions>(request, field, order);
+            if (null != items) RequisitionsTableItems = items.ToList();
             int? count = await _requisitionsService.GetTotalCountAsync<Requisitions>(request);
             return new TableData<Requisitions>
             {
-                Items = items,
+                Items = RequisitionsTableItems,
                 TotalItems = count ?? 0
             };
         }
@@ -100,13 +108,16 @@ namespace MCPackServer.Pages.RequisitionsModule
         #region Projects CRUD methods
         private async Task CreateRequisition()
         {
+            string number = string.Empty;
+            if (null != RequisitionsTableItems)
+                number = (RequisitionsTableItems.Max(r => int.Parse(r.RequisitionNumber)) + 1).ToString("d5");
+            else number = "00001";
             Parameters = new()
             {
                 ["State"] = RequisitionsDialog.States.Add,
                 ["Model"] = new Requisitions()
                 {
-                    RequisitionNumber = (RequisitionsTable.Items.Max(r => int.Parse(r.RequisitionNumber)) + 1)
-                    .ToString(),
+                    RequisitionNumber = number,
                     UserId = CurrentUser.Id,
                     IssuedDate = DateTime.Now
                 }

@@ -49,11 +49,24 @@
 	<None Include="Pages\ProjectsModule\ProjectsPage.razor" />
 	<None Include="Pages\ProvidersModule\ProvidersDialog.razor" />
 	<None Include="Pages\ProvidersModule\ProvidersPage.razor" />
+	<None Include="Pages\PurchaseOrdersModule\AddArticlesDialog.razor" />
+	<None Include="Pages\PurchaseOrdersModule\ArticlesToPurchaseDialog.razor" />
+	<None Include="Pages\PurchaseOrdersModule\PurchaseOrdersDialog.razor" />
+	<None Include="Pages\PurchaseOrdersModule\PurchaseOrdersPage.razor" />
+	<None Include="Pages\PurchaseOrdersModule\PurchaseOrdersReceivingDialog.razor" />
+	<None Include="Pages\PurchaseOrdersModule\PurchaseOrdersReport.razor" />
 	<None Include="Pages\RequisitionsModule\AddArticleDialog.razor" />
 	<None Include="Pages\RequisitionsModule\RequisitionArticlesDialog.razor" />
 	<None Include="Pages\RequisitionsModule\RequisitionsDialog.razor" />
 	<None Include="Pages\RequisitionsModule\RequisitionsPage.razor" />
+	<None Include="Pages\RolesModule\AddClaimsDialog.razor" />
+	<None Include="Pages\RolesModule\AddUserRoleDialog.razor" />
+	<None Include="Pages\RolesModule\RemoveUserRoleDialog.razor" />
+	<None Include="Pages\RolesModule\RoleManagementPage.razor" />
+	<None Include="Pages\RolesModule\RolesDialog.razor" />
     <None Include="Shared\CompanyLogo.razor" />
+    <None Include="UserManagementModule\UserManagementPage.razor" />
+    <None Include="UserManagementModule\UserRegistrationPage.razor" />
   </ItemGroup>
 
 </Project>

@@ -509,5 +509,30 @@ namespace MCPackServer.Pages.ArticlesModule
             }
             return result;
         }
+
+        private static string GroupName(ArticleGroups input)
+        {
+            string result = string.Empty;
+            if (null != input) result = input.Name;
+            return result;
+        }
+
+        private static string FamilyName(ArticleFamilies input)
+        {
+            string result = string.Empty;
+            if (null != input) result = input.Name;
+            return result;
+        }
+
+        private string GetProviderName(int Id)
+        {
+            string providerName = string.Empty;
+            if (0 != Id)
+            {
+                var match = ProvidersList.SingleOrDefault(p => Id == p.Id);
+                if (null != match) providerName = match.MarketName;
+            }
+            return providerName;
+        }
     }
 }

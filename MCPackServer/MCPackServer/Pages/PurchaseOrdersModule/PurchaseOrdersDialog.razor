@@ -1,0 +1,125 @@
+﻿@inject IPurchaseOrdersService _ordersService
+@inject IArticlesToPurchaseService _articlesService
+@inject IProjectsService _projectsService
+@inject IProvidersService _providersService
+@inject IRequisitionsService _requisitionsService
+
+<MudDialog>
+    <TitleContent>
+        <MudText Typo="Typo.h6">
+            <MudIcon Icon="@TitleIcon" /> @Title
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        @if (_processing)
+        {
+            <MudProgressCircular Class="m-sm-n1" Size="Size.Large" Indeterminate />
+            <MudText Class="m-sm-2">Esperando respuesta de servidor...</MudText>
+        }
+        else
+        {
+            <MudContainer Style="max-height: 500px; overflow-y: scroll;">
+                @if (States.Delete == (States)State)
+                {
+                    <div class="form-group">
+                        <MudText Typo="Typo.subtitle1" Align="Align.Center">
+                            ¿Está seguro de eliminar orden de compra seleccionada?
+                        </MudText>
+                    </div>
+                }
+            <MudForm Model="Model" @ref="Form">
+                <MudGrid>
+                    <MudItem xs="6">
+                        <MudAutocomplete T="int" Label="Número de requisición" Value="Model.RequisitionId" Clearable
+                                         SearchFunc="(f) => RequisitionsServerReload(f)" Required ReadOnly="@Disabled"
+                                         ToStringFunc="new Func<int, string>(GetRequisitionNumber)"
+                                         Variant="Variant.Outlined" RequiredError="Inserte número de requisición."
+                                         ValueChanged="(id) => 
+                                                       {
+                                                           Model.RequisitionId = id;
+                                                           Model.DeliveryDate = GetRequiredDate(id);
+                                                       }"
+                                         OnClearButtonClick="() => { Model.RequisitionId = 0; Model.DeliveryDate = null; }"/>
+                    </MudItem>
+                    <MudItem xs="6">
+                        <MudAutocomplete T="int" Label="Proveedor" Value="Model.ProviderId"
+                                         SearchFunc="f => ProvidersServerReload(f)" Clearable
+                                         OnClearButtonClick="() =>
+                                                                 {
+                                                                     Model.Currency = null;
+                                                                     Model.ProviderId = 0;
+                                                                     Model.Discount = 0f;
+                                                                 }"
+                                         ToStringFunc="new Func<int, string>(GetProviderName)"
+                                         Required RequiredError="Seleccione un proveedor"
+                                         ValueChanged="(id) =>
+                                                           {
+                                                               Model.ProviderId = id;
+                                                               Model.Discount = GetProviderDiscount(id);
+                                                           }"
+                                         ReadOnly="@Disabled" />
+                    </MudItem>
+                    <MudItem xs="6">
+                        <MudSelect Label="Estatus" T="string" @bind-Value="Model.Status"
+                                   Variant="Variant.Outlined" Required
+                                   RequiredError="Inserte estatus"
+                                   ReadOnly="@(Disabled || (int)States.Add == State)">
+                            <MudSelectItem Value="@("Pendiente")" />
+                            <MudSelectItem Value="@("Entregado")" />
+                            <MudSelectItem Value="@("En almacén")" />
+                        </MudSelect>
+                    </MudItem>
+                    <MudItem xs="6">
+                        <MudSelect T="string" Label="Moneda de cotización" @bind-Value="Model.Currency"
+                                   Variant="Variant.Outlined" Required
+                                   RequiredError="Inserte moneda de cotización"
+                                   ReadOnly="@Disabled" Disabled="0 == Model.ProviderId">
+                            <MudSelectItem Value="@("MXN")" />
+                            <MudSelectItem Value="@("USD")" />
+                        </MudSelect>
+                    </MudItem>
+                    <MudItem xs="6">
+                        <MudNumericField Label="Número de Proyecto" T="int" @bind-Value="Model.ProjectId"
+                                         HideSpinButtons Variant="Variant.Outlined" Required
+                                         RequiredError="Inserte un número de proyecto"
+                                         Validation="new Func<int, string>(ProjectValidation)" ReadOnly="@Disabled" />
+                    </MudItem>
+                    <MudItem xs="6">
+                        <MudDatePicker Label="Fecha de entrega" @bind-Date="Model.DeliveryDate" Required
+                                       RequiredError="Inserte fecha de entrega"
+                                       ReadOnly="@Disabled" />
+                    </MudItem>
+                    <MudItem xs="12">
+                        <MudNumericField T="float" Label="Descuento" @bind-Value="Model.Discount"
+                                         Min="0f" Max="100f" HideSpinButtons Format="N2"
+                                         AdornmentText="%" Adornment="Adornment.End" Variant="Variant.Outlined"
+                                         Required RequiredError="Inserte descuento"
+                                         ReadOnly="@Disabled" />
+                    </MudItem>
+                    <MudItem xs="12">
+                        <MudTextField Label="Número de factura" @bind-Value="Model.InvoiceNumber"
+                                      Variant="Variant.Outlined" Required
+                                      RequiredError="Inserte número de factura."
+                                      ReadOnly="@Disabled" />
+                    </MudItem>
+                    <MudItem xs="12">
+                        <MudTextField Label="Observaciones" @bind-Value="Model.Observations"
+                                      Variant="Variant.Outlined" Lines="5" Required="false"
+                                      ReadOnly="@Disabled" />
+                    </MudItem>
+                </MudGrid>
+            </MudForm>
+            </MudContainer>
+        }
+    </DialogContent>
+    <DialogActions>
+        <MudButton Variant="Variant.Text" Class="mx-1"
+                   OnClick="() => Dialog.Cancel()" Disabled="_processing">
+            Cerrar
+        </MudButton>
+        <MudButton Variant="Variant.Filled" Color="@ButtonColor" Class="mx-1"
+                   OnClick="async () => await Submit()" Disabled="_processing">
+            Confirmar
+        </MudButton>
+    </DialogActions>
+</MudDialog>

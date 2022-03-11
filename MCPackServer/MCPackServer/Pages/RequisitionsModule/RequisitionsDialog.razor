@@ -46,8 +46,8 @@
                             <MudAutocomplete T="string" @bind-Value="Model.UserId" Required ReadOnly="@Disabled"
                                              RequiredError="Seleccione un usuario de emisión" 
                                              SearchFunc="(f) => UsersServerReload(f)" Variant="Variant.Outlined"
-                                             ToStringFunc="(id) => users.Single(u => id == u.Id).UserName" />
-                            <MudText Typo="Typo.subtitle2">Remitente actual: @(users.Single(u => Model.UserId == u.Id).UserName)</MudText>
+                                             ToStringFunc="new Func<string, string>(GetUserName)" />
+                            <MudText Typo="Typo.subtitle2">Remitente actual: @(GetUserName(Model.UserId))</MudText>
                         </MudItem>
                     </MudGrid>
                 </MudForm>

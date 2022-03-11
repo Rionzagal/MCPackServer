@@ -1,0 +1,62 @@
+﻿@using Microsoft.AspNetCore.Identity
+@inject RoleManager<IdentityRole> _roleManager
+
+<MudDialog>
+    <TitleContent>
+        <MudText Typo="Typo.h6">
+            <MudIcon Icon="@TitleIcon" /> @Title
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        @if (_processing)
+        {
+            <MudProgressCircular Class="m-sm-n1" Size="Size.Large" Indeterminate="true" />
+            <MudText Class="m-sm-2">Esperando respuesta de servidor...</MudText>
+        }
+        else
+        {
+            <MudContainer Style="max-height: 500px; overflow-y: scroll;">
+                <MudTable @ref="UsersTable" T="AspNetUsers" MultiSelection Hover FixedHeader Height="350px"
+                          Items="AvailableUsers" @bind-SelectedItems="@SelectedUsers" Class="my-3">
+                    <ToolBarContent>
+                        <MudText Typo="Typo.h6">Usuarios disponibles</MudText>
+                        <MudSpacer />
+                        <MudButton Variant="Variant.Outlined" OnClick="() => UsersTable.ReloadServerData()" Class="ml-3">
+                            Buscar <MudIcon Icon="@Icons.Material.Filled.Search" />
+                        </MudButton>
+                    </ToolBarContent>
+                    <HeaderContent>
+                        <MudTh><MudTableSortLabel SortBy="new Func<AspNetUsers, object>(x => x.Id)"/>ID</MudTh>
+                        <MudTh><MudTableSortLabel SortBy="new Func<AspNetUsers, object>(x => x.UserName)"/>Nombre de usuario</MudTh>
+                        <MudTh><MudTableSortLabel SortBy="new Func<AspNetUsers, object>(x => x.Email)"/>E-mail</MudTh>
+                    </HeaderContent>
+                    <RowTemplate>
+                        <MudTd DataLabel="ID">@context.Id</MudTd>
+                        <MudTd DataLabel="Nombre de usuario">@context.UserName</MudTd>
+                        <MudTd DataLabel="E-mail">@context.Email</MudTd>
+                    </RowTemplate>
+                    <PagerContent>
+                        <MudTablePager />
+                    </PagerContent>
+                    <LoadingContent>
+                        Cargando...
+                    </LoadingContent>
+                    <NoRecordsContent>
+                        No se encontraron usuarios disponibles.
+                    </NoRecordsContent>
+                </MudTable>
+            </MudContainer>
+        }
+    </DialogContent>
+    <DialogActions>
+        <MudButton Variant="Variant.Text" Class="mx-1"
+                   OnClick="() => Dialog.Cancel()" Disabled="_processing">
+            Cerrar
+        </MudButton>
+        <MudButton Variant="Variant.Filled" Color="@ButtonColor" Class="mx-1"
+                   OnClick="async () => await Submit()"
+                   Disabled="_processing">
+            Confirmar
+        </MudButton>
+    </DialogActions>
+</MudDialog> 

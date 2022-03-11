@@ -76,7 +76,7 @@ namespace MCPackServer.Pages.RequisitionsModule
                 var response = await _articlesService.AddAsync(Model);
                 if (response.IsSuccessful) responses.Add(response);
             }
-            Dialog.Close(DialogResult.Ok(JsonSerializer.Serialize(responses)));
+            Dialog.Close(DialogResult.Ok(responses));
         }
 
         private async Task<IEnumerable<int?>> SearchGroupFilters(string filter)

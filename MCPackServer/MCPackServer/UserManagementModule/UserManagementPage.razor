@@ -1,0 +1,191 @@
+﻿@page "/UserManagement"
+@using McPackManager.Shared.Entities
+
+<MudText Typo="Typo.h1" Align="Align.Center">Manejo y administración de usuario</MudText>
+
+<MudButton OnClick="GoToRegistration" Disabled="!CanCreate" Class="my-3">Registrar nuevo usuario</MudButton>
+<MudTable Dense="true" ServerData="@(new Func<TableState, Task<TableData<AspNetUsers>>>(ServerReload))"
+          Hover="true" T="AspNetUsers" @ref="@UsersGrid" OnRowClick="OnSelectedRow" Class="my-3">
+    <ToolBarContent>
+        <MudText Typo="Typo.h6">Usuarios registrados</MudText>
+        <MudSpacer />
+        @*<MudTextField T="string" Placeholder="Buscar usuario" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search"
+                      IconSize="Size.Medium" Class="mt-0" />*@
+    </ToolBarContent>
+    <HeaderContent>
+        <MudTh><MudTableSortLabel SortLabel="UserId" T="AspNetUsers">ID de usuario</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortLabel="UserName" T="AspNetUsers">Nombre de usuario</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortLabel="Email" T="AspNetUsers">Correo electrónico</MudTableSortLabel></MudTh>
+        <MudTh>Usuario Activo</MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="ID de usuario">@context.Id</MudTd>
+        <MudTd DataLabel="Nombre de usuario">@context.UserName</MudTd>
+        <MudTd DataLabel="Correo electrónico">@context.Email</MudTd>
+        <MudTd DataLabel="Usuario Activo">@context.EmailConfirmed</MudTd>
+    </RowTemplate>
+    <NoRecordsContent>
+        <MudText>Sin usuarios encontrados</MudText>
+    </NoRecordsContent>
+    <LoadingContent>
+        <MudText>Cargando usuarios...</MudText>
+    </LoadingContent>
+    <PagerContent>
+        <MudTablePager />
+    </PagerContent>
+</MudTable>
+
+<MudHidden Invert IsHidden="!VisibleUserInformation">
+    <MudPaper>
+        <MudText Typo="Typo.h5" Align="Align.Center">Mostrando información para @SelectedUser.UserName</MudText>
+
+        <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" Color="Color.Primary">
+            <Header>
+                <MudButtonGroup>
+                    <MudTooltip Text="Reestablecer contraseña">
+                        <MudIconButton Icon="@Icons.Material.Filled.Lock" OnClick="ToggleUserPasswordReset" Disabled="!CanEdit" />
+                    </MudTooltip>
+                    <MudTooltip Text="Editar usuario">
+                        <MudIconButton Icon="@Icons.Material.Filled.Edit" OnClick="ToggleUserEdit" Disabled="!CanEdit" />
+                    </MudTooltip>
+                    <MudTooltip Text="Eliminar usuario">
+                        <MudIconButton Icon="@Icons.Material.Filled.Delete" OnClick="DeleteUser" Disabled="!CanDelete" />
+                    </MudTooltip>
+                </MudButtonGroup>
+            </Header>
+            <ChildContent>
+                <MudTabPanel Text="Seguridad">
+                    <div class="form-group">
+                        <MudText Typo="Typo.subtitle2" Align="Align.Left">Id de usuario:</MudText>
+                        <MudTextField T="string" @bind-Text="@SelectedUser.Id" ReadOnly="true" />
+                    </div>
+                    <div class="form-group">
+                        <MudText Typo="Typo.subtitle2" Align="Align.Left">Correo electrónico:</MudText>
+                        <MudTextField T="string" @bind-Text="@SelectedUser.Email" ReadOnly="true" />
+                    </div>
+                    <div class="form-group">
+                        <MudText Typo="Typo.subtitle2" Align="Align.Left">Nombre de usuario:</MudText>
+                        <MudTextField T="string" @bind-Text="@SelectedUser.UserName" ReadOnly="true" />
+                    </div>
+                    <div class="form-group">
+                        <MudText Typo="Typo.subtitle2" Align="Align.Left">Código de seguridad:</MudText>
+                        <MudTextField T="string" @bind-Text="@SelectedUser.PasswordHash" ReadOnly="true" />
+                    </div>
+                    <div class="form-group">
+                        <MudText Typo="Typo.subtitle2" Align="Align.Left">Sello de seguridad:</MudText>
+                        <MudTextField T="string" @bind-Text="@SelectedUser.SecurityStamp" ReadOnly="true" />
+                    </div>
+                    <div class="form-group">
+                        <MudText Typo="Typo.subtitle2" Align="Align.Left">Sello de concurrencia:</MudText>
+                        <MudTextField T="string" @bind-Text="@SelectedUser.ConcurrencyStamp" ReadOnly="true" />
+                    </div>
+                </MudTabPanel>
+                <MudTabPanel Text="Información personal">
+                    <EditForm Model="SelectedUserInfo">
+                        <div class="form-group">
+                            <MudText Typo="Typo.subtitle2" Align="Align.Left">Primer nombre:</MudText>
+                            <MudTextField T="string" @bind-Text="@SelectedUserInfo.FirstName" ReadOnly="true" />
+                        </div>
+                        <div class="form-group">
+                            <MudText Typo="Typo.subtitle2" Align="Align.Left">Segundo nombre:</MudText>
+                            <MudTextField T="string" @bind-Text="@SelectedUserInfo.MiddleName" ReadOnly="true" />
+                        </div>
+                        <div class="form-group">
+                            <MudText Typo="Typo.subtitle2" Align="Align.Left">Apellido paterno:</MudText>
+                            <MudTextField T="string" @bind-Text="@SelectedUserInfo.FatherSurname" ReadOnly="true" />
+                        </div>
+                        <div class="form-group">
+                            <MudText Typo="Typo.subtitle2" Align="Align.Left">Apellido materno:</MudText>
+                            <MudTextField T="string" @bind-Text="@SelectedUserInfo.MotherSurname" ReadOnly="true" />
+                        </div>
+                        <div class="form-group">
+                            <MudText Typo="Typo.subtitle2" Align="Align.Left">Fecha de nacimiento:</MudText>
+                            <MudDatePicker @bind-Date="@SelectedUserInfo.BirthDate" ReadOnly="true" />
+                        </div>
+                        <div class="form-group">
+                            <MudText Typo="Typo.subtitle2" Align="Align.Left">Género:</MudText>
+                            <MudTextField T="string" @bind-Text="@SelectedUserInfo.Gender" ReadOnly="true" />
+                        </div>
+                    </EditForm>
+                </MudTabPanel>
+            </ChildContent>
+        </MudTabs>
+    </MudPaper>
+</MudHidden>
+
+<MudDialog IsVisible="@VisibleUserEdit" @ref="@EditUserDialog">
+    <TitleContent>
+        <MudText Typo="Typo.h6">
+            <MudIcon Icon="@Icons.Material.Filled.Edit" Class="mr-3"/> Editar usuario @SelectedUser.Id
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudForm @ref="EditUserForm" @bind-IsValid="@FormSuccess" Model="SelectedUser">
+            <div class="form-group">
+                <MudText Typo="Typo.subtitle2" Align="Align.Left">Correo electrónico</MudText>
+                <MudTextField T="string" @bind-Value="@SelectedUser.Email" />
+            </div>
+            <div class="form-group">
+                <MudText Typo="Typo.subtitle2" Align="Align.Left">Nombre de usuario</MudText>
+                <MudTextField T="string" @bind-Value="@SelectedUser.UserName" />
+            </div>
+            <div class="form-group">
+                <MudText Typo="Typo.subtitle2" Align="Align.Left">Primer nombre</MudText>
+                <MudTextField T="string" @bind-Value="@SelectedUserInfo.FirstName" />
+            </div>
+            <div class="form-group">
+                <MudText Typo="Typo.subtitle2" Align="Align.Left">Segundo nombre</MudText>
+                <MudTextField T="string" @bind-Value="@SelectedUserInfo.MiddleName" />
+            </div>
+            <div class="form-group">
+                <MudText Typo="Typo.subtitle2" Align="Align.Left">Apellido paterno</MudText>
+                <MudTextField T="string" @bind-Value="@SelectedUserInfo.FatherSurname" />
+            </div>
+            <div class="form-group">
+                <MudText Typo="Typo.subtitle2" Align="Align.Left">Apellido materno</MudText>
+                <MudTextField T="string" @bind-Value="@SelectedUserInfo.MotherSurname" />
+            </div>
+            <div class="form-group">
+                <MudText Typo="Typo.subtitle2" Align="Align.Left">Género</MudText>
+                <MudTextField T="string" @bind-Value="@SelectedUserInfo.Gender" />
+            </div>
+            <div class="form-group">
+                <MudText Typo="Typo.subtitle2" Align="Align.Left">Fecha de nacimiento</MudText>
+                <MudDatePicker @bind-Date="@SelectedUserInfo.BirthDate" />
+            </div>
+            <div class="form-group">
+                <MudText Typo="Typo.subtitle2" Align="Align.Left">Marcar como usuario activo</MudText>
+                <MudCheckBox @bind-Checked="@SelectedUser.EmailConfirmed" />
+            </div>
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButtonGroup>
+            <MudButton OnClick="ToggleUserEdit">Cerrar</MudButton>
+            <MudButton Disabled="!FormSuccess" OnClick="EditUser">Confirmar</MudButton>
+        </MudButtonGroup>
+    </DialogActions>
+</MudDialog>
+
+<MudDialog IsVisible="@VisiblePasswordReset" @ref="ResetPasswordDialog">
+    <TitleContent>
+        <MudText Typo="Typo.h6">Reestablecer contraseña de usuario</MudText>
+    </TitleContent>
+    <DialogContent>
+        <MudForm @ref="@ResetPasswordForm">
+            <div class="form-group">
+                <MudTextField T="string" InputType="InputType.Password" @bind-Value="UsersPassword" Required="true" 
+                              RequiredError="Introduzca una contraseña." Label="Introduzca una contraseña."
+                              Validation="@(new Func<string, IEnumerable<string>>(PasswordStrength))"  />
+            </div>
+            <div class="form-group">
+                <MudTextField T="string" InputType="InputType.Password" @bind-Value="UsersPasswordConfirmation"
+                              Label="Repita la contraseña." Validation="@(new Func<string, string>(PasswordMatch))" />
+            </div>
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="ToggleUserPasswordReset">Cerrar</MudButton>
+        <MudButton OnClick="ResetUserPassword">Confirmar</MudButton>
+    </DialogActions>
+</MudDialog>

@@ -10,13 +10,6 @@ namespace MCPackServer.Pages.ProvidersModule
 {
     public partial class ProvidersPage
     {
-        #region Dependency Injection
-        [Inject]
-        public IAuthorizationService _authorizationService { get; set; }
-        [Inject]
-        public NavigationManager _navigationManager { get; set; }
-        #endregion
-
         #region Permission State
         #region Permissions
         public bool CanCreateProvider, CanEditProvider, CanDeleteProvider = true;
