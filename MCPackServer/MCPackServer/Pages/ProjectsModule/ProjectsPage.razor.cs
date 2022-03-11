@@ -181,7 +181,7 @@ namespace MCPackServer.Pages.ProjectsModule
             {
                 Where = filters
             };
-            var items = await _productsService.GetForGridAsync<ProjectProducts>(request);
+            var items = await _productsService.GetForGridAsync<ProjectProducts>(request, "ProductId");
             int? count = await _productsService.GetTotalCountAsync<ProjectProducts>(request);
             if (null != items)
             {

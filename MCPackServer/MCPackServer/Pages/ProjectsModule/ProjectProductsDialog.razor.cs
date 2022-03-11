@@ -119,7 +119,7 @@ namespace MCPackServer.Pages.ProjectsModule
                     new WhereFilter { Field = "ProjectId", Value = Model.ProjectId.ToString() }
                 }
             };
-            var response = await _productsService.GetForGridAsync<ProjectProducts>(dm);
+            var response = await _productsService.GetForGridAsync<ProjectProducts>(dm, "ProductId");
             if (null != response) projectProducts = response.ToList();
         }
 
