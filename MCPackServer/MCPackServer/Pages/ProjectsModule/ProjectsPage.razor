@@ -1,0 +1,297 @@
+﻿@page "/Projects"
+@inject IProjectsService _projectsService
+@inject IProjectProductsService _productsService
+
+<MudText Typo="Typo.h3" Align="Align.Center">GESTIÓN DE PROYECTOS</MudText>
+
+<MudTable @ref="ProjectsTable" T="Projects" Dense="true" Hover="true" FixedHeader="true" Height="400px"
+          CustomHeader="true" Striped="true" OnRowClick="OnSelectedProject"
+          ServerData="new Func<TableState, Task<TableData<Projects>>>(ProjectsServerReload)">
+    <ToolBarContent>
+        <MudText Typo="Typo.h6">Proyectos registrados</MudText>
+        <MudSpacer />
+        @if (CanCreateProjects)
+        {
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="mx-1"
+                       OnClick="CreateProject" Disabled="!CanCreateProjects">
+                Añadir
+            </MudButton>
+        }
+        <MudButton Variant="Variant.Filled" Class="mx-1">
+            Borrar filtros de búsqueda
+        </MudButton>
+        <MudButton Variant="Variant.Outlined" Class="ml-1"
+                   OnClick="async () => await ProjectsTable.ReloadServerData()">
+            <MudIcon Icon="@Icons.Material.Filled.Search" /> Buscar
+        </MudButton>
+    </ToolBarContent>
+    <HeaderContent>
+        <MudTHeadRow>
+            <MudTh><MudTableSortLabel SortLabel="Id" T="Projects">ID</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortLabel="ClientId" T="Projects">Cliente</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortLabel="AdmissionDate" T="Projects">Fecha de admisión</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortLabel="CommitmentDate" T="Projects">Fecha de compromiso</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortLabel="DeliveryDate" T="Projects">Fecha de entrega</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortLabel="PaymentConditions" T="Projects">Condiciones de pago</MudTableSortLabel></MudTh>
+        </MudTHeadRow>
+        <MudTHeadRow>
+            <MudTh />
+            <MudTh>
+                <MudAutocomplete T="int?" Label="Buscar por cliente" @bind-Value="ClientIdFilter"
+                                 SearchFunc="f => ClientsServerReload(f)" Clearable
+                                 ToStringFunc="new Func<int?, string>(GetClientName)"
+                                 OnClearButtonClick="(_) => ClientIdFilter = null" />
+            </MudTh>
+            <MudTh />
+            <MudTh />
+            <MudTh />
+            <MudTh />
+        </MudTHeadRow>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="ID">@context.Id</MudTd>
+        <MudTd DataLabel="Cliente">@context.Client.MarketName</MudTd>
+        <MudTd DataLabel="Fecha de ingreso">
+            @(context.AdmissionDate.HasValue ? context.AdmissionDate.Value.Date.ToShortDateString() : "N/A")
+        </MudTd>
+        <MudTd DataLabel="Fecha de compromiso de entrega">
+            @(context.CommitmentDate.HasValue ? context.CommitmentDate.Value.Date.ToShortDateString() : "N/A")
+        </MudTd>
+        <MudTd DataLabel="Fecha de entrega estimada">
+            @(context.DeliveryDate.HasValue ? context.DeliveryDate.Value.Date.ToShortDateString() : "N/A")
+        </MudTd>
+        <MudTd DataLabel="Condiciones de pago">@context.PaymentConditions</MudTd>
+    </RowTemplate>
+    <NoRecordsContent>
+        <MudText>Sin proyectos encontrados</MudText>
+    </NoRecordsContent>
+    <LoadingContent>
+        <MudText>Cargando proyectos...</MudText>
+    </LoadingContent>
+    <PagerContent>
+        <MudTablePager />
+    </PagerContent>
+</MudTable>
+
+@if (VisibleProjectInformation)
+{
+    <MudPaper Class="my-3" Elevation="0">
+        <MudText Typo="Typo.h6" Align="Align.Center" Class="mt-3">
+            PRESENTANDO INFORMACIÓN PARA PROYECTO: @SelectedProject.Id
+        </MudText>
+
+        <MudTabs @ref="ProjectsInformationTabs" Elevation="2" Rounded="true"
+                 ApplyEffectsToContainer="true" Color="Color.Primary">
+            <Header>
+                <MudTooltip Text="Cerrar Producto">
+                    <MudIconButton Icon="@Icons.Material.Filled.Close" Color="Color.Warning"
+                                   OnClick="(_) => 
+                                            { 
+                                                SelectedProject = new();
+                                                VisibleProjectInformation = false;
+                                            }" />
+                </MudTooltip>
+                @if (CanEditProjects)
+                {
+                    <MudTooltip Text="Editar Proyecto">
+                        <MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Secondary"
+                                       OnClick="EditProject" />
+                    </MudTooltip>
+                }
+                @if (CanDeleteProjects)
+                {
+                    <MudTooltip Text="Eliminar proyecto">
+                        <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error"
+                                       OnClick="DeleteProject" />
+                    </MudTooltip>
+                }
+            </Header>
+            <TabPanelHeader>
+                @if (context.Text.StartsWith("Producto: "))
+                {
+                    <MudTooltip Text="Cerrar producto">
+                        <MudIconButton Class="ml-2 pa-1" Icon="@Icons.Material.Filled.Close"
+                                       Color="Color.Error" OnClick="(_) => RemoveTab(tabPanel: context)" />
+                    </MudTooltip>
+                }
+            </TabPanelHeader>
+            <ChildContent>
+                <MudTabPanel Text="Información general" ID="@Guid.NewGuid()" Tag="@Guid.NewGuid()">
+                    <MudGrid Class="m-3" Style="height:500px; overflow-y:scroll; width: inherit">
+                        <MudItem xs="12">
+                            <MudText Typo="Typo.subtitle1">No. de proyecto</MudText>
+                            <MudTextField Value="SelectedProject.Id" ReadOnly />
+                        </MudItem>
+                        <MudItem xs="4">
+                            <MudText Typo="Typo.subtitle1">Cliente</MudText>
+                            <MudTextField Value="@(null != SelectedProject.Client ? SelectedProject.Client.MarketName : "N/A")"
+                                          ReadOnly />
+                        </MudItem>
+                        <MudItem xs="4">
+                            <MudText Typo="Typo.subtitle1">Tipo de proyecto</MudText>
+                            <MudTextField Value="SelectedProject.Type" ReadOnly />
+                        </MudItem>
+                        <MudItem xs="4">
+                            <MudText Typo="Typo.subtitle1">Precio total</MudText>
+                            <MudTextField Value="@($"${total.ToString("n2")} {SelectedProject.AgreedCurrency}")" ReadOnly />
+                        </MudItem>
+                        <MudItem xs="12">
+                            <MudText Typo="Typo.subtitle1">Descripción</MudText>
+                            <MudTextField Value="@SelectedProject.Description" Lines="5" ReadOnly />
+                        </MudItem>
+                        <MudItem xs="6">
+                            <MudText Typo="Typo.subtitle1">Fecha de ingreso</MudText>
+                            <MudTextField Value="@SelectedProject.AdmissionDate" Format="dddd, MMM dd yyyy" ReadOnly />
+                        </MudItem>
+                        <MudItem xs="6">
+                            <MudText Typo="Typo.subtitle1">Tiempos de entrega</MudText>
+                            <MudTextField Value="@SelectedProject.DeliveryTime" ReadOnly />
+                        </MudItem>
+                        <MudItem xs="6">
+                            <MudText Typo="Typo.subtitle1">Fecha compromiso de entrega</MudText>
+                            <MudTextField Value="@SelectedProject.CommitmentDate" Format="dddd, MMM dd yyyy" ReadOnly />
+                        </MudItem>
+                        <MudItem xs="6">
+                            <MudText Typo="Typo.subtitle1">Fecha de entrega estimada</MudText>
+                            <MudTextField Value="@SelectedProject.DeliveryDate" Format="dddd, MMM dd yyyy" ReadOnly />
+                        </MudItem>
+                        <MudItem xs="6">
+                            <MudText Typo="Typo.subtitle1">Estatus</MudText>
+                            <MudTextField Value="@(SelectedProject.RealDeliveryDate.HasValue ? "Entregado" : "En proceso")" ReadOnly />
+                        </MudItem>
+                        <MudItem xs="6">
+                            <MudText Typo="Typo.subtitle1">Fecha de entrega real</MudText>
+                            <MudTextField Value="SelectedProject.RealDeliveryDate" Format="dddd, MMM dd yyyy" ReadOnly />
+                        </MudItem>
+                        <MudItem xs="12">
+                            <MudText Typo="Typo.subtitle1">Condición de pago</MudText>
+                            <MudTextField Value="@SelectedProject.PaymentConditions" ReadOnly />
+                        </MudItem>
+                        <MudItem xs="4">
+                            <MudText Typo="Typo.subtitle1">Moneda de cotización</MudText>
+                            <MudTextField Value="@SelectedProject.AgreedCurrency" ReadOnly />
+                        </MudItem>
+                        <MudItem xs="4">
+                            <MudText Typo="Typo.subtitle1">Moneda acordada</MudText>
+                            <MudTextField Value="@SelectedProject.PaymentCurrency" ReadOnly />
+                        </MudItem>
+                        <MudItem xs="4">
+                            <MudText Typo="Typo.subtitle1">Aplica I.V.A.</MudText>
+                            <MudCheckBox Checked="SelectedProject.HasTaxes" ReadOnly />
+                        </MudItem>
+                        <MudItem xs="6">
+                            <MudText Typo="Typo.subtitle1">Vendedor</MudText>
+                            <MudTextField Value="@SelectedProject.SalesPerson" ReadOnly />
+                        </MudItem>
+                        <MudItem xs="6">
+                            <MudText Typo="Typo.subtitle1">Comisión</MudText>
+                            <MudTextField Value="@($"${commission.ToString("n2")} {SelectedProject.AgreedCurrency}")" ReadOnly />
+                        </MudItem>
+                        <MudItem xs="12">
+                            <MudText Typo="Typo.subtitle1">Observaciones</MudText>
+                            <MudTextField Value="@SelectedProject.Observations" Lines="5" ReadOnly />
+                        </MudItem>
+                    </MudGrid>
+                </MudTabPanel>
+                <MudTabPanel Text="Productos">
+                    <MudTable @ref="ProductsTable" T="ProjectProducts" Dense="true" Hover="true" FixedHeader="true" Height="400px"
+                              CustomHeader="true" Striped="true" OnRowClick="OnSelectedProduct"
+                              Items="SelectedProject.ProjectProducts">
+                        <ToolBarContent>
+                            <MudText Typo="Typo.h6">Productos del proyecto</MudText>
+                            <MudSpacer />
+                            <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="mx-1"
+                                       OnClick="AddProduct" Disabled="!CanEditProjects">
+                                Añadir
+                            </MudButton>
+                            <MudButton Variant="Variant.Outlined" Class="ml-1"
+                                       OnClick="async () => await ProductsTable.ReloadServerData()">
+                                <MudIcon Icon="@Icons.Material.Filled.Search" /> Buscar
+                            </MudButton>
+                        </ToolBarContent>
+                        <HeaderContent>
+                            <MudTHeadRow>
+                                <MudTh><MudTableSortLabel SortLabel="ProductId" T="ProjectProducts">Productos</MudTableSortLabel></MudTh>
+                                <MudTh>Precio de venta</MudTh>
+                                <MudTh><MudTableSortLabel SortLabel="Quantity" T="ProjectProducts">Cantidad</MudTableSortLabel></MudTh>
+                            </MudTHeadRow>
+                        </HeaderContent>
+                        <RowTemplate>
+                            <MudTd DataLabel="Código">@context.Product.Code</MudTd>
+                            <MudTd DataLabel="Descripción">@context.Product.Description</MudTd>
+                            <MudTd DataLabel="Cantidad">@context.Quantity</MudTd>
+                        </RowTemplate>
+                        <NoRecordsContent>
+                            <MudText>Sin productos encontrados para el proyecto</MudText>
+                        </NoRecordsContent>
+                        <LoadingContent>
+                            <MudText>Cargando productos...</MudText>
+                        </LoadingContent>
+                        <PagerContent>
+                            <MudTablePager />
+                        </PagerContent>
+                    </MudTable>
+                </MudTabPanel>
+                @foreach (var product in SelectedProducts)
+                {
+                    <MudTabPanel Text="@($"Producto: {product.Product.Code}")" Tag="product.ProductId"
+                                 ID="product.ProductId">
+                        <MudCard Class="m-3" Elevation="0">
+                            <MudCardHeader Style="height: 100px;">
+                                <CardHeaderContent>
+                                    <MudText Typo="Typo.subtitle1">
+                                        <b>Código de producto:</b> @product.Product.Code
+                                    </MudText>
+                                </CardHeaderContent>
+                            </MudCardHeader>
+                            <MudCardContent Style="height:300px; overflow-y:scroll;">
+                                <MudGrid Class="m-3" Style="width: inherit">
+                                    <MudItem xs="6">
+                                        <MudText Typo="Typo.subtitle1">Tipo de producto</MudText>
+                                        <MudTextField Value="@product.Product.Type" ReadOnly />
+                                    </MudItem>
+                                    <MudItem xs="6">
+                                        <MudText Typo="Typo.subtitle1">Modelo</MudText>
+                                        <MudTextField Value="@product.Product.Model" ReadOnly />
+                                    </MudItem>
+                                    <MudItem xs="12">
+                                        <MudText Typo="Typo.subtitle1">Descripción</MudText>
+                                        <MudTextField Value="@product.Product.Description" Lines="5" ReadOnly />
+                                    </MudItem>
+                                    <MudItem xs="4">
+                                        <MudText Typo="Typo.subtitle1">Precio unitario</MudText>
+                                        <MudTextField Value="@($"${product.SalePrice.ToString("n2")} {SelectedProject.AgreedCurrency}")" ReadOnly />
+                                    </MudItem>
+                                    <MudItem xs="4">
+                                        <MudText Typo="Typo.subtitle1">Cantidad</MudText>
+                                        <MudTextField Value="@product.Quantity" ReadOnly />
+                                    </MudItem>
+                                    <MudItem xs="4">
+                                        <MudText Typo="Typo.subtitle1">Precio total</MudText>
+                                        <MudTextField Value="@($"${(product.SalePrice * product.Quantity).ToString("n2")} {SelectedProject.AgreedCurrency}")" ReadOnly />
+                                    </MudItem>
+                                    <MudItem xs="12">
+                                        <MudText Typo="Typo.subtitle1">Observaciones</MudText>
+                                        <MudTextField Value="@product.Observations" Lines="5" ReadOnly />
+                                    </MudItem>
+                                </MudGrid>
+                            </MudCardContent>
+                            <MudCardActions Style="height: 100px">
+                                <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="mx-1"
+                                           OnClick="async (_) => await EditProduct(product)"
+                                           Disabled="!CanEditProjects">
+                                    Editar
+                                </MudButton>
+                                <MudButton Variant="Variant.Filled" Color="Color.Error" Class="mx-1"
+                                           OnClick="async (_) => await DeleteProduct(product)"
+                                           Disabled="!CanEditProjects">
+                                    Eliminar
+                                </MudButton>
+                            </MudCardActions>
+                        </MudCard>
+                    </MudTabPanel>
+                }
+            </ChildContent>
+        </MudTabs>
+    </MudPaper>
+}

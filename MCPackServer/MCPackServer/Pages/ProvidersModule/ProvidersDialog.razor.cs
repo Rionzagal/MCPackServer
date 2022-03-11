@@ -1,20 +1,16 @@
 ﻿using MCPackServer.Entities;
 using MCPackServer.Models;
 using Microsoft.AspNetCore.Components;
+using Microsoft.JSInterop;
 using MudBlazor;
-using Newtonsoft.Json.Linq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http.Json;
-using System.Text.Json;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
-namespace MCPackServer.Pages.ClientsModule
+namespace MCPackServer.Pages.ProvidersModule
 {
-    public partial class ClientsDialog
+    public partial class ProvidersDialog
     {
+        [Inject]
+        public IJSRuntime _runtime { get; set; }
         public enum States { Add, Edit, Delete }
 
         #region Parameters
@@ -23,7 +19,7 @@ namespace MCPackServer.Pages.ClientsModule
         [Parameter]
         public States State { get; set; }
         [Parameter]
-        public Clients Model { get; set; } = new();
+        public Providers Model { get; set; } = new();
         #endregion
 
         #region Dialog variables
@@ -36,33 +32,31 @@ namespace MCPackServer.Pages.ClientsModule
 
         #region API elements
         private MudForm Form;
-        private List<Contacts> ClientContacts = new();
+        private List<Contacts> ProviderContacts = new();
         #endregion
 
         protected override async Task OnInitializedAsync()
         {
             if (States.Add == State) //representing an Add dialog
             {
-                Title = "Añadir nuevo cliente";
+                Title = "Añadir nuevo proveedor";
                 TitleIcon = Icons.Material.Filled.Create;
                 Disabled = false;
                 ButtonColor = Color.Success;
             }
             else if (States.Edit == State) //representing an Edit dialog
             {
-                Title = "Editar cliente seleccionado";
+                Title = "Editar proveedor seleccionado";
                 TitleIcon = Icons.Material.Filled.Edit;
                 Disabled = false;
                 ButtonColor = Color.Primary;
             }
             else if (States.Delete == State) //representing a Delete dialog
             {
-                _processing = true;
-                Title = "Eliminar cliente seleccionado";
+                Title = "Eliminar proveedor seleccionado";
                 TitleIcon = Icons.Material.Filled.Delete;
                 Disabled = true;
                 ButtonColor = Color.Error;
-                _processing = false;
             }
             else //should not get to this option
             {
@@ -76,28 +70,25 @@ namespace MCPackServer.Pages.ClientsModule
 
         private async Task Submit()
         {
-            ActionResponse<Clients> response = new();
             _processing = true;
+            ActionResponse<Providers> response = new();
             await Form.Validate();
             if (Form.IsValid)
             {
-                if (States.Add == State) response = await _clientsService.AddAsync(Model);
-                else if (States.Edit == State) response = await _clientsService.UpdateAsync(Model);
-                else
+                if (States.Add == State) response = await _service.AddAsync(Model);
+                else if (States.Edit == State) response = await _service.UpdateAsync(Model);
+                else if (States.Delete == State)
                 {
-                    var clearResponse = await _clientsService.ClearContacts(Model.Id);
-                    if (clearResponse.IsSuccessful) response = await _clientsService.RemoveAsync(Model);
-                    else response.Failure(error: "Internal error while clearing contacts.");
-                    if (response.IsSuccessful && States.Delete == State)
+                    response = await _service.RemoveAsync(Model);
+                    if (response.IsSuccessful)
                     {
-                        var contactsResponse = await _contactsService.ClearUnaligned();
-                        if (contactsResponse.IsSuccessful)
+                        var _clearResponse = await _contactsService.ClearUnaligned();
+                        if (_clearResponse.IsSuccessful)
                             Snackbar.Add("Contactos correctamente eliminados.", Severity.Info);
                         else
                             Snackbar.Add("Error al eliminar contactos.", Severity.Error);
                     }
                 }
-                _processing = false;
                 Dialog.Close(DialogResult.Ok(response));
             }
             else
@@ -107,8 +98,24 @@ namespace MCPackServer.Pages.ClientsModule
             }
         }
 
+        private async Task<TableData<Contacts>> ProviderContactsLoad(TableState state, object providerId)
+        {
+            DataManagerRequest request = new()
+            {
+                Take = state.PageSize,
+                Skip = state.Page * state.PageSize
+            };
+            var items = await _providersService.GetContacts(providerId, request);
+            int? count = await _providersService.CountContacts(providerId, request);
+            return new TableData<Contacts>()
+            {
+                Items = items,
+                TotalItems = count ?? 0
+            };
+        }
+
         #region Validations
-        private static IEnumerable<string> ValidateEmail(string input)
+        private  IEnumerable<string> ValidateEmail(string input)
         {
             if (string.IsNullOrEmpty(input))
             {
@@ -143,5 +150,7 @@ namespace MCPackServer.Pages.ClientsModule
                 yield return "El campo no admite caracteres especiales más que espacios en blanco.";
         }
         #endregion
+
+        //async private void Enter() => await _runtime.InvokeVoidAsync("EnterToTab");
     }
 }

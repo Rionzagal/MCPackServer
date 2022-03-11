@@ -16,22 +16,23 @@ namespace MCPackServer.Services
         public override async Task<IEnumerable<T>> GetForGridAsync<T>(DataManagerRequest request, string sortField = "Id", string order = "")
         {
             using IDbConnection conn = Connection;
-            request.Take = 0!= request.Take ? request.Take : 10;
+            request.Take = 0!= request.Take ? request.Take : 10; 
             DynamicParameters parameters = new();
+            List<KeyValuePair<string, string>> whereValues = CheckFilters(request.Where);
             string query = $"SELECT p.*, c.* FROM Projects p INNER JOIN Clients c " +
                 $"ON p.ClientId = c.Id ";
-            if (null != request.Where && request.Where.Any())
+            if (whereValues.Any())
             {
                 string where = "WHERE ";
-                foreach (var item in request.Where)
+                foreach (var item in whereValues)
                 {
-                    parameters.Add($"@{item.Field}", item.Value);
-                    where += $"p.{item.Field} LIKE '%' + @{item.Field} + '%' ";
-                    if (item.Field != request.Where.Last().Field) where += "AND ";
+                    parameters.Add(item.Key, item.Value);
+                    where += $"p.{item.Key} LIKE CONCAT('%', @{item.Key}, '%') ";
+                    if (item.Key != whereValues.Last().Key) where += "AND ";
                 }
                 query += where;
             }
-            query += $"ORDER BY {sortField} {order} LIMIT {request.Skip}, {request.Take} ";
+            query += $"ORDER BY p.{sortField} {order} LIMIT {request.Skip}, {request.Take} ";
             return await conn.QueryAsync<Projects, Clients, Projects>
                 (query, param: parameters, map: (project, client) =>
                 {
@@ -52,7 +53,7 @@ namespace MCPackServer.Services
                 project.Client = client;
                 return project;
             });
-            return result.FirstOrDefault() as T;
+            return result.First() as T;
         }
     }
 }

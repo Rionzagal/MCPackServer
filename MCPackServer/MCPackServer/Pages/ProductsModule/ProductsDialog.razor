@@ -1,0 +1,98 @@
+﻿<MudDialog>
+    <TitleContent>
+        <MudText Typo="Typo.h6">
+            <MudIcon Icon="@TitleIcon" /> @Title
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        @if (_processing)
+        {
+            <MudProgressCircular Class="m-sm-n1" Size="Size.Large" Indeterminate="true" />
+            <MudText Class="m-sm-2">Esperando respuesta de servidor...</MudText>
+        }
+        else
+        {
+    <MudContainer Style="max-height: 500px; overflow-y: scroll;">
+        @if (States.Delete == (States)State)
+        {
+            <div class="form-group">
+                <MudText Typo="Typo.subtitle1" Align="Align.Center">
+                    ¿Está seguro de eliminar producto seleccionado?
+                </MudText>
+            </div>
+        }
+    <MudForm Model="Model" @ref="Form">
+        <div class="form-group">
+            <MudTextField T="string"
+                          Label="Tipo de producto"
+                          Required
+                          RequiredError="Inserte tipo de producto"
+                          @bind-Value="Model.Type"
+                          ReadOnly="@Disabled" />
+        </div>
+        <div class="form-group">
+            <MudTextField T="string"
+                          Label="Código"
+                          Required
+                          RequiredError="Inserte código"
+                          @bind-Value="Model.Code"
+                          ReadOnly="@Disabled" />
+        </div>
+        <div class="form-group">
+            <MudTextField T="string"
+                          Label="Modelo"
+                          Required
+                          RequiredError="Inserte modelo"
+                          @bind-Value="Model.Model"
+                          ReadOnly="@Disabled" />
+        </div>
+        <div class="form-group">
+            <MudTextField T="string" 
+                          Label="Descripción"
+                          @bind-Value="Model.Description"
+                          ReadOnly="@Disabled"
+                          Lines="3"/>
+        </div>
+        <div class="form-group">
+            <MudTextField T="string"
+                          Label="Observaciones"
+                          @bind-Value="Model.Observations"
+                          ReadOnly="@Disabled" 
+                          Lines="3"/>
+        </div>
+        <div class="form-group">
+            <MudNumericField T="float"
+                             Label="Precio sugerido"
+                             Required
+                             RequiredError="Inserte precio sugerido"
+                             @bind-Value="Model.SugestedPrice"
+                             HideSpinButtons
+                             Min="0.0f"
+                             AdornmentIcon="@Icons.Material.Filled.AttachMoney"
+                             Adornment="Adornment.Start"
+                             Format="N2"
+                             ReadOnly="@Disabled" />
+        </div>
+        <div class="form-group">
+            <MudTextField T="string"
+                          Label="Divisa"
+                          Required
+                          RequiredError="Inserte divisa"
+                          @bind-Value="Model.Currency"
+                          ReadOnly="Disabled" />
+        </div>
+    </MudForm>
+    </MudContainer>
+        }
+    </DialogContent>
+    <DialogActions>
+        <MudButton Variant="Variant.Text" Class="mx-1"
+                   OnClick="() => Dialog.Cancel()" Disabled="_processing">
+            Cerrar
+        </MudButton>
+        <MudButton Variant="Variant.Filled" Color="@ButtonColor" Class="mx-1"
+                   OnClick="async () => await Submit()" Disabled="_processing">
+            Confirmar
+        </MudButton>
+    </DialogActions>
+</MudDialog>

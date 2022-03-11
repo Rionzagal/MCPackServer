@@ -11,9 +11,9 @@ using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace MCPackServer.Pages.ClientsModule
+namespace MCPackServer.Pages.SharedDialogs
 {
-    public partial class ClientsDialog
+    public partial class ContactsDialog
     {
         public enum States { Add, Edit, Delete }
 
@@ -23,7 +23,7 @@ namespace MCPackServer.Pages.ClientsModule
         [Parameter]
         public States State { get; set; }
         [Parameter]
-        public Clients Model { get; set; } = new();
+        public Contacts Model { get; set; } = new();
         #endregion
 
         #region Dialog variables
@@ -36,33 +36,30 @@ namespace MCPackServer.Pages.ClientsModule
 
         #region API elements
         private MudForm Form;
-        private List<Contacts> ClientContacts = new();
         #endregion
 
         protected override async Task OnInitializedAsync()
         {
             if (States.Add == State) //representing an Add dialog
             {
-                Title = "Añadir nuevo cliente";
+                Title = "Añadir contacto cliente";
                 TitleIcon = Icons.Material.Filled.Create;
                 Disabled = false;
                 ButtonColor = Color.Success;
             }
             else if (States.Edit == State) //representing an Edit dialog
             {
-                Title = "Editar cliente seleccionado";
+                Title = "Editar contacto seleccionado";
                 TitleIcon = Icons.Material.Filled.Edit;
                 Disabled = false;
                 ButtonColor = Color.Primary;
             }
             else if (States.Delete == State) //representing a Delete dialog
             {
-                _processing = true;
-                Title = "Eliminar cliente seleccionado";
+                Title = "Eliminar contacto seleccionado";
                 TitleIcon = Icons.Material.Filled.Delete;
                 Disabled = true;
                 ButtonColor = Color.Error;
-                _processing = false;
             }
             else //should not get to this option
             {
@@ -76,27 +73,14 @@ namespace MCPackServer.Pages.ClientsModule
 
         private async Task Submit()
         {
-            ActionResponse<Clients> response = new();
             _processing = true;
+            ActionResponse<Contacts> response = new();
             await Form.Validate();
             if (Form.IsValid)
             {
-                if (States.Add == State) response = await _clientsService.AddAsync(Model);
-                else if (States.Edit == State) response = await _clientsService.UpdateAsync(Model);
-                else
-                {
-                    var clearResponse = await _clientsService.ClearContacts(Model.Id);
-                    if (clearResponse.IsSuccessful) response = await _clientsService.RemoveAsync(Model);
-                    else response.Failure(error: "Internal error while clearing contacts.");
-                    if (response.IsSuccessful && States.Delete == State)
-                    {
-                        var contactsResponse = await _contactsService.ClearUnaligned();
-                        if (contactsResponse.IsSuccessful)
-                            Snackbar.Add("Contactos correctamente eliminados.", Severity.Info);
-                        else
-                            Snackbar.Add("Error al eliminar contactos.", Severity.Error);
-                    }
-                }
+                if (States.Add == State) response = await _service.AddAsync(Model);
+                else if (States.Edit == State) response = await _service.UpdateAsync(Model);
+                else if (States.Delete == State) response = await _service.RemoveAsync(Model);
                 _processing = false;
                 Dialog.Close(DialogResult.Ok(response));
             }

@@ -1,5 +1,6 @@
 ﻿using MCPackServer.Entities;
 using MCPackServer.Models;
+using MCPackServer.Pages.SharedDialogs;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
@@ -123,17 +124,15 @@ namespace MCPackServer.Pages.ClientsModule
                 TotalItems = count ?? 0
             };
         }
-        private async Task OnSelectedClientRow(TableRowClickEventArgs<Clients> args)
+        private void OnSelectedClientRow(TableRowClickEventArgs<Clients> args)
         {
             SelectedClient = args.Item;
             VisibleClientInformation = true;
         }
         private async Task FilterClients() => await ClientsTable.ReloadServerData();
-        private void DeleteClientFilters()
-        {
+        private void DeleteClientFilters() =>
             MarketNameFilter = LegalNameFilter = CityFilter = ProvinceFilter
             = PhoneNumberFilter = WebsiteFilter = string.Empty;
-        }
         #endregion
         #region Clients server methods
         private async Task AddClient()
@@ -234,7 +233,7 @@ namespace MCPackServer.Pages.ClientsModule
                 TotalItems = count ?? 0
             };
         }
-        private async Task OnSelectedContactRow(TableRowClickEventArgs<Contacts> args)
+        private void OnSelectedContactRow(TableRowClickEventArgs<Contacts> args)
         {
             var selectedId = args.Item.Id;
             if (!SelectedContacts.Any(c => selectedId == c.Id))
@@ -245,80 +244,71 @@ namespace MCPackServer.Pages.ClientsModule
         #region Contacts server methods
         private async Task CreateContact()
         {
-            //Parameters = new()
-            //{
-            //    ["State"] = ClientsDialog.States.Add,
-            //    ["Model"] = new Contacts()
-            //};
-            //var dialog = Dialogs.Show<ContactsDialog>("Añadir nuevo contacto", Parameters);
-            //var result = await dialog.Result;
-            //if (!result.Cancelled)
-            //{
-            //    var element = JObject.Parse(result.Data.ToString());
-            //    if (bool.Parse(element.GetValue("Success").ToString()))
-            //    {
-            //        Snackbar.Add("Contacto añadido con éxito.", Severity.Success);
-            //        var ResultValue = JsonConvert.DeserializeObject<Contacts>
-            //            (element.GetValue("Value").ToString());
-            //        EntityDBModel<Contacts> LinkPayload = new()
-            //        {
-            //            Action = "Add",
-            //            KeyColumn = nameof(ResultValue.Id),
-            //            Key = ResultValue.Id,
-            //            Value = ResultValue
-            //        };
-            //        var response = await Http.PostAsJsonAsync
-            //            ($"api/Clients/LinkContact/{SelectedClient.Id}", LinkPayload);
-            //        if (response.IsSuccessStatusCode)
-            //            Snackbar.Add("Contacto enlazado con éxito.", Severity.Success);
-            //        else
-            //            Snackbar.Add("Error al enlazar contacto.", Severity.Error);
-            //    }
-            //    else
-            //        Snackbar.Add("Error al añadir contacto.", Severity.Error);
-            //    await ContactsTable.ReloadServerData();
-            //}
+            Parameters = new()
+            {
+                ["State"] = ClientsDialog.States.Add,
+                ["Model"] = new Contacts()
+            };
+            var dialog = Dialogs.Show<ContactsDialog>("Añadir nuevo contacto", Parameters);
+            var result = await dialog.Result;
+            if (!result.Cancelled)
+            {
+                ActionResponse<Contacts> Response = (ActionResponse<Contacts>)result.Data;
+                if (Response.IsSuccessful)
+                {
+                    Snackbar.Add("Contacto añadido con éxito.", Severity.Success);
+                    Contacts model = Response.Value;
+                    var response = await _clientsService.LinkContact(SelectedClient.Id, model.Id);
+                    if (response.IsSuccessful)
+                        Snackbar.Add("Contacto enlazado con éxito.", Severity.Success);
+                    else
+                        Snackbar.Add("Error al enlazar contacto.", Severity.Error);
+                }
+                else
+                    Snackbar.Add("Error al añadir contacto.", Severity.Error);
+                await ContactsTable.ReloadServerData();
+            }
         }
         private async Task EditContact(Contacts contact)
         {
-            //Parameters = new()
-            //{
-            //    ["State"] = ClientsDialog.States.Edit,
-            //    ["Model"] = contact
-            //};
-            //var dialog = Dialogs.Show<ContactsDialog>("Editar contacto seleccionado", Parameters);
-            //var result = await dialog.Result;
-            //if (!result.Cancelled)
-            //{
-            //    var element = JObject.Parse(result.Data.ToString());
-            //    if (bool.Parse(element.GetValue("Success").ToString()))
-            //        Snackbar.Add("Contacto editado con éxito.", Severity.Success);
-            //    else
-            //        Snackbar.Add("Error al editar el contacto seleccionado.", Severity.Error);
-            //    await ContactsTable.ReloadServerData();
-            //}
+            Parameters = new()
+            {
+                ["State"] = ClientsDialog.States.Edit,
+                ["Model"] = contact
+            };
+            var dialog = Dialogs.Show<ContactsDialog>("Editar contacto seleccionado", Parameters);
+            var result = await dialog.Result;
+            if (!result.Cancelled)
+            {
+                ActionResponse<Contacts> Response = (ActionResponse<Contacts>)result.Data;
+                if (Response.IsSuccessful)
+                    Snackbar.Add("Contacto editado con éxito.", Severity.Success);
+                else
+                    Snackbar.Add("Error al editar el contacto seleccionado.", Severity.Error);
+                await ContactsTable.ReloadServerData();
+            }
         }
         private async Task DeleteContact(Contacts contact)
         {
-            //Parameters = new()
-            //{
-            //    ["State"] = ClientsDialog.States.Delete,
-            //    ["Model"] = contact
-            //};
-            //var dialog = Dialogs.Show<ContactsDialog>("Eliminar contacto seleccionado", Parameters);
-            //var result = await dialog.Result;
-            //if (!result.Cancelled)
-            //{
-            //    var element = JObject.Parse(result.Data.ToString());
-            //    if (bool.Parse(element.GetValue("Success").ToString()))
-            //    {
-            //        Snackbar.Add("Contacto eliminado con éxito.", Severity.Info);
-            //        RemoveTab(selectedContact: contact);
-            //    }
-            //    else
-            //        Snackbar.Add("Error al eliminar contacto seleccionado.", Severity.Error);
-            //    await ContactsTable.ReloadServerData();
-            //}
+            Parameters = new()
+            {
+                ["State"] = ClientsDialog.States.Delete,
+                ["Model"] = contact
+            };
+            var dialog = Dialogs.Show<ContactsDialog>("Eliminar contacto seleccionado", Parameters);
+            var result = await dialog.Result;
+            if (!result.Cancelled)
+            {
+                ActionResponse<Contacts> Response = (ActionResponse<Contacts>)result.Data;
+                if (Response.IsSuccessful)
+                {
+                    Snackbar.Add("Contacto eliminado con éxito.", Severity.Info);
+                    RemoveTab(selectedContact: contact);
+                }
+                else
+                    Snackbar.Add("Error al eliminar contacto seleccionado.", Severity.Error);
+                await ContactsTable.ReloadServerData();
+            }
         }
         #endregion
         private void RemoveTab(MudTabPanel? tabPanel = null, Contacts? selectedContact = null)
