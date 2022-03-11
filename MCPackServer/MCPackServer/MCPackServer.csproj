@@ -65,8 +65,8 @@
 	<None Include="Pages\RolesModule\RoleManagementPage.razor" />
 	<None Include="Pages\RolesModule\RolesDialog.razor" />
     <None Include="Shared\CompanyLogo.razor" />
-    <None Include="UserManagementModule\UserManagementPage.razor" />
-    <None Include="UserManagementModule\UserRegistrationPage.razor" />
+    <None Include="Pages\UserManagementModule\UserManagementPage.razor" />
+    <None Include="Pages\UserManagementModule\UserRegistrationPage.razor" />
   </ItemGroup>
 
 </Project>
