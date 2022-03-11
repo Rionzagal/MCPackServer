@@ -1,0 +1,168 @@
+﻿@inject IProvidersService _providersService
+@inject IContactsService _contactsService
+<MudDialog>
+    <TitleContent>
+        <MudText Typo="Typo.h6">
+            <MudIcon Icon="@TitleIcon" /> @Title
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        @if (_processing)
+        {
+            <MudProgressCircular Class="m-sm-n1" Size="Size.Large" Indeterminate="true" />
+            <MudText Class="m-sm-2">Esperando respuesta de servidor...</MudText>
+        }
+        else
+        {
+    <MudContainer Style="max-height: 500px; overflow-y: scroll;">
+        @if (States.Delete == (States)State)
+        {
+            <div class="form-group">
+                <MudText Typo="Typo.subtitle1" Align="Align.Center">
+                    ¿Está seguro de eliminar proveedor seleccionado?
+                </MudText>
+            </div>
+        }
+        <MudForm Model="Model" @ref="Form">
+            <MudGrid>
+                <MudItem xs="12">
+                    <MudTextField T="string" Label="Nombre comercial" Required="true"
+                                  RequiredError="Insertar nombre comercial de proveedor"
+                                  @bind-Value="Model.MarketName"
+                                  ReadOnly="@Disabled" />
+                </MudItem>
+                <MudItem xs="12">
+                    <MudTextField T="string" Label="Razón social" Required="true"
+                                  RequiredError="Insertar razón social de proveedor"
+                                  @bind-Value="Model.LegalName"
+                                  ReadOnly="@Disabled" />
+                </MudItem>
+                <MudItem xs="12">
+                    <MudTextField T="string" Label="Domicilio fiscal" Required="true"
+                                  RequiredError="Insertar domicilio fiscal de proveedor"
+                                  @bind-Value="Model.FiscalAddress"
+                                  ReadOnly="@Disabled" />
+                </MudItem>
+                <MudItem xs="6">
+                    <MudTextField T="string" Label="Código postal" Required="true"
+                                  RequiredError="Insertar código postal de proveedor"
+                                  @bind-Value="Model.PostalCode"
+                                  ReadOnly="@Disabled" />
+                </MudItem>
+                <MudItem xs="6">
+                    <MudTextField T="string" Label="Ciudad" Required="true"
+                                  RequiredError="Insertar ciudad de domicilio de proveedor"
+                                  Validation="@(new Func<string, IEnumerable<string>>(ValidateName))"
+                                  @bind-Value="Model.City"
+                                  ReadOnly="@Disabled" />
+                </MudItem>
+                <MudItem xs="6">
+                    <MudTextField T="string" Label="Provincia/Estado" Required="true"
+                                  RequiredError="Insertar provincia/estado de domicilio de proveedor"
+                                  Validation="@(new Func<string, IEnumerable<string>>(ValidateName))"
+                                  @bind-Value="Model.Province"
+                                  ReadOnly="@Disabled" />
+                </MudItem>
+                <MudItem xs="6">
+                    <MudTextField T="string" Label="País" Required="true"
+                                  RequiredError="Insertar país de domicilio de proveedor"
+                                  Validation="@(new Func<string, IEnumerable<string>>(ValidateName))"
+                                  @bind-Value="Model.Country"
+                                  ReadOnly="@Disabled" />
+                </MudItem>
+                <MudItem xs="6">
+                    <MudTextField T="string" Label="Sitio web" Required="true"
+                                  RequiredError="Insertar sitio web de proveedor"
+                                  @bind-Value="Model.Website"
+                                  ReadOnly="@Disabled" />
+                </MudItem>
+                <MudItem xs="6">
+                    <MudTextField T="string" Label="Número telefónico de cliente" Required="true"
+                                  RequiredError="Insertar número telefónico de cliente"
+                                  Validation="@(new Func<string, IEnumerable<string>>(ValidatePhone))"
+                                  InputType="InputType.Telephone"
+                                  @bind-Value="Model.PhoneNumber"
+                                  ReadOnly="@Disabled" />
+                </MudItem>
+                <MudItem xs="12">
+                    <MudTextField T="string" Label="Tipo de pago" Required="true"
+                                  RequiredError="Insertar tipo de pago"
+                                  @bind-Value="Model.TypeOfPayment"
+                                  ReadOnly="@Disabled" />
+                </MudItem>
+                <MudItem xs="12">
+                    <MudTextField T="string" Label="Condición de pago" Required="true"
+                                  RequiredError="Insertar condición de pago"
+                                  @bind-Value="Model.PaymentCondition"
+                                  ReadOnly="@Disabled" />
+                </MudItem>
+                <MudItem xs="3">
+                    <MudTextField T="string" Label="Límite de crédito"
+                                  @bind-Value="Model.CreditLimit"
+                                  ReadOnly="@Disabled" />
+                </MudItem>
+                <MudItem xs="3">
+                    <MudCheckBox @bind-Checked="Model.HasTaxes" Label="Aplica I.V.A" 
+                                 ReadOnly="@Disabled" />
+                </MudItem>
+                <MudItem xs="3">
+                    <MudNumericField T="float" Label="Descuento" Required="true"
+                                     RequiredError="Insertar descuento" @bind-Value="Model.Discount"
+                                     Min="0.00f" Max="100.00f" Step="1" Format="N2"
+                                     AdornmentText="%" Adornment="Adornment.End"
+                                     ReadOnly="@Disabled" />
+                </MudItem>
+                <MudItem xs="3">
+                    <MudCheckBox Label="Entrega a domicilio"
+                                 @bind-Checked="Model.HomeDelivery"
+                                 ReadOnly="@Disabled" />
+                </MudItem>
+                <MudItem xs="12">
+                    <MudTextField T="string" Label="Observaciones"
+                                  @bind-Value="Model.Observations"
+                                  ReadOnly="@Disabled" />
+                </MudItem>
+            </MudGrid>
+        </MudForm>
+        @if (States.Delete == (States)State)
+        {
+            <div class="form-group">
+                <MudTable ServerData="(state) => ProviderContactsLoad(state, Model.Id)" Dense Striped>
+                    <ToolBarContent>
+                        <MudText Typo="Typo.subtitle1">
+                            Contactos asociados
+                        </MudText>
+                    </ToolBarContent>
+                    <HeaderContent>
+                        <MudTh>Nombre</MudTh>
+                        <MudTh>Correo</MudTh>
+                        <MudTh>Puesto</MudTh>
+                    </HeaderContent>
+                    <RowTemplate>
+                        <MudTd DataLabel="Nombre">@context.FullName</MudTd>
+                        <MudTd DataLabel="Correo">@context.EmailAddress</MudTd>
+                        <MudTd DataLabel="Puesto">@context.Position</MudTd>
+                    </RowTemplate>
+                    <PagerContent>
+                        <MudTablePager />
+                    </PagerContent>
+                    <NoRecordsContent>
+                        No se encontraron contactos asociados.
+                    </NoRecordsContent>
+                </MudTable>
+            </div>
+        }
+    </MudContainer>
+    }
+    </DialogContent>
+    <DialogActions>
+        <MudButton Variant="Variant.Text" Class="mx-1"
+                   OnClick="() => Dialog.Cancel()" Disabled="_processing">
+            Cerrar
+        </MudButton>
+        <MudButton Variant="Variant.Filled" Color="@ButtonColor" Class="mx-1"
+                   OnClick="async () => await Submit()" Disabled="_processing">
+            Confirmar
+        </MudButton>
+    </DialogActions>
+</MudDialog>

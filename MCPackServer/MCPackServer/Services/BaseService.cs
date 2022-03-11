@@ -59,7 +59,7 @@ namespace MCPackServer.Services
                 foreach (var item in whereValues)
                 {
                     parameters.Add(item.Key, item.Value);
-                    where += $"{item.Key} LIKE '%' + @{item.Key} + '%' ";
+                    where += $"{item.Key} LIKE CONCAT('%', @{item.Key}, '%') ";
                     if (item.Key != whereValues.Last().Key) where += "AND ";
                 }
                 query += where;
@@ -82,7 +82,7 @@ namespace MCPackServer.Services
                 foreach (var item in whereValues)
                 {
                     parameters.Add(item.Key, item.Value);
-                    where += $"{item.Key} LIKE '%' + @{item.Key} + '%' ";
+                    where += $"{item.Key} LIKE CONCAT('%', @{item.Key}, '%') ";
                     if (item.Key != whereValues.Last().Key) where += "AND ";
                 }
                 query += where;
@@ -97,7 +97,7 @@ namespace MCPackServer.Services
             string tableName = instance.GetType().Name;
             DynamicParameters parameters = new();
             parameters.Add(key, value);
-            string query = $"SELECT * FROM {tableName} WHERE {key} LIKE '%' + @{key} +'%' ";
+            string query = $"SELECT * FROM {tableName} WHERE {key} LIKE CONCAT('%', @{key}, '%') ";
             return await conn.QuerySingleAsync<T>(query, parameters);
         }
 
@@ -149,13 +149,18 @@ namespace MCPackServer.Services
                 DynamicParameters parameters = new();
                 string tableName = entity.GetType().Name;
                 string query = $"DELETE FROM {tableName} WHERE ";
-                var properties = entity.GetType().GetProperties();
+                var properties = entity.GetType()
+                    .GetProperties()
+                    .Where(x => x.GetAccessors()[0].IsFinal || !x.GetAccessors()[0].IsVirtual);
                 foreach (var property in properties)
                 {
-                    var value = property.GetValue(entity);
-                    parameters.Add(property.Name, value);
-                    query += $"{property.Name} LIKE '%' + @{property.Name} + '%' ";
-                    if (property.Name != properties.Last().Name) query += "AND ";
+                    object? value = property.GetValue(entity);
+                    if (null != value)
+                    {
+                        parameters.Add(property.Name, value);
+                        if (property.Name != properties.First().Name) query += "AND ";
+                        query += $"{property.Name} LIKE CONCAT('%', @{property.Name}, '%') ";
+                    }
                 }
                 await conn.ExecuteAsync(query, parameters, transaction);
                 transaction.Commit();
@@ -163,8 +168,8 @@ namespace MCPackServer.Services
             }
             catch (Exception ex)
             {
-                conn.Close();
                 transaction.Rollback();
+                conn.Close();
                 response.Failure(error: ex.Message);
             }
             return response;

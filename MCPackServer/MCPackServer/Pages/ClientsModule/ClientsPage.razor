@@ -11,7 +11,7 @@
         <MudText Typo="Typo.h6">Clientes registrados</MudText>
         <MudSpacer />
         <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="mx-1"
-                   OnClick="AddClient"> @*Disabled="!CanCreateClient">*@
+                   OnClick="AddClient" >
             Añadir
         </MudButton>
         <MudButton Variant="Variant.Filled" OnClick="DeleteClientFilters" Class="mx-1">
@@ -74,18 +74,18 @@
 @if (VisibleClientInformation)
 {
     <MudPaper Class="my-3" Elevation="0">
-        <MudText Typo="@Typo.h6" Align="Align.Center">PRESENTANDO INFORMACIÓN PARA CLIENTE: @ClientsTable.SelectedItem.MarketName</MudText>
-        <MudTabs @ref="ClientInformationTabs" Elevation="2" Rounded="true" ApplyEffectsToContainer="true" Color="Color.Primary">
+        <MudText Typo="@Typo.h6" Align="Align.Center">PRESENTANDO INFORMACIÓN PARA CLIENTE: @SelectedClient.MarketName</MudText>
+        <MudTabs @ref="ClientInformationTabs" Elevation="2" Rounded ApplyEffectsToContainer Color="Color.Primary">
             <Header>
                 <MudTooltip Text="Cerrar cliente">
                     <MudIconButton Icon="@Icons.Material.Filled.Close" 
                                    OnClick="(_) => { SelectedClient = new(); VisibleClientInformation = false; }" />
                 </MudTooltip>
                 <MudTooltip Text="Editar información de cliente">
-                    <MudIconButton Icon="@Icons.Material.Filled.Edit" OnClick="EditClient" Disabled="!CanEditClient" />
+                    <MudIconButton Icon="@Icons.Material.Filled.Edit" OnClick="EditClient" />
                 </MudTooltip>
                 <MudTooltip Text="Eliminar cliente">
-                    <MudIconButton Icon="@Icons.Material.Filled.Delete" OnClick="DeleteClient" Disabled="!CanDeleteClient" />
+                    <MudIconButton Icon="@Icons.Material.Filled.Delete" OnClick="DeleteClient" />
                 </MudTooltip>
             </Header>
             <TabPanelHeader>
@@ -102,19 +102,19 @@
                     <MudPaper Elevation="0" Class="m-3" Style="height:500px; overflow-y:scroll;">
                         <div class="form-group">
                             <MudText Typo="Typo.subtitle2" Align="Align.Left">Nombre comercial:</MudText>
-                            <MudTextField T="string" @bind-Text="@SelectedClient.MarketName" ReadOnly="true" />
+                            <MudTextField T="string" @bind-Text="@SelectedClient.MarketName" ReadOnly />
                         </div>
                         <div class="form-group">
                             <MudText Typo="Typo.subtitle2" Align="Align.Left">Razón social:</MudText>
-                            <MudTextField T="string" @bind-Text="@SelectedClient.LegalName" ReadOnly="true" />
+                            <MudTextField T="string" @bind-Text="@SelectedClient.LegalName" ReadOnly />
                         </div>
                         <div class="form-group">
                             <MudText Typo="Typo.subtitle2" Align="Align.Left">Sitio Web:</MudText>
-                            <MudTextField T="string" @bind-Text="@SelectedClient.Website" ReadOnly="true" />
+                            <MudTextField T="string" @bind-Text="@SelectedClient.Website" ReadOnly />
                         </div>
                         <div class="form-group">
                             <MudText Typo="Typo.subtitle2" Align="Align.Left">Condición de pago:</MudText>
-                            <MudTextField T="string" @bind-Text="@SelectedClient.PaymentCondition" ReadOnly="true" />
+                            <MudTextField T="string" @bind-Text="@SelectedClient.PaymentCondition" ReadOnly />
                         </div>
                     </MudPaper>
                 </MudTabPanel>
@@ -122,41 +122,41 @@
                     <MudPaper Elevation="0" Class="m-3" Style="height:500px; overflow-y:scroll;">
                         <div class="form-group">
                             <MudText Typo="Typo.subtitle2" Align="Align.Left">Número de teléfono:</MudText>
-                            <MudTextField T="string" @bind-Text="@SelectedClient.PhoneNumber" ReadOnly="true" />
+                            <MudTextField T="string" @bind-Text="@SelectedClient.PhoneNumber" ReadOnly />
                         </div>
                         <div class="form-group">
                             <MudText Typo="Typo.subtitle2" Align="Align.Left">Domicilio fiscal:</MudText>
-                            <MudTextField T="string" @bind-Text="@SelectedClient.FiscalAddress" ReadOnly="true" />
+                            <MudTextField T="string" @bind-Text="@SelectedClient.FiscalAddress" ReadOnly />
                         </div>
                         <div class="form-group">
                             <MudText Typo="Typo.subtitle2" Align="Align.Left">Ciudad:</MudText>
-                            <MudTextField T="string" @bind-Text="@SelectedClient.City" ReadOnly="true" />
+                            <MudTextField T="string" @bind-Text="@SelectedClient.City" ReadOnly />
                         </div>
                         <div class="form-group">
                             <MudText Typo="Typo.subtitle2" Align="Align.Left">Provincia/Estado:</MudText>
-                            <MudTextField T="string" @bind-Text="@SelectedClient.Province" ReadOnly="true" />
+                            <MudTextField T="string" @bind-Text="@SelectedClient.Province" ReadOnly />
                         </div>
                         <div class="form-group">
                             <MudText Typo="Typo.subtitle2" Align="Align.Left">País:</MudText>
-                            <MudTextField T="string" @bind-Text="@SelectedClient.Country" ReadOnly="true" />
+                            <MudTextField T="string" @bind-Text="@SelectedClient.Country" ReadOnly />
                         </div>
                         <div class="form-group">
                             <MudText Typo="Typo.subtitle2" Align="Align.Left">Código postal:</MudText>
-                            <MudTextField T="string" @bind-Text="@SelectedClient.PostalCode" ReadOnly="true" />
+                            <MudTextField T="string" @bind-Text="@SelectedClient.PostalCode" ReadOnly />
                         </div>
                     </MudPaper>
                 </MudTabPanel>
                 <MudTabPanel Text="Contactos asociados">
                     <MudPaper Elevation="0" Class="m-3" Style="height:500px; overflow-y:scroll;">
-                        <MudTable Dense="true" Hover="true" T="Contacts" @ref="@ContactsTable" CustomHeader="true"
-                                  FixedHeader="true" Height="400px"
+                        <MudTable Dense Hover T="Contacts" @ref="@ContactsTable" CustomHeader
+                                  FixedHeader Height="400px"
                                   ServerData="@(new Func<TableState, Task<TableData<Contacts>>>(ContactsServerReload))"
-                                  OnRowClick="OnSelectedContactRow" Striped="true">
+                                  OnRowClick="OnSelectedContactRow" Striped>
                             <ToolBarContent>
                                 <MudText Typo="Typo.h6">Contactos registrados</MudText>
                                 <MudSpacer />
                                 <MudButton Variant="Variant.Filled" Color="Color.Primary"
-                                           OnClick="CreateContact" Disabled="!CanCreateContact">
+                                           OnClick="CreateContact" >
                                     Añadir contacto
                                 </MudButton>
                             </ToolBarContent>
@@ -198,24 +198,24 @@
                             <MudCardContent Style="height:300px; overflow-y:scroll;">
                                 <div class="form-group">
                                     <MudText Typo="Typo.subtitle2" Align="Align.Left">Puesto:</MudText>
-                                    <MudTextField T="string" @bind-Text="@contact.Position" ReadOnly="true" />
+                                    <MudTextField T="string" @bind-Text="@contact.Position" ReadOnly />
                                 </div>
                                 <div class="form-group">
                                     <MudText Typo="Typo.subtitle2" Align="Align.Left">Correo electrónico:</MudText>
-                                    <MudTextField T="string" @bind-Text="@contact.EmailAddress" ReadOnly="true" />
+                                    <MudTextField T="string" @bind-Text="@contact.EmailAddress" ReadOnly />
                                 </div>
                                 <div class="form-group">
                                     <MudText Typo="Typo.subtitle2" Align="Align.Left">Número de teléfono:</MudText>
-                                    <MudTextField T="string" @bind-Text="@contact.MobilePhone" ReadOnly="true" />
+                                    <MudTextField T="string" @bind-Text="@contact.MobilePhone" ReadOnly />
                                 </div>
                             </MudCardContent>
                             <MudCardActions Style="height:100px;">
                                 <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="mx-1"
-                                           OnClick="async (_) => await EditContact(contact)" Disabled="!CanEditContact">
+                                           OnClick="async (_) => await EditContact(contact)" >
                                     Editar
                                 </MudButton>
                                 <MudButton Variant="Variant.Filled" Color="Color.Error" Class="mx-1"
-                                           OnClick="(_) => DeleteContact(contact)" Disabled="!CanDeleteContact">
+                                           OnClick="(_) => DeleteContact(contact)" >
                                     Eliminar
                                 </MudButton>
                             </MudCardActions>
@@ -226,17 +226,3 @@
         </MudTabs>
     </MudPaper>
 }
-
-<style>
-    .selected {
-        background-color: #1E88E5 !important;
-    }
-
-        .selected > td {
-            color: white !important;
-        }
-
-            .selected > td .mud-input {
-                color: white !important;
-            }
-</style>

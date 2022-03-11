@@ -18,17 +18,18 @@ namespace MCPackServer.Services
             using IDbConnection conn = Connection;
             request.Take = 0 != request.Take ? request.Take : 10;
             DynamicParameters parameters = new();
+            List<KeyValuePair<string, string>> whereFilters = CheckFilters(request.Where);
             string query = $"SELECT pp.*, project.*, product.* FROM ProjectProducts pp " +
                 $"INNER JOIN Projects project ON pp.ProjectId = project.Id " +
                 $"INNER JOIN MCProducts product ON pp.ProductId = product.Id ";
-            if (null != request.Where && request.Where.Any())
+            if (whereFilters.Any())
             {
                 string where = "WHERE ";
-                foreach (var item in request.Where)
+                foreach (var item in whereFilters)
                 {
-                    parameters.Add($"@{item.Field}", item.Value);
-                    where += $"pp.{item.Field} LIKE '%' + @{item.Field} + '%' ";
-                    if (request.Where.Last().Field != item.Field)
+                    parameters.Add(item.Key, item.Value);
+                    where += $"pp.{item.Key} LIKE CONCAT('%', @{item.Key}, '%') ";
+                    if (whereFilters.Last().Key != item.Key)
                         where += "AND ";
                 }
                 query += where;
@@ -47,15 +48,16 @@ namespace MCPackServer.Services
         {
             using IDbConnection conn = Connection;
             DynamicParameters parameters = new();
+            List<KeyValuePair<string, string>> whereFilters = CheckFilters(request.Where);
             string query = $"SELECT COUNT(ProductId) FROM ProjectProducts ";
-            if (null != request.Where && request.Where.Any())
+            if (whereFilters.Any())
             {
                 string where = "WHERE ";
-                foreach (var item in request.Where)
+                foreach (var item in whereFilters)
                 {
-                    parameters.Add($"@{item.Field}", item.Value);
-                    where += $"pp.{item.Field} LIKE '%' + @{item.Field} + '%' ";
-                    if (request.Where.Last().Field != item.Field)
+                    parameters.Add(item.Key, item.Value);
+                    where += $"pp.{item.Key} LIKE CONCAT('%', @{item.Key}, '%') ";
+                    if (whereFilters.Last().Key != item.Key)
                         where += "AND ";
                 }
                 query += where;

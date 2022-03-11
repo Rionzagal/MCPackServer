@@ -1,12 +1,22 @@
 ﻿<AuthorizeView>
     <Authorized>
-        <a href="Identity/Account/Manage">Hello, @context.User.Identity?.Name!</a>
-        <form method="post" action="Identity/Account/LogOut">
-            <button type="submit" class="nav-link btn btn-link">Log out</button>
-        </form>
+        <MudTooltip Text="@context.User.Identity.Name">
+            <MudIconButton Icon="@Icons.Material.Filled.Settings" Link="Identity/Account/Manage"
+            Color="Color.Inherit"/>
+        </MudTooltip>
+        <MudTooltip Text="Salir">
+            <MudIconButton Icon="@Icons.Material.Filled.Logout" Link="Identity/Account/LogOut"
+            Color="Color.Inherit"/>
+        </MudTooltip>
     </Authorized>
     <NotAuthorized>
-        <a href="Identity/Account/Register">Register</a>
-        <a href="Identity/Account/Login">Log in</a>
+        <MudTooltip Text="Registrarse">
+            <MudIconButton Icon="@Icons.Material.Filled.AppRegistration" Link="Identity/Account/Register" 
+            Color="Color.Inherit"/>
+        </MudTooltip>
+        <MudTooltip Text="Ingresar">
+            <MudIconButton Icon="@Icons.Material.Filled.Login" Link="Identity/Account/Login"
+            Color="Color.Inherit"/>
+        </MudTooltip>
     </NotAuthorized>
 </AuthorizeView>

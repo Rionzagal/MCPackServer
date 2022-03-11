@@ -35,8 +35,20 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="Pages\ArticlesModule\ArticlesDialog.razor" />
+    <None Include="Pages\ArticlesModule\ArticlesPage.razor" />
+    <None Include="Pages\ArticlesModule\FamiliesDialog.razor" />
+    <None Include="Pages\ArticlesModule\GroupsDialog.razor" />
+    <None Include="Pages\ArticlesModule\QuotesDialog.razor" />
     <None Include="Pages\ClientsModule\ClientsDialog.razor" />
     <None Include="Pages\ClientsModule\ClientsPage.razor" />
+	<None Include="Pages\ProductsModule\ProductsPage.razor" />
+	<None Include="Pages\ProductsModule\ProductsDialog.razor" />
+	<None Include="Pages\ProjectsModule\ProjectProductsDialog.razor" />
+	<None Include="Pages\ProjectsModule\ProjectsDialog.razor" />
+	<None Include="Pages\ProjectsModule\ProjectsPage.razor" />
+	<None Include="Pages\ProvidersModule\ProvidersDialog.razor" />
+	<None Include="Pages\ProvidersModule\ProvidersPage.razor" />
     <None Include="Shared\CompanyLogo.razor" />
   </ItemGroup>
 
