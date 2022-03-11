@@ -69,7 +69,7 @@ namespace MCPackServer.Services
                 foreach (var item in whereFilters)
                 {
                     parameters.Add(item.Key, item.Value);
-                    where += $"AND p.{item.Key} LIKE CONCAT('%', @{item.Key}, '%') ";
+                    where += $"AND U.{item.Key} LIKE CONCAT('%', @{item.Key}, '%') ";
                 }
                 query += where;
             }

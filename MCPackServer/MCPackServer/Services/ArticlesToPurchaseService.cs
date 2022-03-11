@@ -29,7 +29,7 @@ namespace MCPackServer.Services
                 foreach (var item in whereValues)
                 {
                     parameters.Add(item.Key, item.Value);
-                    where += $"a.{item.Key} LIKE '%' + @{item.Key} + '%' ";
+                    where += $"a.{item.Key} LIKE CONCAT('%', @{item.Key}, '%') ";
                     if (item.Key != whereValues.Last().Key)
                         where += "AND ";
                 }
@@ -62,7 +62,7 @@ namespace MCPackServer.Services
                 foreach (var item in whereValues)
                 {
                     parameters.Add(item.Key, item.Value);
-                    where += $"a.{item.Key} LIKE '%' + @{item.Key} + '%' ";
+                    where += $"a.{item.Key} LIKE CONCAT('%', @{item.Key}, '%') ";
                     if (item.Key != whereValues.Last().Key)
                         where += "AND ";
                 }

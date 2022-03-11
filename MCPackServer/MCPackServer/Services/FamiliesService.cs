@@ -32,8 +32,8 @@ namespace MCPackServer.Services
                 foreach (var item in whereValues)
                 {
                     parameters.Add(item.Key, item.Value);
-                    where += $"f.{item.Key} LIKE '%' + @{item.Key} + '%' ";
-                    if (item.Key != whereValues.Last().Key)
+                    where += $"f.{item.Key} LIKE CONCAT('%', @{item.Key}, '%') ";
+                    if (whereValues.Last().Key != item.Key)
                         where += "AND ";
                 }
                 query += where;

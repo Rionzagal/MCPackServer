@@ -1,0 +1,67 @@
+﻿@inject IRequisitionsService _requisitionsService
+
+<MudDialog>
+    <TitleContent>
+        <MudText Typo="Typo.h6">
+            <MudIcon Icon="@TitleIcon" /> @Title
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        @if (_processing)
+        {
+            <MudProgressCircular Class="m-sm-n1" Size="Size.Large" Indeterminate="true" />
+            <MudText Class="m-sm-2">Esperando respuesta de servidor...</MudText>
+        }
+        else
+        {
+            <MudContainer Style="max-height: 500px; overflow-y: scroll;">
+                @if (States.Delete == (States)State)
+                {
+                    <div class="form-group">
+                        <MudText Typo="Typo.subtitle1" Align="Align.Center">
+                            ¿Está seguro de eliminar proveedor seleccionado?
+                        </MudText>
+                    </div>
+                }
+                <MudForm Model="Model" @ref="Form">
+                    <MudGrid>
+                        <MudItem xs="12">
+                            <MudText Typo="Typo.subtitle1">Número de requisición</MudText>
+                            <MudTextField @bind-Value="Model.RequisitionNumber" Required ReadOnly="@Disabled"
+                                          Validation="new Func<string, IEnumerable<string>>(ValidateRequisitionsNumber)"
+                                          Clearable Variant="Variant.Outlined" />
+                        </MudItem>
+                        <MudItem xs="6">
+                            <MudText Typo="Typo.subtitle1">Fecha de emisión</MudText>
+                            <MudDatePicker @bind-Date="Model.IssuedDate" Required ReadOnly="@Disabled"
+                                           RequiredError="Inserte fecha de emisión" Variant="Variant.Outlined" />
+                        </MudItem>
+                        <MudItem xs="6">
+                            <MudText Typo="Typo.subtitle1">Fecha de requerimiento</MudText>
+                            <MudDatePicker @bind-Date="Model.RequiredDate" Required ReadOnly="@Disabled"
+                                           RequiredError="Inserte fecha de requerimiento" Variant="Variant.Outlined" />
+                        </MudItem>
+                        <MudItem xs="12">
+                            <MudText Typo="Typo.subtitle1">Remitente</MudText>
+                            <MudAutocomplete T="string" @bind-Value="Model.UserId" Required ReadOnly="@Disabled"
+                                             RequiredError="Seleccione un usuario de emisión" 
+                                             SearchFunc="(f) => UsersServerReload(f)" Variant="Variant.Outlined"
+                                             ToStringFunc="(id) => users.Single(u => id == u.Id).UserName" />
+                            <MudText Typo="Typo.subtitle2">Remitente actual: @(users.Single(u => Model.UserId == u.Id).UserName)</MudText>
+                        </MudItem>
+                    </MudGrid>
+                </MudForm>
+            </MudContainer>
+        }
+    </DialogContent>
+    <DialogActions>
+        <MudButton Variant="Variant.Text" Class="mx-1"
+                   OnClick="() => Dialog.Cancel()" Disabled="_processing">
+            Cerrar
+        </MudButton>
+        <MudButton Variant="Variant.Filled" Color="@ButtonColor" Class="mx-1"
+                   OnClick="async () => await Submit()" Disabled="_processing">
+            Confirmar
+        </MudButton>
+    </DialogActions>
+</MudDialog>

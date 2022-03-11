@@ -18,21 +18,21 @@ namespace MCPackServer.Services
             using IDbConnection conn = Connection;
             request.Take = 0!= request.Take ? request.Take : 10;
             DynamicParameters parameters = new();
+            List<KeyValuePair<string, string>> whereFilters = CheckFilters(request.Where);
             string query = $"SELECT q.*, a.*, p.* FROM Quotes q " +
                 $"INNER JOIN PurchaseArticles a ON q.ArticleId = a.Id " +
                 $"INNER JOIN Providers p ON q.ProviderId = p.Id ";
-            if (null != request.Where && request.Where.Any())
+            if (whereFilters.Any())
             {
-                string where = "WHERE ";
-                foreach (var item in request.Where)
+                string where = string.Empty;
+                foreach (var item in whereFilters)
                 {
-                    parameters.Add("@" + item.Field, item.Value);
-                    where += $"q.{item.Field} LIKE '%' + @{item.Field} + '%' ";
-                    if (item.Field != request.Where.Last().Field) where += "AND ";
+                    parameters.Add(item.Key, item.Value);
+                    where += $"AND q.{item.Key} LIKE CONCAT('%', @{item.Key}, '%') ";
                 }
                 query += where;
             }
-            query += $"ORDER BY {sortField} {order} LIMIT {request.Skip}, {request.Take} ";
+            query += $"ORDER BY q.{sortField} {order} LIMIT {request.Skip}, {request.Take} ";
             return await conn.QueryAsync<Quotes, PurchaseArticles, Providers, Quotes>
                 (query, param: parameters, map: (quote, article, provider) =>
                 {

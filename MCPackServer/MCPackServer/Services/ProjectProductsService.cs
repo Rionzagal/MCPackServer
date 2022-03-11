@@ -18,18 +18,18 @@ namespace MCPackServer.Services
             using IDbConnection conn = Connection;
             request.Take = 0 != request.Take ? request.Take : 10;
             DynamicParameters parameters = new();
-            List<KeyValuePair<string, string>> whereFilters = CheckFilters(request.Where);
+            List<KeyValuePair<string, string>> whereValues = CheckFilters(request.Where);
             string query = $"SELECT pp.*, project.*, product.* FROM ProjectProducts pp " +
                 $"INNER JOIN Projects project ON pp.ProjectId = project.Id " +
                 $"INNER JOIN MCProducts product ON pp.ProductId = product.Id ";
-            if (whereFilters.Any())
+            if (whereValues.Any())
             {
                 string where = "WHERE ";
-                foreach (var item in whereFilters)
+                foreach (var item in whereValues)
                 {
                     parameters.Add(item.Key, item.Value);
                     where += $"pp.{item.Key} LIKE CONCAT('%', @{item.Key}, '%') ";
-                    if (whereFilters.Last().Key != item.Key)
+                    if (whereValues.Last().Key != item.Key)
                         where += "AND ";
                 }
                 query += where;

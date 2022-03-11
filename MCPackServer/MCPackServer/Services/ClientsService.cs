@@ -27,7 +27,7 @@ namespace MCPackServer.Services
                 foreach (var item in whereValues)
                 {
                     parameters.Add(item.Key, item.Value);
-                    where += $"AND U.{item.Key} LIKE '%' + @{item.Key} + '%' ";
+                    where += $"AND U.{item.Key} LIKE CONCAT('%', @{item.Key}, '%') ";
                 }
                 query += where;
             }
@@ -48,7 +48,7 @@ namespace MCPackServer.Services
                 foreach (var item in whereValues)
                 {
                     parameters.Add(item.Key, item.Value);
-                    where += $"AND U.{item.Key} LIKE '%' + @{item.Key} + '%' ";
+                    where += $"AND U.{item.Key} LIKE CONCAT('%', @{item.Key}, '%') ";
                 }
                 query += where;
             }
@@ -68,7 +68,7 @@ namespace MCPackServer.Services
                 foreach (var item in whereValues)
                 {
                     parameters.Add(item.Key, item.Value);
-                    where += $"AND C.{item.Key} LIKE '%' + @{item.Key} + '%' ";
+                    where += $"AND C.{item.Key} LIKE CONCAT('%', @{item.Key}, '%') ";
                 }
                 query += where;
             }

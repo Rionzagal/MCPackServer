@@ -49,6 +49,10 @@
 	<None Include="Pages\ProjectsModule\ProjectsPage.razor" />
 	<None Include="Pages\ProvidersModule\ProvidersDialog.razor" />
 	<None Include="Pages\ProvidersModule\ProvidersPage.razor" />
+	<None Include="Pages\RequisitionsModule\AddArticleDialog.razor" />
+	<None Include="Pages\RequisitionsModule\RequisitionArticlesDialog.razor" />
+	<None Include="Pages\RequisitionsModule\RequisitionsDialog.razor" />
+	<None Include="Pages\RequisitionsModule\RequisitionsPage.razor" />
     <None Include="Shared\CompanyLogo.razor" />
   </ItemGroup>
 

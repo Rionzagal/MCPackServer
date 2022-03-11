@@ -18,22 +18,22 @@ namespace MCPackServer.Services
             using IDbConnection conn = Connection;
             request.Take = 0!= request.Take ? request.Take : 10;
             DynamicParameters parameters = new();
+            List<KeyValuePair<string, string>> whereFilters = CheckFilters(request.Where);
             string query = $"SELECT PO.*, projects.*, providers.*, requisition.* FROM PurchaseOrders PO " +
                 $"INNER JOIN Projects projects ON PO.ProjectId = projects.Id " +
                 $"INNER JOIN Providers providers ON PO.ProviderId = providers.Id " +
                 $"INNER JOIN Requisitions requisition ON PO.RequisitionId = requisition.Id ";
-            if (null != request.Where && request.Where.Any())
+            if (whereFilters.Any())
             {
                 string where = string.Empty;
-                foreach (var item in request.Where)
+                foreach (var item in whereFilters)
                 {
-                    parameters.Add("@" + item.Field, item.Value);
-                    where += $"PO.{item.Field} LIKE '%' + @{item.Field} + '%' ";
-                    if (item.Field != request.Where.Last().Field) where += "AND ";
+                    parameters.Add(item.Key, item.Value);
+                    where += $"AND PO.{item.Key} LIKE CONCAT('%', @{item.Key}, '%') ";
                 }
                 query += where;
             }
-            query += $"ORDER BY {sortField} {order} LIMIT {request.Skip}, {request.Take} ";
+            query += $"ORDER BY PO.{sortField} {order} LIMIT {request.Skip}, {request.Take} ";
             return await conn.QueryAsync<PurchaseOrders, Projects, Providers, Requisitions, PurchaseOrders>
                 (query, param: parameters, map: (order, project, provider, requisition) =>
                 {
@@ -48,7 +48,7 @@ namespace MCPackServer.Services
         {
             using IDbConnection conn = Connection;
             DynamicParameters parameters = new();
-            parameters.Add("@" + key, value);
+            parameters.Add(key, value);
             string query = $"SELECT PO.*, projects.*, providers.*, requisition.* FROM PurchaseOrders PO " +
                 $"INNER JOIN Projects projects ON PO.ProjectId = projects.Id " +
                 $"INNER JOIN Providers providers ON PO.ProviderId = providers.Id " +

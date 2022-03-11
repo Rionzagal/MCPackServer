@@ -1,0 +1,216 @@
+﻿@page "/Requisitions"
+
+@inject IRequisitionsService _requisitionsService
+@inject IRequisitionArticlesService _articlesService
+
+@attribute [Authorize]
+
+<MudText Typo="Typo.h3" Align="Align.Center">GESTIÓN DE REQUISICIONES</MudText>
+
+<MudTable @ref="RequisitionsTable" T="Requisitions" Dense="true" Hover="true" FixedHeader="true" Height="400px"
+          CustomHeader="true" Striped="true" OnRowClick="OnSelectedRequisition"
+          ServerData="new Func<TableState, Task<TableData<Requisitions>>>(RequisitionsServerReload)">
+    <ToolBarContent>
+        <MudText Typo="Typo.h6">Requisiciones registradas</MudText>
+        <MudSpacer />
+        @if (CanCreate)
+        {
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="mx-1"
+                       OnClick="CreateRequisition" Disabled="!CanCreate">
+                Añadir
+            </MudButton>
+        }
+        <MudButton Variant="Variant.Filled" Class="mx-1">
+            Borrar filtros de búsqueda
+        </MudButton>
+        <MudButton Variant="Variant.Outlined" Class="ml-1"
+                   OnClick="async () => await RequisitionsTable.ReloadServerData()">
+            <MudIcon Icon="@Icons.Material.Filled.Search" /> Buscar
+        </MudButton>
+    </ToolBarContent>
+    <HeaderContent>
+        <MudTHeadRow>
+            <MudTh><MudTableSortLabel SortLabel="RequisitionNumber" T="Requisitions">Número</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortLabel="IssuedDate" T="Requisitions">Fecha de emisión</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortLabel="RequiredDate" T="Requisitions">Fecha de requerimiento</MudTableSortLabel></MudTh>
+        </MudTHeadRow>
+        <MudTHeadRow>
+            <MudTh />
+            <MudTh></MudTh>
+            <MudTh />
+        </MudTHeadRow>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="Número">@context.RequisitionNumber</MudTd>
+        <MudTd DataLabel="Fecha de emisión">@context.IssuedDate</MudTd>
+        <MudTd DataLabel="Fecha de requerimiento">@context.RequiredDate</MudTd>
+    </RowTemplate>
+    <NoRecordsContent>
+        <MudText>Sin requisiciones encontradas</MudText>
+    </NoRecordsContent>
+    <LoadingContent>
+        <MudText>Cargando requisiciones...</MudText>
+    </LoadingContent>
+    <PagerContent>
+        <MudTablePager />
+    </PagerContent>
+</MudTable>
+
+<MudHidden Invert="true" IsHidden="!VisibleRequisitionInformation">
+    <MudPaper Class="my-3" Elevation="0">
+        <MudText Typo="Typo.h6" Align="Align.Center" Class="mt-3">
+            PRESENTANDO INFORMACIÓN PARA REQUISICIÓN: @SelectedRequisition.RequisitionNumber
+        </MudText>
+
+        <MudTabs @ref="RequisitionsInformationTabs" Elevation="2" Rounded="true"
+                 ApplyEffectsToContainer="true" Color="Color.Primary">
+            <Header>
+                <MudTooltip Text="Cerrar Producto">
+                    <MudIconButton Icon="@Icons.Material.Filled.Close" Color="Color.Warning"
+                                   OnClick="(_) =>
+                                            {
+                                                SelectedRequisition = new();
+                                                VisibleRequisitionInformation = false;
+                                            }" />
+                </MudTooltip>
+                @if (CanEdit)
+                {
+                    <MudTooltip Text="Editar Proyecto">
+                        <MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Secondary"
+                                       OnClick="async () => await EditRequisition(SelectedRequisition)" />
+                    </MudTooltip>
+                }
+                @if (CanDelete)
+                {
+                    <MudTooltip Text="Eliminar proyecto">
+                        <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error"
+                                       OnClick="async () => await DeleteRequisition(SelectedRequisition)" />
+                    </MudTooltip>
+                }
+            </Header>
+            <TabPanelHeader>
+                @if (context.Text.StartsWith("Artículo: "))
+                {
+                    <MudTooltip Text="Cerrar producto">
+                        <MudIconButton Class="ml-2 pa-1" Icon="@Icons.Material.Filled.Close"
+                                       Color="Color.Error" OnClick="(_) => RemoveTab(tabPanel: context)" />
+                    </MudTooltip>
+                }
+            </TabPanelHeader>
+            <ChildContent>
+                <MudTabPanel Text="Información general" ID="@Guid.NewGuid()" Tag="@Guid.NewGuid()">
+                    <MudGrid Class="m-3" Style="height:500px; overflow-y:scroll; width: inherit">
+                        <MudItem xs="12">
+                            <MudText Typo="Typo.subtitle1">Número de requisición</MudText>
+                            <MudTextField Value="SelectedRequisition.RequisitionNumber" ReadOnly />
+                        </MudItem>
+                        <MudItem xs="6">
+                            <MudText Typo="Typo.subtitle1">Responsable de emisión</MudText>
+                            <MudTextField Value="@(null != SelectedRequisition.User ? SelectedRequisition.User.UserName : "N/A")"
+                                          ReadOnly />
+                        </MudItem>
+                        <MudItem xs="6">
+                            <MudText Typo="Typo.subtitle1">Cantidad de artículos requeridos</MudText>
+                            <MudTextField Value="@(null != SelectedRequisition.RequisitionArticles ? SelectedRequisition.RequisitionArticles.Count : 0)"
+                                          ReadOnly />
+                        </MudItem>
+                        <MudItem xs="6">
+                            <MudText Typo="Typo.subtitle1">Fecha de emisión</MudText>
+                            <MudTextField Value="@SelectedRequisition.IssuedDate" Format="dddd, MMM dd yyyy" ReadOnly />
+                        </MudItem>
+                        <MudItem xs="6">
+                            <MudText Typo="Typo.subtitle1">Fecha de requerimiento</MudText>
+                            <MudTextField Value="@SelectedRequisition.RequiredDate" Format="dddd, MMM dd yyyy" ReadOnly />
+                        </MudItem>
+                    </MudGrid>
+                </MudTabPanel>
+                <MudTabPanel Text="Productos">
+                    <MudTable @ref="ArticlesTable" T="RequisitionArticles" Dense="true" Hover="true" FixedHeader="true" Height="400px"
+                              CustomHeader="true" Striped="true" OnRowClick="OnSelectedProduct"
+                              Items="SelectedRequisition.RequisitionArticles">
+                        <ToolBarContent>
+                            <MudText Typo="Typo.h6">Productos del proyecto</MudText>
+                            <MudSpacer />
+                            <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="mx-1"
+                                       OnClick="AddProduct" Disabled="!CanEdit">
+                                Añadir
+                            </MudButton>
+                        </ToolBarContent>
+                        <HeaderContent>
+                            <MudTHeadRow>
+                                <MudTh><MudTableSortLabel SortLabel="ArticleId" T="RequisitionArticles">Artículo</MudTableSortLabel></MudTh>
+                                <MudTh><MudTableSortLabel SortLabel="Quantity" T="RequisitionArticles">Cantidad</MudTableSortLabel></MudTh>
+                                <MudTh><MudTableSortLabel SortLabel="ProjectId" T="RequisitionArticles">Proyecto</MudTableSortLabel></MudTh>
+                            </MudTHeadRow>
+                        </HeaderContent>
+                        <RowTemplate>
+                            <MudTd DataLabel="Artículo">@context.Article.Name</MudTd>
+                            <MudTd DataLabel="Cantidad">@context.Quantity</MudTd>
+                            <MudTd DataLabel="Proyecto">@context.ProjectId</MudTd>
+                        </RowTemplate>
+                        <NoRecordsContent>
+                            <MudText>Sin artículos encontrados para la requisición</MudText>
+                        </NoRecordsContent>
+                        <LoadingContent>
+                            <MudText>Cargando artículos...</MudText>
+                        </LoadingContent>
+                        <PagerContent>
+                            <MudTablePager />
+                        </PagerContent>
+                    </MudTable>
+                </MudTabPanel>
+                @foreach (var product in SelectedArticles)
+                {
+                    <MudTabPanel Text="@($"Artículo: {product.Article.Code}")" Tag="product.ArticleId"
+                                 ID="product.ArticleId">
+                        <MudCard Class="m-3" Elevation="0">
+                            <MudCardHeader Style="height: 100px;">
+                                <CardHeaderContent>
+                                    <MudText Typo="Typo.subtitle1">
+                                        <b>Nombre de artículo:</b> @product.Article.Name
+                                    </MudText>
+                                </CardHeaderContent>
+                            </MudCardHeader>
+                            <MudCardContent Style="height:300px; overflow-y:scroll;">
+                                <MudGrid Class="m-3" Style="width: inherit">
+                                    <MudItem xs="12">
+                                        <MudText Typo="Typo.subtitle1">Descripción</MudText>
+                                        <MudTextField Value="@product.Article.Description" Lines="2" ReadOnly />
+                                    </MudItem>
+                                    <MudItem xs="6">
+                                        <MudText Typo="Typo.subtitle1">Marca</MudText>
+                                        <MudTextField Value="@product.Article.TradeMark" ReadOnly />
+                                    </MudItem>
+                                    <MudItem xs="6">
+                                        <MudText Typo="Typo.subtitle1">Modelo</MudText>
+                                        <MudTextField Value="@product.Article.Model" ReadOnly />
+                                    </MudItem>
+                                    <MudItem xs="6">
+                                        <MudText Typo="Typo.subtitle1">Cantidad requerida</MudText>
+                                        <MudTextField Value="@product.Quantity" ReadOnly />
+                                    </MudItem>
+                                    <MudItem xs="6">
+                                        <MudText Typo="Typo.subtitle1">Proyecto de destino</MudText>
+                                        <MudTextField Value="@product.ProjectId" ReadOnly />
+                                    </MudItem>
+                                </MudGrid>
+                            </MudCardContent>
+                            <MudCardActions Style="height: 100px">
+                                <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="mx-1"
+                                           OnClick="async (_) => await EditProduct(product)"
+                                           Disabled="!CanEdit">
+                                    Editar
+                                </MudButton>
+                                <MudButton Variant="Variant.Filled" Color="Color.Error" Class="mx-1"
+                                           OnClick="async (_) => await DeleteProduct(product)"
+                                           Disabled="!CanEdit">
+                                    Eliminar
+                                </MudButton>
+                            </MudCardActions>
+                        </MudCard>
+                    </MudTabPanel>
+                }
+            </ChildContent>
+        </MudTabs>
+    </MudPaper>
+</MudHidden>
