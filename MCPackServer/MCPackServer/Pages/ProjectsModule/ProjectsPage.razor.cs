@@ -113,7 +113,10 @@ namespace MCPackServer.Pages.ProjectsModule
                     Snackbar.Add("Proyecto añadido con éxito.", Severity.Success);
                 }
                 else
+                {
                     Snackbar.Add("Error al añadir proyecto.", Severity.Error);
+                    response.Errors.ForEach(e => Console.WriteLine(e));
+                }
                 await ProjectsTable.ReloadServerData();
             }
         }
@@ -136,7 +139,10 @@ namespace MCPackServer.Pages.ProjectsModule
                     Snackbar.Add("Proyecto editado con éxito.", Severity.Success);
                 }
                 else
+                {
                     Snackbar.Add("Error al editar proyecto.", Severity.Error);
+                    response.Errors.ForEach(e => Console.WriteLine(e));
+                }
                 await ProjectsTable.ReloadServerData();
             }
         }
@@ -159,7 +165,10 @@ namespace MCPackServer.Pages.ProjectsModule
                     Snackbar.Add("Proyecto eliminado con éxito.", Severity.Info);
                 }
                 else
+                    {
                     Snackbar.Add("Error al eliminar proyecto.", Severity.Error);
+                    response.Errors.ForEach(e => Console.WriteLine(e));
+                }
                 await ProjectsTable.ReloadServerData();
             }
         }
@@ -223,7 +232,10 @@ namespace MCPackServer.Pages.ProjectsModule
                     Snackbar.Add("Producto añadido con éxito.", Severity.Success);
                 }
                 else
+                {
                     Snackbar.Add("Error al añadir producto.", Severity.Error);
+                    response.Errors.ForEach(e => Console.WriteLine(e));
+                }
                 SelectedProject.ProjectProducts = await ProductsServerReload(SelectedProject.Id);
             }
         }
@@ -246,7 +258,10 @@ namespace MCPackServer.Pages.ProjectsModule
                     Snackbar.Add("Producto editado con éxito.", Severity.Success);
                 }
                 else
+                {
                     Snackbar.Add("Error al editar producto.", Severity.Error);
+                    response.Errors.ForEach(e => Console.WriteLine(e));
+                }
             }
         }
         private async Task DeleteProduct(ProjectProducts product)
@@ -268,7 +283,10 @@ namespace MCPackServer.Pages.ProjectsModule
                     Snackbar.Add("Producto eliminado con éxito", Severity.Info);
                 }
                 else
+                {
                     Snackbar.Add("Error al eliminar el producto", Severity.Error);
+                    response.Errors.ForEach(e => Console.WriteLine(e));
+                }
             }
         }
         #endregion
