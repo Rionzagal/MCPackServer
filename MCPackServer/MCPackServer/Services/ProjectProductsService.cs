@@ -13,7 +13,7 @@ namespace MCPackServer.Services
         {
         }
 
-        public override async Task<IEnumerable<T>> GetForGridAsync<T>(DataManagerRequest request, string sortField = "Id", string order = "")
+        public override async Task<IEnumerable<T>> GetForGridAsync<T>(DataManagerRequest request, string sortField = "Id", string order = "", bool getAll = false)
         {
             using IDbConnection conn = Connection;
             request.Take = 0 != request.Take ? request.Take : 10;

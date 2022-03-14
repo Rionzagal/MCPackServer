@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 namespace MCPackServer.Entities
 {
     [Keyless]
-    public partial class ContactsWithCompanies
+    public partial class AssociatedContactsView
     {
         public int Id { get; set; }
         [Required]

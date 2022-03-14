@@ -44,7 +44,7 @@ namespace MCPackServer.Services
             return filters;
         }
 
-        public virtual async Task<IEnumerable<T>> GetForGridAsync<T>(DataManagerRequest request, string sortField = "Id", string order = "") where T : class
+        public virtual async Task<IEnumerable<T>> GetForGridAsync<T>(DataManagerRequest request, string sortField = "Id", string order = "", bool getAll = false) where T : class
         {
             using IDbConnection conn = Connection;
             var instance = Activator.CreateInstance(typeof(T));
@@ -64,7 +64,8 @@ namespace MCPackServer.Services
                 }
                 query += where;
             }
-            query += $"ORDER BY {sortField} {order} LIMIT {request.Skip}, {request.Take} ";
+            query += $"ORDER BY {sortField} {order} ";
+            if (getAll) query += $"LIMIT {request.Skip}, {request.Take} ";
             return await conn.QueryAsync<T>(query, parameters);
         }
 

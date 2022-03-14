@@ -1,1 +1,65 @@
-﻿
+﻿<MudDialog>
+    <TitleContent>
+        <MudText Typo="Typo.h6">
+            <MudIcon Icon="@TitleIcon" /> @Title
+        </MudText>
+    </TitleContent>
+    <DialogContent>
+        @if (_processing)
+        {
+            <MudProgressCircular Class="m-sm-n1" Size="Size.Large" Indeterminate="true" />
+            <MudText Class="m-sm-2">Esperando respuesta de servidor...</MudText>
+        }
+        else
+        {
+            <MudContainer Style="max-height: 500px; overflow-y: scroll;">
+                <MudTable @ref="PermissionsTable" T="AspNetRoleClaims" MultiSelection Hover FixedHeader Height="350px"
+                          Items="PermissionList" @bind-SelectedItems="@SelectedPermissions" Class="my-3" GroupBy="PermissionGrouping">
+                    <ToolBarContent>
+                        <MudText Typo="Typo.h6">Permisos disponible para rol</MudText>
+                        <MudSpacer />
+                    </ToolBarContent>
+                    <HeaderContent>
+                        <MudTHeadRow>
+                            <MudTh />
+                            <MudTh>Tipo</MudTh>
+                            <MudTh>Valor</MudTh>
+                        </MudTHeadRow>
+                    </HeaderContent>
+                    <GroupHeaderTemplate>
+                        <MudTh Style="font-weight: 500;" colspan="2">@($"{context.GroupName}: {context.Key} ({context.Items.ToList().Count})")</MudTh>
+                    </GroupHeaderTemplate>
+                    <RowTemplate>
+                        <MudTd DataLabel="Tipo">@context.ClaimType</MudTd>
+                        <MudTd DataLabel="Valor">@context.ClaimValue</MudTd>
+                    </RowTemplate>
+                    <GroupFooterTemplate>
+                        <MudTh Style="padding-bottom: 50px; text-align: right;" colspan="2">Permisos totales : @context.Items.ToList().Count</MudTh>
+                    </GroupFooterTemplate>
+                    <FooterContent>
+                        <MudTFootRow Style="font-weight: 500;">
+                            <MudTd colspan="2">Permisos seleccionados: @SelectedPermissions.Count</MudTd>
+                        </MudTFootRow>
+                    </FooterContent>
+                    <NoRecordsContent>
+                        <MudText>Sin permisos disponibles para el rol</MudText>
+                    </NoRecordsContent>
+                    <LoadingContent>
+                        <MudText>Cargando...</MudText>
+                    </LoadingContent>
+                </MudTable>
+            </MudContainer>
+        }
+    </DialogContent>
+    <DialogActions>
+        <MudButton Variant="Variant.Text" Class="mx-1"
+                   OnClick="() => Dialog.Cancel()" Disabled="_processing">
+            Cerrar
+        </MudButton>
+        <MudButton Variant="Variant.Filled" Color="@ButtonColor" Class="mx-1"
+                   OnClick="async () => await Submit()"
+                   Disabled="_processing && !SelectedPermissions.Any()">
+            Confirmar
+        </MudButton>
+    </DialogActions>
+</MudDialog> 

@@ -10,7 +10,7 @@
     <DialogContent>
         @if (_processing)
         {
-            <MudProgressCircular Class="m-sm-n1" Size="Size.Large" Indeterminate="true" />
+            <MudProgressCircular Class="m-sm-n1" Size="Size.Large" Indeterminate />
             <MudText Class="m-sm-2">Esperando respuesta de servidor...</MudText>
         }
         else
@@ -27,10 +27,9 @@
             <MudForm Model="Model" @ref="Form">
                 <MudGrid>
                     <MudItem xs="4">
-                        <MudNumericField @bind-Value="Model.Id" HideSpinButtons="true" T="int" Min="0"
-                                         Label="ID" Required RequiredError="Este campo es obligatorio"
-                                         ReadOnly="@Disabled" Adornment="Adornment.Start"
-                                         AdornmentIcon="@Icons.Material.Filled.VpnKey" />
+                        <MudTextField @bind-Value="Model.ProjectNumber" Required T="string" Label="ID"
+                                        ReadOnly="@(Disabled || States.Edit == State)" 
+                                        RequiredError="Este campo es obligatorio" />
                     </MudItem>
                     <MudItem xs="4">
                         <MudSelect @bind-Value="Model.Type" Required T="string" Label="Tipo de proyecto">
@@ -70,38 +69,38 @@
                     <MudItem xs="12">
                         <MudTextField T="string" @bind-Text="@Model.DeliveryTime"
                                       Label="Tiempos de entrega" Lines="2"
-                                      Required="true" ReadOnly="@Disabled"
+                                      Required ReadOnly="@Disabled"
                                       RequiredError="Inserte tiempos de entrega" />
                     </MudItem>
                     <MudItem xs="6">
                         <MudTextField T="string" @bind-Text="@Model.AgreedCurrency"
                                       Label="Divisa pactada"
-                                      Required="true" ReadOnly="@Disabled"
+                                      Required ReadOnly="@Disabled"
                                       RequiredError="Inserte divisa pactada" />
                     </MudItem>
                     <MudItem xs="6">
                         <MudTextField T="string" @bind-Text="@Model.PaymentCurrency"
                                       Label="Divisa de pago"
-                                      Required="true" ReadOnly="@Disabled"
+                                      Required ReadOnly="@Disabled"
                                       RequiredError="Inserte divisa de pago" />
                     </MudItem>
                     <MudItem xs="12">
                         <MudTextField T="string" @bind-Text="@Model.PaymentConditions"
                                       Label="Condiciones de pago" Lines="5"
-                                      Required="true" ReadOnly="@Disabled"
+                                      Required ReadOnly="@Disabled"
                                       RequiredError="Inserte condiciones de pago" />
                     </MudItem>
                     <MudItem xs="4">
                         <MudTextField T="string" @bind-Text="@Model.SalesPerson"
                                       Label="Nombre de vendedor" ReadOnly="@Disabled"
-                                      Required="true" RequiredError="Inserte nombre del vendedor" />
+                                      Required RequiredError="Inserte nombre del vendedor" />
                     </MudItem>
                     <MudItem xs="4">
                         <MudNumericField T="float" @bind-Value="Model.Comision"
                                          Label="Comisión" Required="false"
                                          AdornmentText="%" Adornment="Adornment.Start"
                                          ReadOnly="@Disabled" Min="0.0f" Max="100.0f"
-                                         HideSpinButtons="true" />
+                                         HideSpinButtons />
                     </MudItem>
                     <MudItem xs="4">
                         <MudCheckBox @bind-Checked="Model.HasTaxes"

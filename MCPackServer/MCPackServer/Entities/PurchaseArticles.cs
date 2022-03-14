@@ -35,6 +35,8 @@ namespace MCPackServer.Entities
         [Required]
         [StringLength(20)]
         public string Code { get; set; }
+        [StringLength(100)]
+        public string Observations { get; set; }
 
         [ForeignKey(nameof(FamilyId))]
         [InverseProperty(nameof(ArticleFamilies.PurchaseArticles))]

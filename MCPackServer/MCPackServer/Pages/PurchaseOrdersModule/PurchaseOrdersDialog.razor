@@ -31,7 +31,7 @@
                 <MudGrid>
                     <MudItem xs="6">
                         <MudAutocomplete T="int" Label="Número de requisición" Value="Model.RequisitionId" Clearable
-                                         SearchFunc="(f) => RequisitionsServerReload(f)" Required ReadOnly="@Disabled"
+                                         SearchFunc="(f) => RequisitionsServerReload(f)" ReadOnly="@Disabled"
                                          ToStringFunc="new Func<int, string>(GetRequisitionNumber)"
                                          Variant="Variant.Outlined" RequiredError="Inserte número de requisición."
                                          ValueChanged="(id) => 
@@ -63,7 +63,7 @@
                         <MudSelect Label="Estatus" T="string" @bind-Value="Model.Status"
                                    Variant="Variant.Outlined" Required
                                    RequiredError="Inserte estatus"
-                                   ReadOnly="@(Disabled || (int)States.Add == State)">
+                                   ReadOnly="@(Disabled || States.Add == State)">
                             <MudSelectItem Value="@("Pendiente")" />
                             <MudSelectItem Value="@("Entregado")" />
                             <MudSelectItem Value="@("En almacén")" />
@@ -79,10 +79,10 @@
                         </MudSelect>
                     </MudItem>
                     <MudItem xs="6">
-                        <MudNumericField Label="Número de Proyecto" T="int" @bind-Value="Model.ProjectId"
-                                         HideSpinButtons Variant="Variant.Outlined" Required
-                                         RequiredError="Inserte un número de proyecto"
-                                         Validation="new Func<int, string>(ProjectValidation)" ReadOnly="@Disabled" />
+                        <MudAutocomplete T="int" Label="Número de Proyecto" @bind-Value="Model.ProjectId"
+                                         Variant="Variant.Outlined" Required RequiredError="Inserte un número de proyecto"
+                                         SearchFunc="f => ProjectsServerReload(f)" ReadOnly="@Disabled"
+                                         ToStringFunc="new Func<int, string>(GetProjectNumber)" Clearable/>
                     </MudItem>
                     <MudItem xs="6">
                         <MudDatePicker Label="Fecha de entrega" @bind-Date="Model.DeliveryDate" Required
@@ -98,9 +98,7 @@
                     </MudItem>
                     <MudItem xs="12">
                         <MudTextField Label="Número de factura" @bind-Value="Model.InvoiceNumber"
-                                      Variant="Variant.Outlined" Required
-                                      RequiredError="Inserte número de factura."
-                                      ReadOnly="@Disabled" />
+                                      Variant="Variant.Outlined" ReadOnly="@Disabled" />
                     </MudItem>
                     <MudItem xs="12">
                         <MudTextField Label="Observaciones" @bind-Value="Model.Observations"

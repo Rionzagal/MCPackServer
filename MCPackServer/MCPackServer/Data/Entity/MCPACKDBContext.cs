@@ -30,12 +30,13 @@ namespace MCPackServer.Data.Entity
         public virtual DbSet<AspNetUserRoles> AspNetUserRoles { get; set; }
         public virtual DbSet<AspNetUserTokens> AspNetUserTokens { get; set; }
         public virtual DbSet<AspNetUsers> AspNetUsers { get; set; }
+        public virtual DbSet<AssociatedContactsView> AssociatedContactsView { get; set; }
         public virtual DbSet<ClientContacts> ClientContacts { get; set; }
         public virtual DbSet<Clients> Clients { get; set; }
         public virtual DbSet<Contacts> Contacts { get; set; }
-        public virtual DbSet<ContactsWithCompanies> ContactsWithCompanies { get; set; }
         public virtual DbSet<DeviceCodes> DeviceCodes { get; set; }
         public virtual DbSet<Keys> Keys { get; set; }
+        public virtual DbSet<Logs> Logs { get; set; }
         public virtual DbSet<MCProducts> MCProducts { get; set; }
         public virtual DbSet<PersistedGrants> PersistedGrants { get; set; }
         public virtual DbSet<ProjectProducts> ProjectProducts { get; set; }
@@ -49,6 +50,7 @@ namespace MCPackServer.Data.Entity
         public virtual DbSet<Requisitions> Requisitions { get; set; }
         public virtual DbSet<SystemRolePermissions> SystemRolePermissions { get; set; }
         public virtual DbSet<UserInformation> UserInformation { get; set; }
+        public virtual DbSet<UserInformationView> UserInformationView { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -120,6 +122,23 @@ namespace MCPackServer.Data.Entity
                     .HasFilter("([NormalizedUserName] IS NOT NULL)");
             });
 
+            modelBuilder.Entity<AssociatedContactsView>(entity =>
+            {
+                entity.ToView("AssociatedContactsView");
+
+                entity.Property(e => e.CompanyId).IsUnicode(false);
+
+                entity.Property(e => e.EmailAddress).IsUnicode(false);
+
+                entity.Property(e => e.FullName).IsUnicode(false);
+
+                entity.Property(e => e.MobilePhone).IsUnicode(false);
+
+                entity.Property(e => e.Position).IsUnicode(false);
+
+                entity.Property(e => e.status).IsUnicode(false);
+            });
+
             modelBuilder.Entity<ClientContacts>(entity =>
             {
                 entity.HasKey(e => new { e.ClientId, e.ContactId });
@@ -167,21 +186,19 @@ namespace MCPackServer.Data.Entity
                 entity.Property(e => e.Position).IsUnicode(false);
             });
 
-            modelBuilder.Entity<ContactsWithCompanies>(entity =>
+            modelBuilder.Entity<Logs>(entity =>
             {
-                entity.ToView("ContactsWithCompanies");
+                entity.Property(e => e.Action).IsUnicode(false);
 
-                entity.Property(e => e.CompanyId).IsUnicode(false);
+                entity.Property(e => e.Message).IsUnicode(false);
 
-                entity.Property(e => e.EmailAddress).IsUnicode(false);
+                entity.Property(e => e.TableName).IsUnicode(false);
 
-                entity.Property(e => e.FullName).IsUnicode(false);
-
-                entity.Property(e => e.MobilePhone).IsUnicode(false);
-
-                entity.Property(e => e.Position).IsUnicode(false);
-
-                entity.Property(e => e.status).IsUnicode(false);
+                entity.HasOne(d => d.User)
+                    .WithMany(p => p.Logs)
+                    .HasForeignKey(d => d.UserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Logs_AspNetUsers");
             });
 
             modelBuilder.Entity<MCProducts>(entity =>
@@ -293,6 +310,8 @@ namespace MCPackServer.Data.Entity
                 entity.Property(e => e.Model).IsUnicode(false);
 
                 entity.Property(e => e.Name).IsUnicode(false);
+
+                entity.Property(e => e.Observations).IsUnicode(false);
 
                 entity.Property(e => e.TradeMark).IsUnicode(false);
 
@@ -408,6 +427,17 @@ namespace MCPackServer.Data.Entity
                     .HasForeignKey<UserInformation>(d => d.AspNetUserId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_UserInformation_AspNetUsers");
+            });
+
+            modelBuilder.Entity<UserInformationView>(entity =>
+            {
+                entity.ToView("UserInformationView");
+
+                entity.Property(e => e.FullName).IsUnicode(false);
+
+                entity.Property(e => e.Gender).IsUnicode(false);
+
+                entity.Property(e => e.ShortName).IsUnicode(false);
             });
 
             OnModelCreatingPartial(modelBuilder);

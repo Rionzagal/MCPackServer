@@ -90,6 +90,17 @@ namespace MCPackServer.Pages.RequisitionsModule
             return result;
         }
 
+        private string GetGroupName(int? Id)
+        {
+            string groupName = string.Empty;
+            if (Id.HasValue && Id.Value > 0)
+            {
+                var match = Groups.SingleOrDefault(g => g.Id == Id);
+                if (null != match) groupName = match.Name;
+            }
+            return groupName;
+        }
+
         private async Task<IEnumerable<int?>> SearchFamilyFilters(string filter, int? groupId)
         {
             List<int?> result = new();
@@ -103,6 +114,17 @@ namespace MCPackServer.Pages.RequisitionsModule
                 filterFamilies = Families.Where(x => x.Name.Contains(filter) && groupId == x.GroupId).ToList();
             foreach (var item in filterFamilies) result.Add(item.Id);
             return result;
+        }
+
+        private string GetFamilyName(int? Id)
+        {
+            string familyName = string.Empty;
+            if (Id.HasValue && Id != 0)
+            {
+                var match = Families.SingleOrDefault(f => f.Id == Id);
+                if (match != null) familyName = match.Name;
+            }
+            return familyName;
         }
 
         private async Task<TableData<RequisitionArticles>> ArticlesServerReload(TableState state)

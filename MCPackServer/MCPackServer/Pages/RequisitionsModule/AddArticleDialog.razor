@@ -11,7 +11,7 @@
     <DialogContent>
         @if (_processing)
         {
-            <MudProgressCircular Class="m-sm-n1" Size="Size.Large" Indeterminate="true" />
+            <MudProgressCircular Class="m-sm-n1" Size="Size.Large" Indeterminate />
             <MudText Class="m-sm-2">Esperando respuesta de servidor...</MudText>
         }
         else
@@ -26,10 +26,10 @@
                         <MudSpacer />
                         <MudAutocomplete T="int?" @bind-Value="GroupFilter" Clearable Label="Filtrar por grupo"
                                          SearchFunc="(f) => SearchGroupFilters(f)" Class="mx-3" Variant="Variant.Outlined"
-                                         ToStringFunc="(id) => Groups.Single(g => id == g.Id).Name"  />
+                                         ToStringFunc="new Func<int?, string>(GetGroupName)"  />
                         <MudAutocomplete T="int?" @bind-Value="FamilyFilter" Clearable Label="Filtrar por familia"
                                          SearchFunc="(f) => SearchFamilyFilters(f, GroupFilter)" Class="mx-3" Variant="Variant.Outlined"
-                                         ToStringFunc="(id) => Families.Single(f => id == f.Id).Name"  />
+                                         ToStringFunc="new Func<int?, string>(GetFamilyName)"  />
                         <MudButton Variant="Variant.Outlined" OnClick="() => ArticlesTable.ReloadServerData()" Class="ml-3">
                             Buscar <MudIcon Icon="@Icons.Material.Filled.Search" />
                         </MudButton>

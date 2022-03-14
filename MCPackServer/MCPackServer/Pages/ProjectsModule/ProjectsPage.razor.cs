@@ -1,10 +1,6 @@
 ﻿using MCPackServer.Entities;
 using MCPackServer.Models;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Components;
 using MudBlazor;
-using Newtonsoft.Json.Linq;
-using System.Text.Json;
 
 namespace MCPackServer.Pages.ProjectsModule
 {

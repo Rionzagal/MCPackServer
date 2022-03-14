@@ -1,0 +1,122 @@
+﻿@page "/Users/Edit/{Id}"
+
+@using MCPackServer.Models
+@using Microsoft.AspNetCore.Identity
+
+@inject UserManager<IdentityUser> _userManager
+@inject IUsersService _usersService
+
+@attribute [Authorize(Roles = "Admin, Developer")]
+
+<MudText Typo="Typo.h3" Align="Align.Center">Edición de usuario</MudText>
+
+<MudPaper Class="my-3">
+    <MudButton Class="mx-1" Color="Color.Primary" OnClick="ReturnToGrid">Regresar a la tabla</MudButton>
+
+    <MudTabs Elevation="2" Rounded ApplyEffectsToContainer Color="Color.Primary">
+        <ChildContent>
+            <MudTabPanel Text="Información de usuario">
+                    <MudForm @ref="AspNetUsersForm">
+                        <MudGrid Class="m-3" Style="height:inherit; overflow-y:scroll; width: inherit">
+                            <MudItem xs="12">
+                                <MudText Typo="Typo.subtitle2" Align="Align.Left">Id de usuario</MudText>
+                                <MudTextField @bind-Value="@EditUserModel.Id" ReadOnly />
+                            </MudItem>
+                            <MudItem xs="12">
+                                <MudText Typo="Typo.subtitle2" Align="Align.Left">Correo electrónico</MudText>
+                                <MudTextField @bind-Value="@EditUserModel.Email" Required RequiredError="Este campo es obligatorio" 
+                                Validation="new Func<string, IEnumerable<string>>(ValidateEmail)"/>
+                            </MudItem>
+                            <MudItem xs="12">
+                                <MudText Typo="Typo.subtitle2" Align="Align.Left">Nombre de usuario</MudText>
+                                <MudTextField @bind-Value="@EditUserModel.UserName" Required RequiredError="Este campo es obligatorio" />
+                            </MudItem>
+                            <MudItem xs="12">
+                                <MudText Typo="Typo.subtitle1" Align="Align.Left">Número de teléfono</MudText>
+                                <MudTextField @bind-Value="@EditUserModel.PhoneNumber" 
+                                Validation="new Func<string, IEnumerable<string>>(ValidatePhone)" />
+                            </MudItem>
+                            <MudItem xs="12">
+                                <MudText Typo="Typo.subtitle1" Align="Align.Left">Activar/Desactivar usuario</MudText>
+                                <MudCheckBox @bind-Checked="EditUserModel.EmailConfirmed" />
+                            </MudItem>
+                            <MudItem xs="12">
+                                <MudButton Class="m-3" Color="Color.Info" OnClick="ResetIdentityUser">
+                                    Reestablecer
+                                </MudButton>
+                                <MudButton Class="m-3" Color="Color.Success" OnClick="SubmitIdentityUser">
+                                    Confirmar
+                                </MudButton>
+                            </MudItem>
+                        </MudGrid>
+                    </MudForm>
+                </MudTabPanel>
+                <MudTabPanel Text="Contraseña">
+                    <MudForm @ref="PasswordResetForm">
+                        <MudGrid Class="m-3" Style="height:inherit; overflow-y:scroll; width: inherit">
+                            <MudItem xs="12">
+                                <MudText Typo="Typo.subtitle2" Align="Align.Left">Nueva contraseña</MudText>
+                                <MudTextField @bind-Value="NewPasswordText" Required RequiredError="Este campo es obligatorio"
+                                Validation="new Func<string, IEnumerable<string>>(PasswordStrength)" />
+                            </MudItem>
+                            <MudItem xs="12">
+                                <MudText Typo="Typo.subtitle2" Align="Align.Left">Confirmación de contraseña</MudText>
+                                <MudTextField @bind-Value="NewPasswordConfirm" Required RequiredError="Este campo es obligatorio"
+                                Validation="new Func<string, string>(PasswordMatch)"/>
+                            </MudItem>
+                            <MudItem xs="12">
+                                <MudButton Class="m-3" Color="Color.Info" OnClick="ResetPasswordFields">
+                                    Reestablecer
+                                </MudButton>
+                                <MudButton Class="m-3" Color="Color.Success" OnClick="SubmitPassword">
+                                    Confirmar
+                                </MudButton>
+                            </MudItem>
+                        </MudGrid>
+                    </MudForm>
+                </MudTabPanel>
+                <MudTabPanel Text="Información personal">
+                    <MudForm @ref="UserInfoForm">
+                        <MudGrid Class="m-3" Style="height:inherit; overflow-y:scroll; width: inherit">
+                            <MudItem xs="12">
+                                <MudText Typo="Typo.h3" Align="Align.Left"></MudText>
+                                <MudTextField @bind-Value="EditUserInfoModel.FirstName" Required RequiredError="Este campo es obligatorio" />
+                            </MudItem>
+                            <MudItem xs="12">
+                                <MudText Typo="Typo.h3" Align="Align.Left"></MudText>
+                                <MudTextField @bind-Value="EditUserInfoModel.MiddleName" />
+                            </MudItem>
+                            <MudItem xs="12">
+                                <MudText Typo="Typo.h3" Align="Align.Left"></MudText>
+                                <MudTextField @bind-Value="EditUserInfoModel.FatherSurname" Required RequiredError="Este campo es obligatorio" />
+                            </MudItem>
+                            <MudItem xs="12">
+                                <MudText Typo="Typo.h3" Align="Align.Left"></MudText>
+                                <MudTextField @bind-Value="EditUserInfoModel.MotherSurname" />
+                            </MudItem>
+                            <MudItem xs="12">
+                                <MudText Typo="Typo.h3" Align="Align.Left"></MudText>
+                                <MudDatePicker @bind-Date="EditUserInfoModel.BirthDate" Required RequiredError="Este campo es obligatorio" />
+                            </MudItem>
+                            <MudItem xs="12">
+                                <MudText Typo="Typo.h3" Align="Align.Left"></MudText>
+                                <MudSelect T="string" @bind-Value="EditUserInfoModel.Gender" >
+                                    <MudSelectItem Value="@("Femenino")" />
+                                    <MudSelectItem Value="@("Masculino")" />
+                                    <MudSelectItem Value="@("Otro")" />
+                                </MudSelect>
+                            </MudItem>
+                            <MudItem xs="12">
+                                <MudButton Class="m-3" Color="Color.Info" OnClick="ResetUserInformation">
+                                    Reestablecer
+                                </MudButton>
+                                <MudButton Class="m-3" Color="Color.Success" OnClick="SubmitUserInfo">
+                                    Confirmar
+                                </MudButton>
+                            </MudItem>
+                        </MudGrid>
+                    </MudForm>
+                </MudTabPanel>
+        </ChildContent>
+    </MudTabs>
+</MudPaper>

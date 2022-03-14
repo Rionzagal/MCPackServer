@@ -35,6 +35,7 @@ namespace MCPackServer.Pages.ProjectsModule
 
         #region API elements
         private MudForm Form;
+        private List<Projects> ExistentProjects = new();
         private List<Clients> ClientsList = new();
         #endregion
 
@@ -63,12 +64,14 @@ namespace MCPackServer.Pages.ProjectsModule
             }
             else //should not get to this option
             {
-                Title = null;
-                TitleIcon = null;
-                Disabled = true;
-                ButtonColor = Color.Default;
                 Dialog.Cancel();
             }
+
+            await GetExistentProjects();
+            if (ExistentProjects.Any())
+                Model.ProjectNumber = (ExistentProjects.Max(p => int.Parse(p.ProjectNumber)) + 1).ToString("d4");
+            else
+                Model.ProjectNumber = "0001";
         }
 
         private async Task Submit()
@@ -93,9 +96,6 @@ namespace MCPackServer.Pages.ProjectsModule
             await Form.Validate();
             if (Form.IsValid && ProjectValid)
             {
-                var properties = typeof(Projects).GetProperties()
-                    .Where(x => !x.GetAccessors()[0].IsFinal && x.GetAccessors()[0].IsVirtual).ToList();
-                properties.ForEach(x => x.SetValue(Model, null));
                 if (States.Add == State) response = await _projectsService.AddAsync(Model);
                 else if (States.Edit == State) response = await _projectsService.UpdateAsync(Model);
                 else if (States.Edit == State) response = await _projectsService.RemoveAsync(Model);
@@ -109,6 +109,13 @@ namespace MCPackServer.Pages.ProjectsModule
                     Snackbar.Add("Operación no válida. Este cliente ya cuenta con un proyecto de refacciones.", Severity.Warning);
                 _processing = false;
             }
+        }
+
+        private async Task GetExistentProjects()
+        {
+            DataManagerRequest request = new();
+            var response = await _projectsService.GetForGridAsync<Projects>(request, "ProjectNumber", "DESC");
+            if (response != null) ExistentProjects = response.ToList();
         }
 
         private async Task<IEnumerable<int>> ClientsServerReload(string filter = "")

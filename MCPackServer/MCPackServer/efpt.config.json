@@ -74,6 +74,10 @@
          "ObjectType": 0
       },
       {
+         "Name": "[dbo].[Logs]",
+         "ObjectType": 0
+      },
+      {
          "Name": "[dbo].[MCProducts]",
          "ObjectType": 0
       },
@@ -126,7 +130,11 @@
          "ObjectType": 0
       },
       {
-         "Name": "[dbo].[ContactsWithCompanies]",
+         "Name": "[dbo].[AssociatedContactsView]",
+         "ObjectType": 3
+      },
+      {
+         "Name": "[dbo].[UserInformationView]",
          "ObjectType": 3
       }
    ],

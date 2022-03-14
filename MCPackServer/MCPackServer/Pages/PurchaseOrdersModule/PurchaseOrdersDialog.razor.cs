@@ -61,14 +61,9 @@ namespace MCPackServer.Pages.PurchaseOrdersModule
             {
                 Dialog.Cancel();
             }
-
-            DataManagerRequest ProjectsDm = new()
-            {
-                Take = 0,
-                RequiresCounts = false
-            };
-            var response = await _projectsService.GetForGridAsync<Projects>(new DataManagerRequest());
-            if (null != response) projects = response.ToList();
+            await ProjectsServerReload(string.Empty);
+            await ProvidersServerReload(string.Empty);
+            await RequisitionsServerReload(string.Empty);
         }
 
         private async Task Submit()
@@ -103,7 +98,7 @@ namespace MCPackServer.Pages.PurchaseOrdersModule
                     new WhereFilter { Field = "LegalName", Value = filter }
                 }
             };
-            var response = await _providersService.GetForGridAsync<Providers>(dm);
+            var response = await _providersService.GetForGridAsync<Providers>(dm, getAll: true);
             if (null != response)
             {
                 providers = response.ToList();
@@ -134,6 +129,36 @@ namespace MCPackServer.Pages.PurchaseOrdersModule
             return discount;
         }
 
+        private async Task<IEnumerable<int>> ProjectsServerReload(string filter)
+        {
+            List<int> result = new();
+            DataManagerRequest ProjectsDm = new()
+            {
+                Where = new List<WhereFilter>()
+                {
+                    new WhereFilter(){ Field = "ProjectNumber", Value = filter }
+                }
+            };
+            var response = await _projectsService.GetForGridAsync<Projects>(ProjectsDm, getAll: true);
+            if (null != response)
+            {
+                projects = response.ToList();
+                projects.ForEach(project => result.Add(project.Id));
+            }
+            return result;
+        }
+
+        private string GetProjectNumber(int Id)
+        {
+            string number = string.Empty;
+            if (Id > 0)
+            {
+                var match = projects.SingleOrDefault(p => p.Id == Id);
+                if (null != match) number = match.ProjectNumber;
+            }
+            return number;
+        }
+
         private async Task<IEnumerable<int>> RequisitionsServerReload(string filter)
         {
             List<int> result = new();
@@ -145,7 +170,7 @@ namespace MCPackServer.Pages.PurchaseOrdersModule
                     new WhereFilter { Field = "RequisitionNumber", Value = filter }
                 }
             };
-            var response = await _requisitionsService.GetForGridAsync<Requisitions>(dm);
+            var response = await _requisitionsService.GetForGridAsync<Requisitions>(dm, getAll: true);
             if (null != response)
             {
                 requisitions = response.ToList();
@@ -156,7 +181,7 @@ namespace MCPackServer.Pages.PurchaseOrdersModule
 
         private string GetRequisitionNumber(int Id)
         {
-            string number = string.Empty;
+            string number = "N/A";
             if (0 != Id)
             {
                 var match = requisitions.SingleOrDefault(requisition => requisition.Id == Id);

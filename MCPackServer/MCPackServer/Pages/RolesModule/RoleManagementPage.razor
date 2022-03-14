@@ -1,4 +1,176 @@
-﻿@page "/RolesManagement"
+﻿@page "/Roles"
 @using Microsoft.AspNetCore.Identity
-@inject RoleManager<IdentityRole> _roleManager
 
+@inject RoleManager<IdentityRole> _roleManager
+@inject IRolesService _rolesService
+
+<MudText Typo="Typo.h3" Align="Align.Center">Gestión de roles de usuario</MudText>
+
+<MudTable Dense Hover Striped CustomHeader FixedHeader Height="400px"
+          T="AspNetRoles" @ref="RolesTable" OnRowClick="OnSelectedRole"
+          ServerData="@(new Func<TableState, Task<TableData<AspNetRoles>>>(RolesServerReload))">
+    <ToolBarContent>
+        <MudText Typo="Typo.h6">Puestos registrados</MudText>
+        <MudSpacer />
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="mx-1"
+                   OnClick="AddRole">
+            Añadir
+        </MudButton>
+    </ToolBarContent>
+    <HeaderContent>
+        <MudTHeadRow>
+            <MudTh><MudTableSortLabel SortLabel="Id" T="AspNetRoles">ID</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortLabel="Name" T="AspNetRoles">Nombre</MudTableSortLabel></MudTh>
+        </MudTHeadRow>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="ID">@context.Id</MudTd>
+        <MudTd DataLabel="Nombre">@context.Name</MudTd>
+    </RowTemplate>
+    <NoRecordsContent>
+        <MudText>Sin puestos encontrados</MudText>
+    </NoRecordsContent>
+    <LoadingContent>
+        <MudText>Cargando puestos...</MudText>
+    </LoadingContent>
+    <PagerContent>
+        <MudTablePager />
+    </PagerContent>
+</MudTable>
+
+@if (VisibleRoleInformation)
+{
+    <MudPaper Class="m-3">
+        <MudText Typo="Typo.h6" Align="Align.Center">Mostrando información para rol de usuario: @SelectedRole.Name</MudText>
+        <MudTabs @ref="RolesInformationTabs" Elevation="2" Rounded ApplyEffectsToContainer Color="Color.Primary">
+            <Header>
+                <MudTooltip Text="Cerrar">
+                    <MudIconButton Icon="@Icons.Material.Filled.Close"
+                                   OnClick="() => { SelectedRole = new(); VisibleRoleInformation = false; }" />
+                </MudTooltip>
+                <MudTooltip Text="Eliminar">
+                    <MudIconButton Icon="@Icons.Material.Filled.Delete" Disabled="!CanDelete"
+                                   OnClick="async () => await DeleteRole(SelectedRole)"/>
+                </MudTooltip>
+            </Header>
+            <ChildContent>
+                <MudTabPanel Text="Información general">
+                    <MudGrid Class="m-3" Style="height: 500px; overflow-y: scroll; width: inherit">
+                        <MudItem xs="12">
+                            <MudText Typo="Typo.subtitle1">ID</MudText>
+                            <MudTextField Value="@SelectedRole.Id" Variant="Variant.Outlined" ReadOnly />
+                        </MudItem>
+                        <MudItem xs="12">
+                            <MudText Typo="Typo.subtitle1">Nombre</MudText>
+                            <MudTextField Value="@SelectedRole.Name" Variant="Variant.Outlined" ReadOnly />
+                        </MudItem>
+                        <MudItem xs="12">
+                            <MudText Typo="Typo.subtitle1">Sello de concurrencia</MudText>
+                            <MudTextField Value="@SelectedRole.ConcurrencyStamp" Variant="Variant.Outlined" ReadOnly />
+                        </MudItem>
+                        <MudItem xs="6">
+                            <MudText Typo="Typo.subtitle1">Cantidad de permisos asociados</MudText>
+                            <MudTextField Value="@SelectedRole.AspNetRoleClaims.Count" Variant="Variant.Outlined" ReadOnly />
+                        </MudItem>
+                        <MudItem xs="6">
+                            <MudText Typo="Typo.subtitle1">Cantidad de usuarios asignados</MudText>
+                            <MudTextField Value="@SelectedRole.AspNetUserRoles.Count" Variant="Variant.Outlined" ReadOnly />
+                        </MudItem>
+                    </MudGrid>
+                </MudTabPanel>
+                <MudTabPanel Text="Permisos de rol">
+                    <MudTable @ref="ClaimsTable" T="AspNetRoleClaims" MultiSelection Hover FixedHeader Height="450px" Class="m-3"
+                              Striped Items="SelectedRole.AspNetRoleClaims" GroupBy="ClaimsGroupDefinition"
+                              CustomHeader CustomFooter FixedFooter FooterClass="table-foot-bordered">
+                        <ToolBarContent>
+                            <MudText Typo="Typo.h6">Permisos de rol</MudText>
+                            <MudSpacer />
+                            <MudButton Color="Color.Primary" Class="mx-3" Disabled="!CanEdit"
+                                       Variant="Variant.Filled" OnClick="AddPermissions">
+                                Añadir permisos
+                            </MudButton>
+                        </ToolBarContent>
+                        <HeaderContent>
+                            <MudTHeadRow>
+                                <MudTh />
+                                <MudTh>Tipo</MudTh>
+                                <MudTh>Valor</MudTh>
+                            </MudTHeadRow>
+                        </HeaderContent>
+                        <GroupHeaderTemplate>
+                            <MudTh Style="font-weight: 500;" colspan="2">@($"{context.GroupName}: {context.Key} ({context.Items.ToList().Count})")</MudTh>
+                        </GroupHeaderTemplate>
+                        <RowTemplate>
+                            <MudTd DataLabel="Tipo">@context.ClaimType</MudTd>
+                            <MudTd DataLabel="Valor">@context.ClaimValue</MudTd>
+                        </RowTemplate>
+                        <GroupFooterTemplate>
+                            <MudTh Style="padding-bottom: 50px; text-align: right;">Permisos totales : @context.Items.ToList().Count</MudTh>
+                        </GroupFooterTemplate>
+                        <FooterContent>
+                            <MudTFootRow Style="font-weight: 500;">
+                                <MudTd>Permisos totales: @SelectedRole.AspNetRoleClaims.Count</MudTd>
+                                <MudTd>
+                                    <MudButton Color="Color.Error" Class="mx-3" Disabled="!CanEdit"
+                                               Variant="Variant.Filled" OnClick="async () => await DeletePermissions(ClaimsTable.SelectedItems)">
+                                        Eliminar permisos seleccionados
+                                    </MudButton>
+                                </MudTd>
+                            </MudTFootRow>
+                        </FooterContent>
+                        <NoRecordsContent>
+                            <MudText>Sin permisos concedidos al rol</MudText>
+                        </NoRecordsContent>
+                        <LoadingContent>
+                            <MudText>Cargando...</MudText>
+                        </LoadingContent>
+                    </MudTable>
+                </MudTabPanel>
+                <MudTabPanel Text="Usuarios dentro de rol">
+                    <MudTable @ref="UsersTable" T="AspNetUserRoles" Dense Hover FixedHeader Height="400px" Class="m-3"
+                              CustomHeader Striped Items="SelectedRole.AspNetUserRoles"
+                              FixedFooter>
+                        <ToolBarContent>
+                            <MudText Typo="Typo.h6">Usuarios en el rol</MudText>
+                            <MudSpacer />
+                            <MudButton Color="Color.Primary" Class="mx-3" Disabled="!CanEdit"
+                                       OnClick="AddUser">
+                                Añadir usuario
+                            </MudButton>
+                        </ToolBarContent>
+                        <HeaderContent>
+                            <MudTHeadRow>
+                                <MudTh>ID</MudTh>
+                                <MudTh>Nombre de usuario</MudTh>
+                                <MudTh>E-mail</MudTh>
+                                <MudTh>Sello de seguridad</MudTh>
+                                <MudTh />
+                            </MudTHeadRow>
+                        </HeaderContent>
+                        <RowTemplate>
+                            <MudTd DataLabel="ID">@context.User.Id</MudTd>
+                            <MudTd DataLabel="Nombre de usuario">@context.User.UserName</MudTd>
+                            <MudTd DataLabel="E-mail">@context.User.Email</MudTd>
+                            <MudTd DataLabel="Sello de seguridad">@context.User.SecurityStamp</MudTd>
+                            <MudTd DataLabel="Eliminar">
+                                <MudButton Variant="Variant.Outlined" Class="mx-3" Size="Size.Small"
+                                           Disabled="!CanEdit" OnClick="async () => await RemoveUser(context.User)" >
+                                    <MudIcon Icon="@Icons.Material.Filled.Visibility" /> Visualizar
+                                </MudButton>
+                            </MudTd>
+                        </RowTemplate>
+                        <PagerContent>
+                            <MudTablePager />
+                        </PagerContent>
+                        <NoRecordsContent>
+                            <MudText>Sin usuarios asociados a rol</MudText>
+                        </NoRecordsContent>
+                        <LoadingContent>
+                            <MudText>Cargando...</MudText>
+                        </LoadingContent>
+                    </MudTable>
+                </MudTabPanel>
+            </ChildContent>
+        </MudTabs>
+    </MudPaper>
+}

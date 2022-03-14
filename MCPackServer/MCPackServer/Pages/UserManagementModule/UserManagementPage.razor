@@ -1,1 +1,174 @@
-﻿
+﻿@page "/Users"
+@using MCPackServer.Models
+@using Microsoft.AspNetCore.Identity
+
+@inject IUsersService _usersService
+@inject UserManager<IdentityUser> _userManager
+
+<MudText Typo="Typo.h3" Align="Align.Center">Manejo y administración de usuarios</MudText>
+
+<MudTable T="UserInformationView" @ref="UsrersTable" Dense Hover FixedHeader Height="400px"
+          CustomHeader Striped ServerData="UsersServerReload" OnRowClick="OnSelectedRow" >
+    <ToolBarContent>
+        <MudText Typo="Typo.h6">Usuarios registrados</MudText>
+        <MudSpacer />
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="mx-1"
+                       OnClick="GoToRegistration" >
+                Registrar usuario
+        </MudButton>
+        <MudButton Variant="Variant.Filled" Class="mx-1" OnClick="ClearFilters">
+            Borrar filtros de búsqueda
+        </MudButton>
+        <MudButton Variant="Variant.Outlined" Class="ml-1"
+                   OnClick="() => UsrersTable.ReloadServerData()">
+            <MudIcon Icon="@Icons.Material.Filled.Search" /> Buscar
+        </MudButton>
+    </ToolBarContent>
+    <HeaderContent>
+        <MudTHeadRow>
+            <MudTh><MudTableSortLabel SortLabel="UserId" T="UserInformationView">ID de usuario</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortLabel="ShortName" T="UserInformationView">Nombre</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortLabel="UserName" T="UserInformationView">Nombre de usuario</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortLabel="Email" T="UserInformationView">Correo electrónico</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortLabel="Gender" T="UserInformationView">Género</MudTableSortLabel></MudTh>
+            <MudTh>Usuario Activo</MudTh>
+        </MudTHeadRow>
+        <MudTHeadRow>
+            <MudTh>
+                <MudTextField T="string" @bind-Value="IdFilter" Clearable Placeholder="Id" />
+            </MudTh>
+            <MudTh>
+                <MudTextField T="string" @bind-Value="ShortNameFilter" Clearable Placeholder="Nombre" />
+            </MudTh>
+            <MudTh>
+                <MudTextField T="string" @bind-Value="UserNameFilter" Clearable Placeholder="Nombre de usuario" />
+            </MudTh>
+            <MudTh>
+                <MudTextField T="string" @bind-Value="EmailFilter" Clearable Placeholder="Correo electrónico" />
+            </MudTh>
+            <MudTh>
+                <MudSelect T="string" @bind-Value="GenderFilter" Clearable Placeholder="Género de usuario">
+                    <MudSelectItem Value="@("Femenino")" />
+                    <MudSelectItem Value="@("Masculino")" />
+                    <MudSelectItem Value="@("Otro")" />
+                </MudSelect>
+            </MudTh>
+            <MudTh>
+                <MudSelect T="string" @bind-Value="StatusFilter" Clearable Placeholder="Estatus de usuario" >
+                    <MudSelectItem Value="@("Activo")" />
+                    <MudSelectItem Value="@("Inactivo")" />
+                </MudSelect>
+            </MudTh>
+        </MudTHeadRow>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="ID de usuario">@context.Id</MudTd>
+        <MudTd DataLabel="Nombre">@context.ShortName</MudTd>
+        <MudTd DataLabel="Nombre de usuario">@context.UserName</MudTd>
+        <MudTd DataLabel="Correo electrónico">@context.Email</MudTd>
+        <MudTd DataLabel="Género">@context.Gender</MudTd>
+        <MudTd DataLabel="Usuario Activo">@context.Active</MudTd>
+    </RowTemplate>
+    <NoRecordsContent>
+        <MudText>Sin usuarios encontrados</MudText>
+    </NoRecordsContent>
+    <LoadingContent>
+        <MudText>Cargando usuarios...</MudText>
+    </LoadingContent>
+    <PagerContent>
+        <MudTablePager />
+    </PagerContent>
+</MudTable>
+
+@if (VisibleUserInformation)
+{
+    <MudPaper Class="my-3" Elevation="0" >
+        <MudText Typo="Typo.h5" Align="Align.Center">Mostrando información para @SelectedUser.UserName</MudText>
+
+        <MudTabs Elevation="2" Rounded ApplyEffectsToContainer Color="Color.Primary">
+            <Header>
+                <MudButtonGroup>
+                    <MudTooltip Text="Cerrar">
+                        <MudIconButton Icon="@Icons.Material.Filled.Close" OnClick="() => VisibleUserInformation = false" />
+                    </MudTooltip>
+                    <MudTooltip Text="Editar usuario">
+                        <MudIconButton Icon="@Icons.Material.Filled.Edit" OnClick="GoToUserEdit" />
+                    </MudTooltip>
+                    <MudTooltip Text="Eliminar usuario">
+                        <MudIconButton Icon="@Icons.Material.Filled.Delete" OnClick="DeleteUser" />
+                    </MudTooltip>
+                </MudButtonGroup>
+            </Header>
+            <ChildContent>
+                <MudTabPanel Text="Seguridad">
+                    <MudGrid Class="m-3" Style="height:500px; overflow-y:scroll; width: inherit">
+                        <MudItem xs="12">
+                            <MudText Typo="Typo.subtitle2" Align="Align.Left">Id de usuario</MudText>
+                            <MudTextField @bind-Value="@SelectedUser.Id" ReadOnly />
+                        </MudItem>
+                        <MudItem xs="6">
+                            <MudText Typo="Typo.subtitle2" Align="Align.Left">Correo electrónico:</MudText>
+                            <MudTextField @bind-Value="@SelectedUser.Email" ReadOnly />
+                        </MudItem>
+                        <MudItem xs="6">
+                            <MudText Typo="Typo.subtitle2" Align="Align.Left">Nombre de usuario:</MudText>
+                            <MudTextField @bind-Value="@SelectedUser.UserName" ReadOnly />
+                        </MudItem>
+                        <MudItem xs="12">
+                            <MudText Typo="Typo.subtitle2" Align="Align.Left">Código de seguridad:</MudText>
+                            <MudTextField @bind-Value="@SelectedUser.PasswordHash" ReadOnly />
+                        </MudItem>
+                        <MudItem xs="6">
+                            <MudText Typo="Typo.subtitle2" Align="Align.Left">Sello de seguridad:</MudText>
+                            <MudTextField @bind-Value="@SelectedUser.SecurityStamp" ReadOnly />
+                        </MudItem>
+                        <MudItem xs="6" >
+                            <MudText Typo="Typo.subtitle2" Align="Align.Left">Sello de concurrencia:</MudText>
+                            <MudTextField @bind-Value="@SelectedUser.ConcurrencyStamp" ReadOnly />
+                        </MudItem>
+                    </MudGrid>
+                </MudTabPanel>
+                <MudTabPanel Text="Información personal">
+                    <MudGrid Class="m-3" Style="height:500px; overflow-y:scroll; width: inherit">
+                        <MudItem xs="6" >
+                            <MudText Typo="Typo.subtitle2" Align="Align.Left">Primer nombre:</MudText>
+                            <MudTextField @bind-Value="@SelectedUserInfo.FirstName" ReadOnly />
+                        </MudItem>
+                        <MudItem xs="6">
+                            <MudText Typo="Typo.subtitle2" Align="Align.Left">Segundo nombre:</MudText>
+                            <MudTextField @bind-Value="@SelectedUserInfo.MiddleName" ReadOnly />
+                        </MudItem>
+                        <MudItem xs="6">
+                            <MudText Typo="Typo.subtitle2" Align="Align.Left">Apellido paterno:</MudText>
+                            <MudTextField @bind-Value="@SelectedUserInfo.FatherSurname" ReadOnly />
+                        </MudItem>
+                        <MudItem xs="6">
+                            <MudText Typo="Typo.subtitle2" Align="Align.Left">Apellido materno:</MudText>
+                            <MudTextField @bind-Value="@SelectedUserInfo.MotherSurname" ReadOnly />
+                        </MudItem>
+                        <MudItem xs="6">
+                            <MudText Typo="Typo.subtitle2" Align="Align.Left">Fecha de nacimiento:</MudText>
+                            <MudDatePicker @bind-Date="@SelectedUserInfo.BirthDate" ReadOnly />
+                        </MudItem>
+                        <MudItem xs="6">
+                            <MudText Typo="Typo.subtitle2" Align="Align.Left">Género:</MudText>
+                            <MudTextField @bind-Value="@SelectedUserInfo.Gender" ReadOnly />
+                        </MudItem>
+                    </MudGrid>
+                </MudTabPanel>
+            </ChildContent>
+        </MudTabs>
+    </MudPaper>
+}
+
+<MudMessageBox @ref="DeleteMessage" Title="Eliminar usuario" CancelText="Cancelar">
+    <MessageContent>
+        Está a punto de eliminar al usuario @SelectedUser.UserName. <br />
+        Esta acción no se puede revertir.
+    </MessageContent>
+    <YesButton>
+        <MudButton Variant="Variant.Filled" Color="Color.Error" StartIcon="@Icons.Material.Filled.DeleteForever">
+            Eliminar
+        </MudButton>
+    </YesButton>
+</MudMessageBox>

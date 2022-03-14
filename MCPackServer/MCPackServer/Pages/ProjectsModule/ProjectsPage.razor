@@ -6,8 +6,8 @@
 
 <MudText Typo="Typo.h3" Align="Align.Center">GESTIÓN DE PROYECTOS</MudText>
 
-<MudTable @ref="ProjectsTable" T="Projects" Dense="true" Hover="true" FixedHeader="true" Height="400px"
-          CustomHeader="true" Striped="true" OnRowClick="OnSelectedProject"
+<MudTable @ref="ProjectsTable" T="Projects" Dense Hover FixedHeader Height="400px"
+          CustomHeader Striped OnRowClick="OnSelectedProject"
           ServerData="new Func<TableState, Task<TableData<Projects>>>(ProjectsServerReload)">
     <ToolBarContent>
         <MudText Typo="Typo.h6">Proyectos registrados</MudText>
@@ -29,7 +29,7 @@
     </ToolBarContent>
     <HeaderContent>
         <MudTHeadRow>
-            <MudTh><MudTableSortLabel SortLabel="Id" T="Projects">ID</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortLabel="ProjectNumber" T="Projects">Número de proyecto</MudTableSortLabel></MudTh>
             <MudTh><MudTableSortLabel SortLabel="ClientId" T="Projects">Cliente</MudTableSortLabel></MudTh>
             <MudTh><MudTableSortLabel SortLabel="AdmissionDate" T="Projects">Fecha de admisión</MudTableSortLabel></MudTh>
             <MudTh><MudTableSortLabel SortLabel="CommitmentDate" T="Projects">Fecha de compromiso</MudTableSortLabel></MudTh>
@@ -42,7 +42,7 @@
                 <MudAutocomplete T="int?" Label="Buscar por cliente" @bind-Value="ClientIdFilter"
                                  SearchFunc="f => ClientsServerReload(f)" Clearable
                                  ToStringFunc="new Func<int?, string>(GetClientName)"
-                                 OnClearButtonClick="(_) => ClientIdFilter = null" />
+                                 OnClearButtonClick="() => ClientIdFilter = null" />
             </MudTh>
             <MudTh />
             <MudTh />
@@ -82,12 +82,12 @@
             PRESENTANDO INFORMACIÓN PARA PROYECTO: @SelectedProject.Id
         </MudText>
 
-        <MudTabs @ref="ProjectsInformationTabs" Elevation="2" Rounded="true"
-                 ApplyEffectsToContainer="true" Color="Color.Primary">
+        <MudTabs @ref="ProjectsInformationTabs" Elevation="2" Rounded
+                 ApplyEffectsToContainer Color="Color.Primary">
             <Header>
                 <MudTooltip Text="Cerrar Producto">
                     <MudIconButton Icon="@Icons.Material.Filled.Close" Color="Color.Warning"
-                                   OnClick="(_) => 
+                                   OnClick="() => 
                                             { 
                                                 SelectedProject = new();
                                                 VisibleProjectInformation = false;
@@ -113,7 +113,7 @@
                 {
                     <MudTooltip Text="Cerrar producto">
                         <MudIconButton Class="ml-2 pa-1" Icon="@Icons.Material.Filled.Close"
-                                       Color="Color.Error" OnClick="(_) => RemoveTab(tabPanel: context)" />
+                                       Color="Color.Error" OnClick="() => RemoveTab(tabPanel: context)" />
                     </MudTooltip>
                 }
             </TabPanelHeader>
@@ -196,8 +196,8 @@
                     </MudGrid>
                 </MudTabPanel>
                 <MudTabPanel Text="Productos">
-                    <MudTable @ref="ProductsTable" T="ProjectProducts" Dense="true" Hover="true" FixedHeader="true" Height="400px"
-                              CustomHeader="true" Striped="true" OnRowClick="OnSelectedProduct"
+                    <MudTable @ref="ProductsTable" T="ProjectProducts" Dense Hover FixedHeader Height="400px"
+                              CustomHeader Striped OnRowClick="OnSelectedProduct"
                               Items="SelectedProject.ProjectProducts">
                         <ToolBarContent>
                             <MudText Typo="Typo.h6">Productos del proyecto</MudText>
@@ -280,12 +280,12 @@
                             </MudCardContent>
                             <MudCardActions Style="height: 100px">
                                 <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="mx-1"
-                                           OnClick="async (_) => await EditProduct(product)"
+                                           OnClick="async () => await EditProduct(product)"
                                            Disabled="!CanEditProjects">
                                     Editar
                                 </MudButton>
                                 <MudButton Variant="Variant.Filled" Color="Color.Error" Class="mx-1"
-                                           OnClick="async (_) => await DeleteProduct(product)"
+                                           OnClick="async () => await DeleteProduct(product)"
                                            Disabled="!CanEditProjects">
                                     Eliminar
                                 </MudButton>

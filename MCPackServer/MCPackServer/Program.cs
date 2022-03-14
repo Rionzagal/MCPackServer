@@ -1,6 +1,7 @@
 using MCPackServer.Areas.Identity;
 using MCPackServer.Data;
 using MCPackServer.Data.Entity;
+using MCPackServer.Models;
 using MCPackServer.Services;
 using MCPackServer.Services.Interfaces;
 using MCPackServer.Utility.Security;
@@ -41,6 +42,8 @@ builder.Services.AddScoped<IPurchaseOrdersService, PurchaseOrdersService>();
 builder.Services.AddScoped<IQuotesService, QuotesService>();
 builder.Services.AddScoped<IRequisitionArticlesService, RequisitionArticlesService>();
 builder.Services.AddScoped<IRequisitionsService, RequisitionsService>();
+builder.Services.AddScoped<IUsersService, UsersService>();
+builder.Services.AddScoped<IRolesService, RolesService>();
 
 builder.Services.AddSingleton<IAuthorizationPolicyProvider, PermissionPolicyProvider>();
 builder.Services.AddSingleton<IAuthorizationHandler, PermissionAuthorizationHandler>();

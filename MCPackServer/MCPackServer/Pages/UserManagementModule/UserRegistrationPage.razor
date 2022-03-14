@@ -1,1 +1,99 @@
-﻿
+﻿@page "/Users/Register"
+@using MCPackServer.Models
+@using Microsoft.AspNetCore.Identity
+
+@inject UserManager<IdentityUser> _userManager
+@inject IUsersService _usersService
+
+<MudText Typo="Typo.h3" Align="Align.Center">Registrar nuevo usuario</MudText>
+
+<MudPaper Elevation="0" Class="m-3">
+    <MudCard>
+        <MudCardContent>
+            <MudForm @ref="@NewUserForm" @bind-IsValid="@FormSuccess" @bind-Errors="@FormErrors">
+                <MudGrid Class="m-3" Style="width: inherit" >
+                    <MudItem xs="12">
+                        <MudText Typo="Typo.subtitle1" Align="Align.Left">Correo electrónico</MudText>
+                        <MudTextField T="string" @bind-Value="@RegistrationModel.Email" Required RequiredError="Este campo es obligatorio."
+                            Validation="new Func<string, IEnumerable<string>>(ValidateEmail)" />
+                    </MudItem>
+                    <MudItem xs="12">
+                        <MudText Typo="Typo.subtitle1" Align="Align.Left">Nombre de usuario</MudText>
+                        <MudTextField T="string" @bind-Value="@RegistrationModel.UserName" Required RequiredError="Este campo es obligatorio." />
+                    </MudItem>
+                    <MudItem xs="12">
+                        <MudText Typo="Typo.subtitle1" Align="Align.Left">Introduzca una contraseña</MudText>
+                        <MudTextField T="string" @bind-Value="@RegistrationModel.Password" InputType="InputType.Password" Required 
+                            RequiredError="Este campo es obligatorio." Validation="@(new Func<string, IEnumerable<string>>(PasswordStrength))" />
+                    </MudItem>
+                    <MudItem xs="12">
+                        <MudText Typo="Typo.subtitle1" Align="Align.Left">Repita la contraseña</MudText>
+                        <MudTextField T="string" @bind-Value="@RegistrationModel.ConfirmPassword" InputType="InputType.Password" 
+                            Validation="@(new Func<string, string>(PasswordMatch))" />
+                    </MudItem>
+                    <MudItem xs="12">
+                        <MudText Typo="Typo.subtitle1" Align="Align.Left">Primer nombre</MudText>
+                        <MudTextField T="string" @bind-Value="@RegistrationModel.FirstName" Required RequiredError="Este campo es obligatorio." />
+                    </MudItem>
+                    <MudItem xs="12">
+                        <MudText Typo="Typo.subtitle1" Align="Align.Left">Segundo nombre</MudText>
+                        <MudTextField T="string" @bind-Value="@RegistrationModel.MiddleName" />
+                    </MudItem>
+                    <MudItem xs="12">
+                        <MudText Typo="Typo.subtitle1" Align="Align.Left">Apellido paterno</MudText>
+                        <MudTextField T="string" @bind-Value="@RegistrationModel.FatherSurname" Required RequiredError="Este campo es obligatorio." />
+                    </MudItem>
+                    <MudItem xs="12">
+                        <MudText Typo="Typo.subtitle1" Align="Align.Left">Apellido materno</MudText>
+                        <MudTextField T="string" @bind-Value="@RegistrationModel.MotherSurname" />
+                    </MudItem>
+                    <MudItem xs="12">
+                        <MudText Typo="Typo.subtitle1" Align="Align.Left">¿Es usuario activo?</MudText>
+                        <MudDatePicker @bind-Date="@RegistrationModel.BirthDate" Label="Fecha de nacimiento" Required
+                              RequiredError="Este campo es obligatorio."/>
+                    </MudItem>
+                    <MudItem xs="12">
+                        <MudText Typo="Typo.subtitle1" Align="Align.Left">Género</MudText>
+                        <MudSelect T="string" @bind-Value="@RegistrationModel.Gender" Required RequiredError="Este campo es obligatorio.">
+                            <MudSelectItem Value="@("Femenino")" />
+                            <MudSelectItem Value="@("Masculino")" />
+                            <MudSelectItem Value="@("Otro")" />
+                        </MudSelect>
+                    </MudItem>
+                    <MudItem xs="12">
+                        <MudText Typo="Typo.subtitle1" Align="Align.Left">¿Es usuario activo?</MudText>
+                        <MudCheckBox T="bool" @bind-Checked="@RegistrationModel.EmailConfirmed" Class="ml-n2" />
+                    </MudItem>
+                    <MudItem xs="12">
+                        <MudText Typo="Typo.subtitle1" Align="Align.Left">Añadir a rol de usuario (opcional)</MudText>
+                        <MudAutocomplete T="string" @bind-Value="UserRoleId" SearchFunc="f => RolesServerReload(f)"
+                            ToStringFunc="new Func<string, string>(GetRoleName)" />
+                    </MudItem>
+                </MudGrid>
+            </MudForm>
+        </MudCardContent>
+        <MudCardContent>
+            <MudCardActions>
+                <MudButtonGroup>
+                    <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="() => NewUserForm.Validate()">
+                        Validar registro
+                    </MudButton>
+                    <MudButton Variant="Variant.Filled" Color="Color.Secondary" OnClick="() => NewUserForm.Reset()">
+                        Borrar registro
+                    </MudButton>
+                    <MudButton Class="ml-auto" Variant="Variant.Filled" Color="Color.Success" Disabled="!FormSuccess" OnClick="Submit">
+                        Confirmar
+                    </MudButton>
+                </MudButtonGroup>
+            </MudCardActions>
+        </MudCardContent>
+    </MudCard>
+    <MudExpansionPanels>
+        <MudExpansionPanel Text="@($"Mostrar errores en la forma. ({FormErrors.Length})")">
+            @foreach (var error in FormErrors)
+            {
+                <MudText Color="Color.Error">@error</MudText>
+            }
+        </MudExpansionPanel>
+    </MudExpansionPanels>
+</MudPaper>
