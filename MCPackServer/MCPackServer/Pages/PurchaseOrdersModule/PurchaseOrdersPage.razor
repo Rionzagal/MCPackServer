@@ -38,7 +38,7 @@
         <MudTd DataLabel="Número de órden">@context.Id</MudTd>
         <MudTd DataLabel="Fecha de emisión">@(context.IssuedDate.HasValue ? context.IssuedDate.Value.ToShortDateString() : "N/A")</MudTd>
         <MudTd DataLabel="Proveedor">@context.Provider.LegalName</MudTd>
-        <MudTd DataLabel="Proyecto">@context.ProjectId</MudTd>
+        <MudTd DataLabel="Proyecto">@context.Project.ProjectNumber</MudTd>
         <MudTd DataLabel="Estatus">@context.Status</MudTd>
     </RowTemplate>
     <NoRecordsContent>
@@ -52,9 +52,10 @@
     </PagerContent>
 </MudTable>
 
-<MudHidden Invert IsHidden="!VisibleOrderInformation">
+@if (VisibleOrderInformation)
+{
     <MudPaper Elevation="0" Class="m-3">
-        <MudText Typo="Typo.h6" Align="Align.Center">MOSTRANDO INFORMACIÓN PARA ORDEN DE COMPRA: @SelectedOrder.Id</MudText>
+        <MudText Typo="Typo.h6" Align="Align.Center">Orden de compra: @SelectedOrder.Id</MudText>
         <MudTabs @ref="OrderInformationTabs" Elevation="2" Rounded ApplyEffectsToContainer Color="Color.Primary">
             <Header>
                 <MudTooltip Text="Cerrar órden">
@@ -118,7 +119,7 @@
                         </MudItem>
                         <MudItem xs="6">
                             <MudText Typo="Typo.subtitle1">Proyecto</MudText>
-                            <MudTextField Value="SelectedOrder.ProjectId" ReadOnly />
+                            <MudTextField Value="SelectedOrder.Project.ProjectNumber" ReadOnly />
                         </MudItem>
                         <MudItem xs="6">
                             <MudText Typo="Typo.subtitle1">Cliente</MudText>
@@ -126,11 +127,11 @@
                         </MudItem>
                         <MudItem xs="6">
                             <MudText Typo="Typo.subtitle1">Número de requisición</MudText>
-                            <MudTextField Value="SelectedOrder.Requisition.RequisitionNumber" ReadOnly />
+                            <MudTextField Value="@(null != SelectedOrder.Requisition ? SelectedOrder.Requisition.RequisitionNumber : "N/A")" ReadOnly />
                         </MudItem>
                         <MudItem xs="6">
                             <MudText Typo="Typo.subtitle1">Fecha de requisición</MudText>
-                            <MudTextField Value="SelectedOrder.Requisition.IssuedDate" Format="dddd, MMM dd yyyy" ReadOnly />
+                            <MudTextField Value="SelectedOrder.IssuedDate" Format="dddd, MMM dd yyyy" ReadOnly />
                         </MudItem>
                         <MudItem xs="3">
                             <MudText Typo="Typo.subtitle1">Descuento</MudText>
@@ -252,5 +253,4 @@
             </ChildContent>
         </MudTabs>
     </MudPaper>
-</MudHidden>
- 
+}

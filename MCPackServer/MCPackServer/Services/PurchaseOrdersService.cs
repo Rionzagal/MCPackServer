@@ -22,7 +22,7 @@ namespace MCPackServer.Services
             string query = $"SELECT PO.*, projects.*, providers.*, requisition.* FROM PurchaseOrders PO " +
                 $"INNER JOIN Projects projects ON PO.ProjectId = projects.Id " +
                 $"INNER JOIN Providers providers ON PO.ProviderId = providers.Id " +
-                $"INNER JOIN Requisitions requisition ON PO.RequisitionId = requisition.Id ";
+                $"LEFT JOIN Requisitions requisition ON PO.RequisitionId = requisition.Id ";
             if (whereFilters.Any())
             {
                 string where = string.Empty;
@@ -37,9 +37,9 @@ namespace MCPackServer.Services
             return await conn.QueryAsync<PurchaseOrders, Projects, Providers, Requisitions, PurchaseOrders>
                 (query, param: parameters, map: (order, project, provider, requisition) =>
                 {
-                    order.Project = project;
-                    order.Provider = provider;
-                    order.Requisition = requisition;
+                    order.Project = project ?? null;
+                    order.Provider = provider ?? null;
+                    order.Requisition = requisition ?? null;
                     return order;
                 }) as IEnumerable<T>;
         }
@@ -52,14 +52,14 @@ namespace MCPackServer.Services
             string query = $"SELECT PO.*, projects.*, providers.*, requisition.* FROM PurchaseOrders PO " +
                 $"INNER JOIN Projects projects ON PO.ProjectId = projects.Id " +
                 $"INNER JOIN Providers providers ON PO.ProviderId = providers.Id " +
-                $"INNER JOIN Requisitions requisition ON PO.RequisitionId = requisition.Id " +
+                $"LEFT JOIN Requisitions requisition ON PO.RequisitionId = requisition.Id " +
                 $"WHERE PO.{key} = @{key} ";
             var entities = await conn.QueryAsync<PurchaseOrders, Projects, Providers, Requisitions, PurchaseOrders>
                 (query, (order, project, provider, requisition) =>
                 {
-                    order.Provider = provider;
-                    order.Project = project;
-                    order.Requisition = requisition;
+                    order.Provider = provider ?? null;
+                    order.Project = project ?? null;
+                    order.Requisition = requisition ?? null;
                     return order;
                 });
             return entities.FirstOrDefault() as T;

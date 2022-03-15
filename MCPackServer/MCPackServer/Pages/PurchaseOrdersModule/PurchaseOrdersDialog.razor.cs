@@ -159,9 +159,9 @@ namespace MCPackServer.Pages.PurchaseOrdersModule
             return number;
         }
 
-        private async Task<IEnumerable<int>> RequisitionsServerReload(string filter)
+        private async Task<IEnumerable<int?>> RequisitionsServerReload(string filter)
         {
-            List<int> result = new();
+            List<int?> result = new();
             DataManagerRequest dm = new()
             {
                 Take = 0,
@@ -179,10 +179,10 @@ namespace MCPackServer.Pages.PurchaseOrdersModule
             return result;
         }
 
-        private string GetRequisitionNumber(int Id)
+        private string GetRequisitionNumber(int? Id)
         {
-            string number = "N/A";
-            if (0 != Id)
+            string number = string.Empty;
+            if (Id.HasValue && 0 != Id.Value)
             {
                 var match = requisitions.SingleOrDefault(requisition => requisition.Id == Id);
                 if (null != match) number = match.RequisitionNumber;
@@ -190,22 +190,15 @@ namespace MCPackServer.Pages.PurchaseOrdersModule
             return number;
         }
 
-        private DateTime GetRequiredDate(int Id)
+        private DateTime GetRequiredDate(int? Id)
         {
             DateTime date = DateTime.Now;
-            if (0 != Id)
+            if (Id.HasValue && 0 != Id.Value)
             {
                 var match = requisitions.SingleOrDefault(requisitions => requisitions.Id == Id);
                 if (null != match && match.RequiredDate.HasValue) date = match.RequiredDate.Value;
             }
             return date;
         }
-
-        private string ProjectValidation(int input)
-        {
-            if (!projects.Any(p => input == p.Id)) return "Inserte un número de proyecto válido.";
-            return null;
-        }
-
     }
 }

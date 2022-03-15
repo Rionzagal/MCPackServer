@@ -125,6 +125,10 @@ namespace MCPackServer.Pages.PurchaseOrdersModule
             {
                 ["State"] = PurchaseOrdersDialog.States.Add,
                 ["Model"] = new PurchaseOrders()
+                {
+                    IssuedDate = DateTime.Today,
+                    DeliveryDate = DateTime.Today
+                }
             };
             var dialog = Dialogs.Show<PurchaseOrdersDialog>("Añadir nueva órden de compra", Parameters);
             var result = await dialog.Result;

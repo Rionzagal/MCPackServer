@@ -148,5 +148,11 @@ namespace MCPackServer.Pages.ProjectsModule
             }
             return name;
         }
+
+        private string ProjectValidation(string input)
+        {
+            if (ExistentProjects.Any(p => p.ProjectNumber == input)) return "Este proyecto ya existe; inserte un número válido.";
+            return null;
+        }
     }
 }

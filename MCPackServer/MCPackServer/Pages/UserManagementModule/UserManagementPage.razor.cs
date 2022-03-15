@@ -59,11 +59,11 @@ namespace MCPackServer.Pages.UserManagementModule
         {
             var AuthenticationState = await _authenticationStateProvider.GetAuthenticationStateAsync();
             var user = AuthenticationState.User;
-            var claims = user.Claims.ToList();
-            claims.ForEach(c => Console.WriteLine(c));
-
             try
             {
+                CanCreate = (await _authorizationService.AuthorizeAsync(user, Constants.Permissions.Users.Create)).Succeeded;
+                CanEdit = (await _authorizationService.AuthorizeAsync(user, Constants.Permissions.Users.Edit)).Succeeded;
+                CanDelete = (await _authorizationService.AuthorizeAsync(user, Constants.Permissions.Users.Delete)).Succeeded;
             }
             catch (Exception ex)
             {

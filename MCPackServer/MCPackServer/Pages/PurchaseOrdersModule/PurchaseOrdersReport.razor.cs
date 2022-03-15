@@ -30,10 +30,10 @@ namespace MCPackServer.Pages.PurchaseOrdersModule
         private List<string> MaterialNumbers = new();
         protected override async Task OnInitializedAsync()
         {
-            Order = await _ordersService.GetByKeyAsync<PurchaseOrders>(Id, "Id");
-            OrderProvider = Order.Provider;
-            OrderProject = Order.Project;
-            ProjectClient = await _service.GetByKeyAsync<Clients>(OrderProject.ClientId, "Id");
+            Order = await _service.GetByKeyAsync<PurchaseOrders>(Id, nameof(PurchaseOrders.Id));
+            OrderProvider = await _service.GetByKeyAsync<Providers>(Order.ProviderId, nameof(Providers.Id));
+            OrderProject = await _service.GetByKeyAsync<Projects>(Order.ProjectId, nameof(Projects.Id));
+            ProjectClient = await _service.GetByKeyAsync<Clients>(OrderProject.ClientId, nameof(Clients.Id));
 
             #region Get the list of materials of the purchase order
             DataManagerRequest request = new()
@@ -61,7 +61,7 @@ namespace MCPackServer.Pages.PurchaseOrdersModule
 
         private void Return()
         {
-            _navigationManager.NavigateTo("/PurchaseOrdersManagement");
+            _navigationManager.NavigateTo("PurchaseOrders");
         }
 
         private async Task Print()

@@ -22,7 +22,7 @@ namespace MCPackServer.Services
             try
             {
                 string query = "DELETE FROM Contacts WHERE Id NOT IN " +
-                    "(SELECT Id FROM ContactsWithCompanies)";
+                    $"(SELECT Id FROM AssociatedContactsView)";
                 await conn.ExecuteAsync(query, transaction: transaction);
                 transaction.Commit();
                 response.Success();

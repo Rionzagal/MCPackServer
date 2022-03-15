@@ -27,9 +27,9 @@
             <MudForm Model="Model" @ref="Form">
                 <MudGrid>
                     <MudItem xs="4">
-                        <MudTextField @bind-Value="Model.ProjectNumber" Required T="string" Label="ID"
+                        <MudTextField @bind-Value="Model.ProjectNumber" Required T="string" Label="Número de proyecto"
                                         ReadOnly="@(Disabled || States.Edit == State)" 
-                                        RequiredError="Este campo es obligatorio" />
+                                        RequiredError="Este campo es obligatorio" Validation="new Func<string, string>(ProjectValidation)" />
                     </MudItem>
                     <MudItem xs="4">
                         <MudSelect @bind-Value="Model.Type" Required T="string" Label="Tipo de proyecto">

@@ -30,10 +30,10 @@
             <MudForm Model="Model" @ref="Form">
                 <MudGrid>
                     <MudItem xs="6">
-                        <MudAutocomplete T="int" Label="Número de requisición" Value="Model.RequisitionId" Clearable
+                        <MudAutocomplete T="int?" Label="Número de requisición" Value="Model.RequisitionId" Clearable
                                          SearchFunc="(f) => RequisitionsServerReload(f)" ReadOnly="@Disabled"
-                                         ToStringFunc="new Func<int, string>(GetRequisitionNumber)"
-                                         Variant="Variant.Outlined" RequiredError="Inserte número de requisición."
+                                         ToStringFunc="new Func<int?, string>(GetRequisitionNumber)"
+                                         Variant="Variant.Outlined" 
                                          ValueChanged="(id) => 
                                                        {
                                                            Model.RequisitionId = id;

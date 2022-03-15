@@ -21,7 +21,7 @@ namespace MCPackServer.Entities
         [Column(TypeName = "datetime")]
         public DateTime? IssuedDate { get; set; }
         public int ProviderId { get; set; }
-        public int RequisitionId { get; set; }
+        public int? RequisitionId { get; set; }
         [Column(TypeName = "datetime")]
         public DateTime? DeliveryDate { get; set; }
         [Required]

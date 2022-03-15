@@ -119,6 +119,7 @@ namespace MCPackServer.Pages.UserManagementModule
             else if (null != existentUserByEmail) Snackbar.Add("Usuario ya existente. Ingrese otro correo electrónico.", Severity.Warning);
             else if (null != existentUserByUserName) Snackbar.Add("Usuario ya existente.Ingrese otro nombre de usuario.", Severity.Warning);
             else Snackbar.Add("Operación inválida. Revise si hay errores en la forma.", Severity.Warning);
+            ReturnToGrid();
         }
 
         private async Task<IEnumerable<string>> RolesServerReload(string filter)
