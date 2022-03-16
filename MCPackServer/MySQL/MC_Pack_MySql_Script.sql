@@ -28,8 +28,8 @@ CREATE TABLE IF NOT EXISTS `mcpackdb`.`__efmigrationshistory` (
   `ProductVersion` VARCHAR(32) CHARACTER SET 'utf8' NOT NULL,
   PRIMARY KEY (`MigrationId`))
 ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8mb4
-COLLATE = utf8mb4_0900_ai_ci;
+DEFAULT CHARACTER SET = utf8
+COLLATE = utf8_general_ci ;
 
 
 -- -----------------------------------------------------
@@ -46,8 +46,8 @@ CREATE TABLE IF NOT EXISTS `mcpackdb`.`articlegroups` (
   PRIMARY KEY (`Id`))
 ENGINE = InnoDB
 AUTO_INCREMENT = 2
-DEFAULT CHARACTER SET = utf8mb4
-COLLATE = utf8mb4_0900_ai_ci;
+DEFAULT CHARACTER SET = utf8
+COLLATE = utf8_general_ci ;
 
 
 -- -----------------------------------------------------
@@ -62,15 +62,15 @@ CREATE TABLE IF NOT EXISTS `mcpackdb`.`articlefamilies` (
   `Code` VARCHAR(20) NOT NULL,
   `GroupId` INT NOT NULL,
   PRIMARY KEY (`Id`),
-  INDEX `FK_ArticleFamilies_ArticleGroups` (`GroupId` ASC) VISIBLE,
+  INDEX `FK_ArticleFamilies_ArticleGroups` (`GroupId` ASC) ,
   CONSTRAINT `FK_ArticleFamilies_ArticleGroups`
     FOREIGN KEY (`GroupId`)
     REFERENCES `mcpackdb`.`articlegroups` (`Id`)
     ON DELETE CASCADE)
 ENGINE = InnoDB
 AUTO_INCREMENT = 2
-DEFAULT CHARACTER SET = utf8mb4
-COLLATE = utf8mb4_0900_ai_ci;
+DEFAULT CHARACTER SET = utf8
+COLLATE = utf8_general_ci ;
 
 
 -- -----------------------------------------------------
@@ -91,11 +91,11 @@ CREATE TABLE IF NOT EXISTS `mcpackdb`.`clients` (
   `PaymentCondition` VARCHAR(50) NULL DEFAULT NULL,
   `Website` VARCHAR(50) NULL DEFAULT NULL,
   PRIMARY KEY (`Id`),
-  INDEX `IX_Clients` (`Id` ASC) VISIBLE)
+  INDEX `IX_Clients` (`Id` ASC) )
 ENGINE = InnoDB
 AUTO_INCREMENT = 10
-DEFAULT CHARACTER SET = utf8mb4
-COLLATE = utf8mb4_0900_ai_ci;
+DEFAULT CHARACTER SET = utf8
+COLLATE = utf8_general_ci ;
 
 
 -- -----------------------------------------------------
@@ -124,15 +124,15 @@ CREATE TABLE IF NOT EXISTS `mcpackdb`.`projects` (
   `Code` VARCHAR(20) NOT NULL,
   `ProjectNumber` VARCHAR(20) CHARACTER SET 'utf8' NULL DEFAULT NULL,
   PRIMARY KEY (`Id`),
-  INDEX `FK_Proyects_Clients` (`ClientId` ASC) VISIBLE,
+  INDEX `FK_Proyects_Clients` (`ClientId` ASC) ,
   CONSTRAINT `FK_Proyects_Clients`
     FOREIGN KEY (`ClientId`)
     REFERENCES `mcpackdb`.`clients` (`Id`)
     ON DELETE CASCADE)
 ENGINE = InnoDB
 AUTO_INCREMENT = 1536
-DEFAULT CHARACTER SET = utf8mb4
-COLLATE = utf8mb4_0900_ai_ci;
+DEFAULT CHARACTER SET = utf8
+COLLATE = utf8_general_ci ;
 
 
 -- -----------------------------------------------------
@@ -161,8 +161,8 @@ CREATE TABLE IF NOT EXISTS `mcpackdb`.`providers` (
   PRIMARY KEY (`Id`))
 ENGINE = InnoDB
 AUTO_INCREMENT = 3
-DEFAULT CHARACTER SET = utf8mb4
-COLLATE = utf8mb4_0900_ai_ci;
+DEFAULT CHARACTER SET = utf8
+COLLATE = utf8_general_ci ;
 
 
 -- -----------------------------------------------------
@@ -185,8 +185,8 @@ CREATE TABLE IF NOT EXISTS `mcpackdb`.`purchaseorders` (
   `Observations` LONGTEXT NULL DEFAULT NULL,
   `OrderNumber` VARCHAR(50) CHARACTER SET 'utf8' NULL DEFAULT NULL,
   PRIMARY KEY (`Id`),
-  INDEX `FK_PurchaseOrders_Providers` (`ProviderId` ASC) VISIBLE,
-  INDEX `FK_PurchaseOrders_Projects_idx` (`ProjectId` ASC) VISIBLE,
+  INDEX `FK_PurchaseOrders_Providers` (`ProviderId` ASC) ,
+  INDEX `FK_PurchaseOrders_Projects_idx` (`ProjectId` ASC) ,
   CONSTRAINT `FK_PurchaseOrders_Projects`
     FOREIGN KEY (`ProjectId`)
     REFERENCES `mcpackdb`.`projects` (`Id`)
@@ -199,8 +199,8 @@ CREATE TABLE IF NOT EXISTS `mcpackdb`.`purchaseorders` (
     ON UPDATE CASCADE)
 ENGINE = InnoDB
 AUTO_INCREMENT = 2
-DEFAULT CHARACTER SET = utf8mb4
-COLLATE = utf8mb4_0900_ai_ci;
+DEFAULT CHARACTER SET = utf8
+COLLATE = utf8_general_ci ;
 
 
 -- -----------------------------------------------------
@@ -219,15 +219,15 @@ CREATE TABLE IF NOT EXISTS `mcpackdb`.`purchasearticles` (
   `Code` VARCHAR(20) NOT NULL,
   `Observations` VARCHAR(100) NULL DEFAULT NULL,
   PRIMARY KEY (`Id`),
-  INDEX `FK_ShoppingArticles_ArticleFamilies` (`FamilyId` ASC) VISIBLE,
+  INDEX `FK_ShoppingArticles_ArticleFamilies` (`FamilyId` ASC) ,
   CONSTRAINT `FK_ShoppingArticles_ArticleFamilies`
     FOREIGN KEY (`FamilyId`)
     REFERENCES `mcpackdb`.`articlefamilies` (`Id`)
     ON DELETE CASCADE)
 ENGINE = InnoDB
 AUTO_INCREMENT = 2
-DEFAULT CHARACTER SET = utf8mb4
-COLLATE = utf8mb4_0900_ai_ci;
+DEFAULT CHARACTER SET = utf8
+COLLATE = utf8_general_ci ;
 
 
 -- -----------------------------------------------------
@@ -244,8 +244,8 @@ CREATE TABLE IF NOT EXISTS `mcpackdb`.`quotes` (
   `DateUpdated` DATETIME(3) NOT NULL,
   `Currency` VARCHAR(10) NOT NULL,
   PRIMARY KEY (`Id`),
-  INDEX `FK_Quotes_Providers` (`ProviderId` ASC) VISIBLE,
-  INDEX `FK_Quotes_PurchaseArticles` (`ArticleId` ASC) VISIBLE,
+  INDEX `FK_Quotes_Providers` (`ProviderId` ASC) ,
+  INDEX `FK_Quotes_PurchaseArticles` (`ArticleId` ASC) ,
   CONSTRAINT `FK_Quotes_Providers`
     FOREIGN KEY (`ProviderId`)
     REFERENCES `mcpackdb`.`providers` (`Id`)
@@ -256,8 +256,8 @@ CREATE TABLE IF NOT EXISTS `mcpackdb`.`quotes` (
     ON DELETE CASCADE)
 ENGINE = InnoDB
 AUTO_INCREMENT = 2
-DEFAULT CHARACTER SET = utf8mb4
-COLLATE = utf8mb4_0900_ai_ci;
+DEFAULT CHARACTER SET = utf8
+COLLATE = utf8_general_ci ;
 
 
 -- -----------------------------------------------------
@@ -273,7 +273,7 @@ CREATE TABLE IF NOT EXISTS `mcpackdb`.`articlestopurchase` (
   `DepartureDate` DATETIME(3) NULL DEFAULT NULL,
   `SalePrice` DOUBLE NOT NULL,
   PRIMARY KEY (`QuoteId`, `PurchaseOrderId`),
-  INDEX `FK_ArticlesToPurchase_PurchaseOrders` (`PurchaseOrderId` ASC) VISIBLE,
+  INDEX `FK_ArticlesToPurchase_PurchaseOrders` (`PurchaseOrderId` ASC) ,
   CONSTRAINT `FK_ArticlesToPurchase_PurchaseOrders`
     FOREIGN KEY (`PurchaseOrderId`)
     REFERENCES `mcpackdb`.`purchaseorders` (`Id`),
@@ -282,8 +282,8 @@ CREATE TABLE IF NOT EXISTS `mcpackdb`.`articlestopurchase` (
     REFERENCES `mcpackdb`.`quotes` (`Id`)
     ON DELETE CASCADE)
 ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8mb4
-COLLATE = utf8mb4_0900_ai_ci;
+DEFAULT CHARACTER SET = utf8
+COLLATE = utf8_general_ci ;
 
 
 -- -----------------------------------------------------
@@ -297,10 +297,10 @@ CREATE TABLE IF NOT EXISTS `mcpackdb`.`aspnetroles` (
   `NormalizedName` VARCHAR(256) CHARACTER SET 'utf8' NULL DEFAULT NULL,
   `ConcurrencyStamp` LONGTEXT NULL DEFAULT NULL,
   PRIMARY KEY (`Id`),
-  UNIQUE INDEX `RoleNameIndex` (`NormalizedName` ASC) VISIBLE)
+  UNIQUE INDEX `RoleNameIndex` (`NormalizedName` ASC) )
 ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8mb4
-COLLATE = utf8mb4_0900_ai_ci;
+DEFAULT CHARACTER SET = utf8
+COLLATE = utf8_general_ci ;
 
 
 -- -----------------------------------------------------
@@ -314,15 +314,15 @@ CREATE TABLE IF NOT EXISTS `mcpackdb`.`aspnetroleclaims` (
   `ClaimType` LONGTEXT NULL DEFAULT NULL,
   `ClaimValue` LONGTEXT NULL DEFAULT NULL,
   PRIMARY KEY (`Id`),
-  INDEX `IX_AspNetRoleClaims_RoleId` (`RoleId` ASC) VISIBLE,
+  INDEX `IX_AspNetRoleClaims_RoleId` (`RoleId` ASC) ,
   CONSTRAINT `FK_AspNetRoleClaims_AspNetRoles_RoleId`
     FOREIGN KEY (`RoleId`)
     REFERENCES `mcpackdb`.`aspnetroles` (`Id`)
     ON DELETE CASCADE)
 ENGINE = InnoDB
 AUTO_INCREMENT = 249
-DEFAULT CHARACTER SET = utf8mb4
-COLLATE = utf8mb4_0900_ai_ci;
+DEFAULT CHARACTER SET = utf8
+COLLATE = utf8_general_ci ;
 
 
 -- -----------------------------------------------------
@@ -347,11 +347,11 @@ CREATE TABLE IF NOT EXISTS `mcpackdb`.`aspnetusers` (
   `LockoutEnabled` TINYINT NOT NULL,
   `AccessFailedCount` INT NOT NULL,
   PRIMARY KEY (`Id`),
-  UNIQUE INDEX `UserNameIndex` (`NormalizedUserName` ASC) VISIBLE,
-  INDEX `EmailIndex` (`NormalizedEmail` ASC) VISIBLE)
+  UNIQUE INDEX `UserNameIndex` (`NormalizedUserName` ASC) ,
+  INDEX `EmailIndex` (`NormalizedEmail` ASC) )
 ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8mb4
-COLLATE = utf8mb4_0900_ai_ci;
+DEFAULT CHARACTER SET = utf8
+COLLATE = utf8_general_ci ;
 
 
 -- -----------------------------------------------------
@@ -365,14 +365,14 @@ CREATE TABLE IF NOT EXISTS `mcpackdb`.`aspnetuserclaims` (
   `ClaimType` LONGTEXT NULL DEFAULT NULL,
   `ClaimValue` LONGTEXT NULL DEFAULT NULL,
   PRIMARY KEY (`Id`),
-  INDEX `IX_AspNetUserClaims_UserId` (`UserId` ASC) VISIBLE,
+  INDEX `IX_AspNetUserClaims_UserId` (`UserId` ASC) ,
   CONSTRAINT `FK_AspNetUserClaims_AspNetUsers_UserId`
     FOREIGN KEY (`UserId`)
     REFERENCES `mcpackdb`.`aspnetusers` (`Id`)
     ON DELETE CASCADE)
 ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8mb4
-COLLATE = utf8mb4_0900_ai_ci;
+DEFAULT CHARACTER SET = utf8
+COLLATE = utf8_general_ci ;
 
 
 -- -----------------------------------------------------
@@ -386,14 +386,14 @@ CREATE TABLE IF NOT EXISTS `mcpackdb`.`aspnetuserlogins` (
   `ProviderDisplayName` LONGTEXT NULL DEFAULT NULL,
   `UserId` VARCHAR(450) CHARACTER SET 'utf8' NOT NULL,
   PRIMARY KEY (`LoginProvider`, `ProviderKey`),
-  INDEX `IX_AspNetUserLogins_UserId` (`UserId` ASC) VISIBLE,
+  INDEX `IX_AspNetUserLogins_UserId` (`UserId` ASC) ,
   CONSTRAINT `FK_AspNetUserLogins_AspNetUsers_UserId`
     FOREIGN KEY (`UserId`)
     REFERENCES `mcpackdb`.`aspnetusers` (`Id`)
     ON DELETE CASCADE)
 ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8mb4
-COLLATE = utf8mb4_0900_ai_ci;
+DEFAULT CHARACTER SET = utf8
+COLLATE = utf8_general_ci ;
 
 
 -- -----------------------------------------------------
@@ -405,7 +405,7 @@ CREATE TABLE IF NOT EXISTS `mcpackdb`.`aspnetuserroles` (
   `UserId` VARCHAR(450) CHARACTER SET 'utf8' NOT NULL,
   `RoleId` VARCHAR(450) CHARACTER SET 'utf8' NOT NULL,
   PRIMARY KEY (`UserId`, `RoleId`),
-  INDEX `IX_AspNetUserRoles_RoleId` (`RoleId` ASC) VISIBLE,
+  INDEX `IX_AspNetUserRoles_RoleId` (`RoleId` ASC) ,
   CONSTRAINT `FK_AspNetUserRoles_AspNetRoles_RoleId`
     FOREIGN KEY (`RoleId`)
     REFERENCES `mcpackdb`.`aspnetroles` (`Id`)
@@ -415,8 +415,8 @@ CREATE TABLE IF NOT EXISTS `mcpackdb`.`aspnetuserroles` (
     REFERENCES `mcpackdb`.`aspnetusers` (`Id`)
     ON DELETE CASCADE)
 ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8mb4
-COLLATE = utf8mb4_0900_ai_ci;
+DEFAULT CHARACTER SET = utf8
+COLLATE = utf8_general_ci ;
 
 
 -- -----------------------------------------------------
@@ -435,8 +435,8 @@ CREATE TABLE IF NOT EXISTS `mcpackdb`.`aspnetusertokens` (
     REFERENCES `mcpackdb`.`aspnetusers` (`Id`)
     ON DELETE CASCADE)
 ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8mb4
-COLLATE = utf8mb4_0900_ai_ci;
+DEFAULT CHARACTER SET = utf8
+COLLATE = utf8_general_ci ;
 
 
 -- -----------------------------------------------------
@@ -453,8 +453,8 @@ CREATE TABLE IF NOT EXISTS `mcpackdb`.`contacts` (
   PRIMARY KEY (`Id`))
 ENGINE = InnoDB
 AUTO_INCREMENT = 7
-DEFAULT CHARACTER SET = utf8mb4
-COLLATE = utf8mb4_0900_ai_ci;
+DEFAULT CHARACTER SET = utf8
+COLLATE = utf8_general_ci ;
 
 
 -- -----------------------------------------------------
@@ -466,8 +466,8 @@ CREATE TABLE IF NOT EXISTS `mcpackdb`.`clientcontacts` (
   `ClientId` INT NOT NULL,
   `ContactId` INT NOT NULL,
   PRIMARY KEY (`ClientId`, `ContactId`),
-  INDEX `IX_ClientContacts` (`ClientId` ASC) VISIBLE,
-  INDEX `FK_ClientContacts_Contacts` (`ContactId` ASC) VISIBLE,
+  INDEX `IX_ClientContacts` (`ClientId` ASC) ,
+  INDEX `FK_ClientContacts_Contacts` (`ContactId` ASC) ,
   CONSTRAINT `FK_ClientContacts_Clients`
     FOREIGN KEY (`ClientId`)
     REFERENCES `mcpackdb`.`clients` (`Id`)
@@ -477,8 +477,8 @@ CREATE TABLE IF NOT EXISTS `mcpackdb`.`clientcontacts` (
     REFERENCES `mcpackdb`.`contacts` (`Id`)
     ON DELETE CASCADE)
 ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8mb4
-COLLATE = utf8mb4_0900_ai_ci;
+DEFAULT CHARACTER SET = utf8
+COLLATE = utf8_general_ci ;
 
 
 -- -----------------------------------------------------
@@ -497,11 +497,11 @@ CREATE TABLE IF NOT EXISTS `mcpackdb`.`devicecodes` (
   `Expiration` DATETIME(6) NOT NULL,
   `Data` LONGTEXT NOT NULL,
   PRIMARY KEY (`UserCode`),
-  UNIQUE INDEX `IX_DeviceCodes_DeviceCode` (`DeviceCode` ASC) VISIBLE,
-  INDEX `IX_DeviceCodes_Expiration` (`Expiration` ASC) VISIBLE)
+  UNIQUE INDEX `IX_DeviceCodes_DeviceCode` (`DeviceCode` ASC) ,
+  INDEX `IX_DeviceCodes_Expiration` (`Expiration` ASC) )
 ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8mb4
-COLLATE = utf8mb4_0900_ai_ci;
+DEFAULT CHARACTER SET = utf8
+COLLATE = utf8_general_ci ;
 
 
 -- -----------------------------------------------------
@@ -519,10 +519,10 @@ CREATE TABLE IF NOT EXISTS `mcpackdb`.`keys` (
   `DataProtected` TINYINT NOT NULL,
   `Data` LONGTEXT NOT NULL,
   PRIMARY KEY (`Id`),
-  INDEX `IX_Keys_Use` (`Use` ASC) VISIBLE)
+  INDEX `IX_Keys_Use` (`Use` ASC) )
 ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8mb4
-COLLATE = utf8mb4_0900_ai_ci;
+DEFAULT CHARACTER SET = utf8
+COLLATE = utf8_general_ci ;
 
 
 -- -----------------------------------------------------
@@ -539,15 +539,15 @@ CREATE TABLE IF NOT EXISTS `mcpackdb`.`logs` (
   `TimeOfAction` DATETIME NULL DEFAULT NULL,
   `Message` LONGTEXT NOT NULL,
   PRIMARY KEY (`Id`),
-  INDEX `FK_Logs_AspNetUsers_idx` (`UserId` ASC) VISIBLE,
+  INDEX `FK_Logs_AspNetUsers_idx` (`UserId` ASC) ,
   CONSTRAINT `FK_Logs_AspNetUsers`
     FOREIGN KEY (`UserId`)
     REFERENCES `mcpackdb`.`aspnetusers` (`Id`)
     ON DELETE RESTRICT
     ON UPDATE RESTRICT)
 ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8mb4
-COLLATE = utf8mb4_0900_ai_ci;
+DEFAULT CHARACTER SET = utf8
+COLLATE = utf8_general_ci ;
 
 
 -- -----------------------------------------------------
@@ -567,8 +567,8 @@ CREATE TABLE IF NOT EXISTS `mcpackdb`.`mcproducts` (
   PRIMARY KEY (`Id`))
 ENGINE = InnoDB
 AUTO_INCREMENT = 4
-DEFAULT CHARACTER SET = utf8mb4
-COLLATE = utf8mb4_0900_ai_ci;
+DEFAULT CHARACTER SET = utf8
+COLLATE = utf8_general_ci ;
 
 
 -- -----------------------------------------------------
@@ -588,13 +588,13 @@ CREATE TABLE IF NOT EXISTS `mcpackdb`.`persistedgrants` (
   `ConsumedTime` DATETIME(6) NULL DEFAULT NULL,
   `Data` LONGTEXT NOT NULL,
   PRIMARY KEY (`Key`),
-  INDEX `IX_PersistedGrants_ConsumedTime` (`ConsumedTime` ASC) VISIBLE,
-  INDEX `IX_PersistedGrants_Expiration` (`Expiration` ASC) VISIBLE,
-  INDEX `IX_PersistedGrants_SubjectId_ClientId_Type` (`SubjectId` ASC, `ClientId` ASC, `Type` ASC) VISIBLE,
-  INDEX `IX_PersistedGrants_SubjectId_SessionId_Type` (`SubjectId` ASC, `SessionId` ASC, `Type` ASC) VISIBLE)
+  INDEX `IX_PersistedGrants_ConsumedTime` (`ConsumedTime` ASC) ,
+  INDEX `IX_PersistedGrants_Expiration` (`Expiration` ASC) ,
+  INDEX `IX_PersistedGrants_SubjectId_ClientId_Type` (`SubjectId` ASC, `ClientId` ASC, `Type` ASC) ,
+  INDEX `IX_PersistedGrants_SubjectId_SessionId_Type` (`SubjectId` ASC, `SessionId` ASC, `Type` ASC) )
 ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8mb4
-COLLATE = utf8mb4_0900_ai_ci;
+DEFAULT CHARACTER SET = utf8
+COLLATE = utf8_general_ci ;
 
 
 -- -----------------------------------------------------
@@ -609,7 +609,7 @@ CREATE TABLE IF NOT EXISTS `mcpackdb`.`projectproducts` (
   `Quantity` INT NOT NULL,
   `Observations` LONGTEXT NULL DEFAULT NULL,
   PRIMARY KEY (`ProductId`, `ProjectId`),
-  INDEX `FK_ProjectProducts_Projects_idx` (`ProjectId` ASC) VISIBLE,
+  INDEX `FK_ProjectProducts_Projects_idx` (`ProjectId` ASC) ,
   CONSTRAINT `FK_ProjectProducts_MCProducts`
     FOREIGN KEY (`ProductId`)
     REFERENCES `mcpackdb`.`mcproducts` (`Id`)
@@ -621,8 +621,8 @@ CREATE TABLE IF NOT EXISTS `mcpackdb`.`projectproducts` (
     ON DELETE CASCADE
     ON UPDATE CASCADE)
 ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8mb4
-COLLATE = utf8mb4_0900_ai_ci;
+DEFAULT CHARACTER SET = utf8
+COLLATE = utf8_general_ci ;
 
 
 -- -----------------------------------------------------
@@ -634,7 +634,7 @@ CREATE TABLE IF NOT EXISTS `mcpackdb`.`providercontacts` (
   `ProviderId` INT NOT NULL,
   `ContactId` INT NOT NULL,
   PRIMARY KEY (`ProviderId`, `ContactId`),
-  INDEX `FK_ProviderContacts_Contacts` (`ContactId` ASC) VISIBLE,
+  INDEX `FK_ProviderContacts_Contacts` (`ContactId` ASC) ,
   CONSTRAINT `FK_ProviderContacts_Contacts`
     FOREIGN KEY (`ContactId`)
     REFERENCES `mcpackdb`.`contacts` (`Id`)
@@ -644,8 +644,8 @@ CREATE TABLE IF NOT EXISTS `mcpackdb`.`providercontacts` (
     REFERENCES `mcpackdb`.`providers` (`Id`)
     ON DELETE CASCADE)
 ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8mb4
-COLLATE = utf8mb4_0900_ai_ci;
+DEFAULT CHARACTER SET = utf8
+COLLATE = utf8_general_ci ;
 
 
 -- -----------------------------------------------------
@@ -660,15 +660,15 @@ CREATE TABLE IF NOT EXISTS `mcpackdb`.`requisitions` (
   `UserId` VARCHAR(450) CHARACTER SET 'utf8' NOT NULL,
   `RequiredDate` DATETIME(3) NULL DEFAULT NULL,
   PRIMARY KEY (`Id`),
-  UNIQUE INDEX `IX_Requisitions` (`Id` ASC) VISIBLE,
-  INDEX `FK_Requisitions_AspNetUsers` (`UserId` ASC) VISIBLE,
+  UNIQUE INDEX `IX_Requisitions` (`Id` ASC) ,
+  INDEX `FK_Requisitions_AspNetUsers` (`UserId` ASC) ,
   CONSTRAINT `FK_Requisitions_AspNetUsers`
     FOREIGN KEY (`UserId`)
     REFERENCES `mcpackdb`.`aspnetusers` (`Id`))
 ENGINE = InnoDB
 AUTO_INCREMENT = 2
-DEFAULT CHARACTER SET = utf8mb4
-COLLATE = utf8mb4_0900_ai_ci;
+DEFAULT CHARACTER SET = utf8
+COLLATE = utf8_general_ci ;
 
 
 -- -----------------------------------------------------
@@ -682,8 +682,8 @@ CREATE TABLE IF NOT EXISTS `mcpackdb`.`requisitionarticles` (
   `ProjectId` INT NOT NULL,
   `Quantity` INT NOT NULL,
   PRIMARY KEY (`RequisitionId`, `ProjectId`, `ArticleId`),
-  INDEX `FK_RequisitionArticles_PurchaseArticles` (`ArticleId` ASC) VISIBLE,
-  INDEX `FK_RequisitionArticles_Projects_idx` (`ProjectId` ASC) VISIBLE,
+  INDEX `FK_RequisitionArticles_PurchaseArticles` (`ArticleId` ASC) ,
+  INDEX `FK_RequisitionArticles_Projects_idx` (`ProjectId` ASC) ,
   CONSTRAINT `FK_RequisitionArticles_Projects`
     FOREIGN KEY (`ProjectId`)
     REFERENCES `mcpackdb`.`projects` (`Id`)
@@ -696,8 +696,8 @@ CREATE TABLE IF NOT EXISTS `mcpackdb`.`requisitionarticles` (
     FOREIGN KEY (`RequisitionId`)
     REFERENCES `mcpackdb`.`requisitions` (`Id`))
 ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8mb4
-COLLATE = utf8mb4_0900_ai_ci;
+DEFAULT CHARACTER SET = utf8
+COLLATE = utf8_general_ci ;
 
 
 -- -----------------------------------------------------
@@ -710,13 +710,13 @@ CREATE TABLE IF NOT EXISTS `mcpackdb`.`systemrolepermissions` (
   `PermissionValue` LONGTEXT NOT NULL,
   `Id` INT NOT NULL AUTO_INCREMENT,
   PRIMARY KEY (`Id`),
-  UNIQUE INDEX `IX_SystemRolePermissions` (`RoleId` ASC) VISIBLE,
+  UNIQUE INDEX `IX_SystemRolePermissions` (`RoleId` ASC) ,
   CONSTRAINT `FK_SystemRolePermissions_AspNetRoles`
     FOREIGN KEY (`RoleId`)
     REFERENCES `mcpackdb`.`aspnetroles` (`Id`))
 ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8mb4
-COLLATE = utf8mb4_0900_ai_ci;
+DEFAULT CHARACTER SET = utf8
+COLLATE = utf8_general_ci ;
 
 
 -- -----------------------------------------------------
@@ -737,8 +737,8 @@ CREATE TABLE IF NOT EXISTS `mcpackdb`.`userinformation` (
     FOREIGN KEY (`AspNetUserId`)
     REFERENCES `mcpackdb`.`aspnetusers` (`Id`))
 ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8mb4
-COLLATE = utf8mb4_0900_ai_ci;
+DEFAULT CHARACTER SET = utf8
+COLLATE = utf8_general_ci ;
 
 USE `mcpackdb` ;
 

@@ -5,7 +5,7 @@
 @inject UserManager<IdentityUser> _userManager
 @inject IUsersService _usersService
 
-@attribute [Authorize Role="Admin, Developer"]
+@attribute [Authorize (Roles = "Admin, Developer")]
 
 <MudText Typo="Typo.h3" Align="Align.Center">Registrar nuevo usuario</MudText>
 
