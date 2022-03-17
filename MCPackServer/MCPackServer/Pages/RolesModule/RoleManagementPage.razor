@@ -92,7 +92,7 @@
                         <ToolBarContent>
                             <MudText Typo="Typo.h6">Permisos de rol</MudText>
                             <MudSpacer />
-                            @if (CanAddPermissions)
+                            @if (true)
                             {
                                 <MudButton Color="Color.Primary" Class="mx-3" Disabled="!CanEdit"
                                        Variant="Variant.Filled" OnClick="AddPermissions">
@@ -114,7 +114,7 @@
                             <MudTFootRow Style="font-weight: 500;">
                                 <MudTd>Permisos totales: @SelectedRole.AspNetRoleClaims.Count</MudTd>
                                 <MudTd>
-                                    @if (CanDeletePermissions)
+                                    @if (true)
                                     {
                                         <MudButton Color="Color.Error" Class="mx-3" Disabled="!CanEdit"
                                                Variant="Variant.Filled" OnClick="async () => await DeletePermissions(ClaimsTable.SelectedItems)">

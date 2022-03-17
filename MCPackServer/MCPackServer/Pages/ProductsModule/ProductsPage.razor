@@ -34,17 +34,24 @@
         </MudTHeadRow>
         <MudTHeadRow>
             <MudTh>
-                <MudTextField T="string" @bind-Value="TypeFilter" Clearable Placeholder="Buscar por tipo" />
+                <MudTextField @bind-Value="TypeFilter" Clearable OnClearButtonClick="() => TypeFilter = string.Empty"
+                              Placeholder="Buscar por tipo" />
             </MudTh>
             <MudTh>
-                <MudTextField T="string" @bind-Value="CodeFilter" Clearable Placeholder="Buscar por código" />
+                <MudTextField @bind-Value="CodeFilter" Clearable OnClearButtonClick="() => CodeFilter = string.Empty"
+                              Placeholder="Buscar por código" />
             </MudTh>
             <MudTh>
-                <MudTextField T="string" @bind-Value="DescriptionFilter" Clearable Placeholder="Buscar por descripción" />
+                <MudTextField @bind-Value="DescriptionFilter" Clearable OnClearButtonClick="() => DescriptionFilter = string.Empty"
+                              Placeholder="Buscar por descripción" />
             </MudTh>
             <MudTh />
             <MudTh>
-                <MudTextField T="string" @bind-Value="CurrencyFilter" Clearable Placeholder="Buscar por divisa" />
+                <MudSelect T="string" @bind-Value="CurrencyFilter" Clearable Placeholder="Buscar por divisa" 
+                           OnClearButtonClick="() => CurrencyFilter = string.Empty" >
+                              <MudSelectItem T="string" Value="@("MXN")" />
+                              <MudSelectItem T="string" Value="@("USD")" />
+                </MudSelect>
             </MudTh>
         </MudTHeadRow>
     </HeaderContent>
@@ -91,45 +98,32 @@
             </Header>
             <ChildContent>
                 <MudTabPanel Text="Información General">
-                    <MudPaper Elevation="0" Class="m-3" Style="height:500px; overflow-y:scroll;">
-                        <div class="form-group">
-                            <MudText Typo="Typo.subtitle2" Align="Align.Left">Código:</MudText>
-                            <MudTextField T="string" @bind-Text="@SelectedProduct.Code"
-                                          ReadOnly />
-                        </div>
-                        <div class="form-group">
-                            <MudText Typo="Typo.subtitle2" Align="Align.Left">Tipo de producto:</MudText>
-                            <MudTextField T="string" @bind-Text="@SelectedProduct.Type"
-                                          ReadOnly />
-                        </div>
-                        <div class="form-group">
-                            <MudText Typo="Typo.subtitle2" Align="Align.Left">Modelo:</MudText>
-                            <MudTextField T="string" @bind-Text="@SelectedProduct.Model"
-                                          ReadOnly />
-                        </div>
-                        <div class="form-group">
-                            <MudText Typo="Typo.subtitle2" Align="Align.Left">Descripción:</MudText>
-                            <MudTextField T="string" @bind-Text="@SelectedProduct.Description"
-                                          ReadOnly Lines="3" />
-                        </div>
-                        <div class="form-group">
-                            <MudText Typo="Typo.subtitle2" Align="Align.Left">Observaciones:</MudText>
-                            <MudTextField T="string" @bind-Text="@SelectedProduct.Observations"
-                                          ReadOnly Lines="3" />
-                        </div>
-                        <div class="form-group">
-                            <MudText Typo="Typo.subtitle2" Align="Align.Left">Precio sugerido:</MudText>
-                            <MudNumericField T="float" @bind-Value="@SelectedProduct.SugestedPrice"
-                                             AdornmentIcon="@Icons.Material.Filled.AttachMoney"
-                                             Adornment="Adornment.Start" ReadOnly Format="N2"
-                                             HideSpinButtons />
-                        </div>
-                        <div class="form-group">
-                            <MudText Typo="Typo.subtitle2" Align="Align.Left">Divisa:</MudText>
-                            <MudTextField T="string" @bind-Text="@SelectedProduct.Currency"
-                                          ReadOnly />
-                        </div>
-                    </MudPaper>
+                    <MudGrid Class="m-3" Style="width: inherit; height:500px; overflow-y:scroll;">
+                        <MudItem xs="12">
+                            <MudText Typo="Typo.subtitle1" Align="Align.Left">Código</MudText>
+                            <MudTextField Value="@SelectedProduct.Code" ReadOnly />
+                        </MudItem>
+                        <MudItem xs="12">
+                            <MudText Typo="Typo.subtitle1" Align="Align.Left">Tipo de producto</MudText>
+                            <MudTextField Value="@SelectedProduct.Type" ReadOnly />
+                        </MudItem>
+                        <MudItem xs="12">
+                            <MudText Typo="Typo.subtitle1" Align="Align.Left">Modelo</MudText>
+                            <MudTextField Value="@SelectedProduct.Model" ReadOnly />
+                        </MudItem>
+                        <MudItem xs="12">
+                            <MudText Typo="Typo.subtitle1" Align="Align.Left">Descripción</MudText>
+                            <MudTextField Value="@SelectedProduct.Description" ReadOnly Lines="3" />
+                        </MudItem>
+                        <MudItem xs="12">
+                            <MudText Typo="Typo.subtitle1" Align="Align.Left">Observaciones</MudText>
+                            <MudTextField Value="@SelectedProduct.Observations" ReadOnly Lines="3" />
+                        </MudItem>
+                        <MudItem xs="12">
+                            <MudText Typo="Typo.subtitle1" Align="Align.Left">Precio sugerido</MudText>
+                            <MudTextField Value="@($"${SelectedProduct.SugestedPrice.ToString("n2")} {SelectedProduct.Currency}")" ReadOnly />
+                        </MudItem>
+                    </MudGrid>
                 </MudTabPanel>
             </ChildContent>
         </MudTabs>
