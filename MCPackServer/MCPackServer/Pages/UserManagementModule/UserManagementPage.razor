@@ -5,6 +5,8 @@
 @inject IUsersService _usersService
 @inject UserManager<IdentityUser> _userManager
 
+@attribute [Authorize (Roles = "Admin, Developer", Policy = @Constants.Permissions.Users.View)]
+
 <MudText Typo="Typo.h3" Align="Align.Center">Manejo y administración de usuarios</MudText>
 
 <MudTable T="UserInformationView" @ref="UsrersTable" Dense Hover FixedHeader Height="400px"
@@ -12,10 +14,13 @@
     <ToolBarContent>
         <MudText Typo="Typo.h6">Usuarios registrados</MudText>
         <MudSpacer />
-        <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="mx-1"
+        @if (CanCreate)
+        {
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="mx-1"
                        OnClick="GoToRegistration" >
-                Registrar usuario
-        </MudButton>
+                    Registrar usuario
+            </MudButton>
+        }
         <MudButton Variant="Variant.Filled" Class="mx-1" OnClick="ClearFilters">
             Borrar filtros de búsqueda
         </MudButton>
@@ -91,12 +96,18 @@
                     <MudTooltip Text="Cerrar">
                         <MudIconButton Icon="@Icons.Material.Filled.Close" OnClick="() => VisibleUserInformation = false" />
                     </MudTooltip>
-                    <MudTooltip Text="Editar usuario">
-                        <MudIconButton Icon="@Icons.Material.Filled.Edit" OnClick="GoToUserEdit" />
-                    </MudTooltip>
-                    <MudTooltip Text="Eliminar usuario">
-                        <MudIconButton Icon="@Icons.Material.Filled.Delete" OnClick="DeleteUser" />
-                    </MudTooltip>
+                    @if (CanEdit)
+                    {
+                        <MudTooltip Text="Editar usuario">
+                            <MudIconButton Icon="@Icons.Material.Filled.Edit" OnClick="GoToUserEdit" />
+                        </MudTooltip>
+                    }
+                    @if (CanDelete)
+                    {
+                       <MudTooltip Text="Eliminar usuario">
+                            <MudIconButton Icon="@Icons.Material.Filled.Delete" OnClick="DeleteUser" />
+                        </MudTooltip>
+                    }
                 </MudButtonGroup>
             </Header>
             <ChildContent>

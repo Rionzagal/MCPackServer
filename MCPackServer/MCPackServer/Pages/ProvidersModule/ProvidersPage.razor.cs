@@ -12,8 +12,8 @@ namespace MCPackServer.Pages.ProvidersModule
     {
         #region Permission State
         #region Permissions
-        public bool CanCreateProvider, CanEditProvider, CanDeleteProvider = true;
-        public bool CanCreateContact, CanEditContact, CanDeleteContact = true;
+        public bool CanCreateProvider, CanEditProvider, CanDeleteProvider = false;
+        public bool CanCreateContact, CanEditContact, CanDeleteContact, CanViewContact = false;
         #endregion
         #region Visible Flags
         public bool VisibleProviderInformation = false;
@@ -64,7 +64,26 @@ namespace MCPackServer.Pages.ProvidersModule
 
         protected override async Task OnInitializedAsync()
         {
-            await base.OnInitializedAsync();
+            var _authenticationState = await _authenticationStateProvider.GetAuthenticationStateAsync();
+            var user = _authenticationState.User;
+            if (null != user)
+            {
+                try
+                {
+                    CanCreateProvider = (await _authorizationService.AuthorizeAsync(user, Constants.Permissions.Providers.Create)).Succeeded;
+                    CanEditProvider = (await _authorizationService.AuthorizeAsync(user, Constants.Permissions.Providers.Edit)).Succeeded;
+                    CanDeleteProvider = (await _authorizationService.AuthorizeAsync(user, Constants.Permissions.Providers.Delete)).Succeeded;
+
+                    CanViewContact = (await _authorizationService.AuthorizeAsync(user, Constants.Permissions.Contacts.View)).Succeeded;
+                    CanCreateContact = (await _authorizationService.AuthorizeAsync(user, Constants.Permissions.Contacts.Create)).Succeeded;
+                    CanEditContact = (await _authorizationService.AuthorizeAsync(user, Constants.Permissions.Contacts.Edit)).Succeeded;
+                    CanDeleteContact = (await _authorizationService.AuthorizeAsync(user, Constants.Permissions.Contacts.Delete)).Succeeded;
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex);
+                }
+            }
         }
         protected override void OnAfterRender(bool firstRender)
         {

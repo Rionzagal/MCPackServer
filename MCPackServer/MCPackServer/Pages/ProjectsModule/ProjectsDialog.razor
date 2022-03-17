@@ -28,11 +28,12 @@
                 <MudGrid>
                     <MudItem xs="4">
                         <MudTextField @bind-Value="Model.ProjectNumber" Required T="string" Label="Número de proyecto"
-                                        ReadOnly="@(Disabled || States.Edit == State)" 
+                                        ReadOnly="@(Disabled || States.Edit == State)" Variant="Variant.Outlined"
                                         RequiredError="Este campo es obligatorio" Validation="new Func<string, string>(ProjectValidation)" />
                     </MudItem>
                     <MudItem xs="4">
-                        <MudSelect @bind-Value="Model.Type" Required T="string" Label="Tipo de proyecto">
+                        <MudSelect @bind-Value="Model.Type" Required T="string" Label="Tipo de proyecto"
+                            RequiredError="Este campo es obligatorio" Variant="Variant.Outlined">
                             <MudSelectItem T="string" Value="@("Proyecto")" />
                             <MudSelectItem T="string" Value="@("Refacciones")" />
                             <MudSelectItem T="string" Value="@("Servicio")" />
@@ -42,73 +43,75 @@
                         <MudAutocomplete T="int" @bind-Value="Model.ClientId" Label="Cliente" Required
                                          SearchFunc="f => ClientsServerReload(f)" ReadOnly="@Disabled"
                                          ToStringFunc="new Func<int, string>(GetClientName)"
-                                         RequiredError="Seleccionar cliente" />
+                                         RequiredError="Este campo es obligatorio" Variant="Variant.Outlined" />
                     </MudItem>
                     <MudItem xs="12">
-                        <MudTextField T="string" @bind-Text="@Model.Description"
-                                      Required RequiredError="Inserte descripción"
+                        <MudTextField T="string" @bind-Text="@Model.Description" Variant="Variant.Outlined"
+                                      Required RequiredError="Este campo es obligatorio"
                                       Label="Descripción" Lines="5" ReadOnly="@Disabled" />
                     </MudItem>
                     <MudItem xs="6">
-                        <MudDatePicker @bind-Date="@Model.AdmissionDate" Label="Fecha de entrada"
-                                       Required ReadOnly="@Disabled" RequiredError="Inserte fecha de entrada" />
+                        <MudDatePicker @bind-Date="@Model.AdmissionDate" Label="Fecha de entrada" Variant="Variant.Outlined"
+                                       Required ReadOnly="@Disabled" RequiredError="Este campo es obligatorio" />
                     </MudItem>
                     <MudItem xs="6">
-                        <MudDatePicker @bind-Date="@Model.CommitmentDate" Label="Fecha de compromiso"
-                                       Required ReadOnly="@Disabled" RequiredError="Inserte fecha de compromiso" />
+                        <MudDatePicker @bind-Date="@Model.CommitmentDate" Label="Fecha de compromiso" Variant="Variant.Outlined"
+                                       Required ReadOnly="@Disabled" RequiredError="Este campo es obligatorio" />
                     </MudItem>
                     <MudItem xs="6">
-                        <MudDatePicker @bind-Date="@Model.DeliveryDate" Label="Fecha de entrega tentativa"
-                                       Required ReadOnly="@Disabled" RequiredError="Inserte fecha de entrega tentativa" />
+                        <MudDatePicker @bind-Date="@Model.DeliveryDate" Label="Fecha de entrega tentativa" Variant="Variant.Outlined"
+                                       Required ReadOnly="@Disabled" RequiredError="Este campo es obligatorio" />
                     </MudItem>
                     <MudItem xs="6">
                         <MudDatePicker @bind-Date="@Model.RealDeliveryDate"
-                                       Label="Fecha de entrega real"
+                                       Label="Fecha de entrega real" Variant="Variant.Outlined"
                                        Required="false" ReadOnly="@Disabled" />
                     </MudItem>
                     <MudItem xs="12">
                         <MudTextField T="string" @bind-Text="@Model.DeliveryTime"
                                       Label="Tiempos de entrega" Lines="2"
-                                      Required ReadOnly="@Disabled"
-                                      RequiredError="Inserte tiempos de entrega" />
+                                      Required ReadOnly="@Disabled" Variant="Variant.Outlined"
+                                      RequiredError="Este campo es obligatorio" />
                     </MudItem>
                     <MudItem xs="6">
-                        <MudTextField T="string" @bind-Text="@Model.AgreedCurrency"
-                                      Label="Divisa pactada"
-                                      Required ReadOnly="@Disabled"
-                                      RequiredError="Inserte divisa pactada" />
+                        <MudSelect @bind-Value="Model.AgreedCurrency" Required T="string" Label="Moneda pactada"
+                            RequiredError="Este campo es obligatorio" Variant="Variant.Outlined">
+                            <MudSelectItem T="string" Value="@("MXN")" />
+                            <MudSelectItem T="string" Value="@("USD")" />
+                        </MudSelect>
                     </MudItem>
                     <MudItem xs="6">
-                        <MudTextField T="string" @bind-Text="@Model.PaymentCurrency"
-                                      Label="Divisa de pago"
-                                      Required ReadOnly="@Disabled"
-                                      RequiredError="Inserte divisa de pago" />
+                        <MudSelect @bind-Value="Model.PaymentCurrency" Required T="string" Label="Moneda de pago"
+                            RequiredError="Este campo es obligatorio" Variant="Variant.Outlined">
+                            <MudSelectItem T="string" Value="@("MXN")" />
+                            <MudSelectItem T="string" Value="@("USD")" />
+                        </MudSelect>
                     </MudItem>
                     <MudItem xs="12">
                         <MudTextField T="string" @bind-Text="@Model.PaymentConditions"
                                       Label="Condiciones de pago" Lines="5"
-                                      Required ReadOnly="@Disabled"
-                                      RequiredError="Inserte condiciones de pago" />
+                                      Required ReadOnly="@Disabled" Variant="Variant.Outlined"
+                                      RequiredError="Este campo es obligatorio" />
                     </MudItem>
                     <MudItem xs="4">
-                        <MudTextField T="string" @bind-Text="@Model.SalesPerson"
+                        <MudTextField T="string" @bind-Text="@Model.SalesPerson" Variant="Variant.Outlined"
                                       Label="Nombre de vendedor" ReadOnly="@Disabled"
-                                      Required RequiredError="Inserte nombre del vendedor" />
+                                      Required RequiredError="Este campo es obligatorio" />
                     </MudItem>
                     <MudItem xs="4">
                         <MudNumericField T="float" @bind-Value="Model.Comision"
-                                         Label="Comisión" Required="false"
+                                         Label="Comisión" Required="false" Variant="Variant.Outlined"
                                          AdornmentText="%" Adornment="Adornment.Start"
                                          ReadOnly="@Disabled" Min="0.0f" Max="100.0f"
                                          HideSpinButtons />
                     </MudItem>
                     <MudItem xs="4">
-                        <MudCheckBox @bind-Checked="Model.HasTaxes"
+                        <MudCheckBox @bind-Checked="Model.HasTaxes" 
                                      Label="¿Aplica IVA?" ReadOnly="@Disabled" />
                     </MudItem>
                     <MudItem xs="12">
                         <MudTextField T="string" @bind-Text="@Model.Observations"
-                                      Label="Observaciones" Required="false"
+                                      Label="Observaciones" Required="false" Variant="Variant.Outlined"
                                       Lines="5" ReadOnly="@Disabled" />
                     </MudItem>
                 </MudGrid>

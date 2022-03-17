@@ -8,8 +8,6 @@ namespace MCPackServer.Pages.RequisitionsModule
 {
     public partial class RequisitionsPage
     {
-        
-
         #region Permissions and Flags
         #region Permissions
         private bool CanCreate;
@@ -41,6 +39,8 @@ namespace MCPackServer.Pages.RequisitionsModule
         DataManagerRequest ArticlesDm;
         #endregion
         #region Search filters
+        private string UserIdFilter = string.Empty;
+        private string NumberFilter = string.Empty;
         #endregion
         #endregion
 
@@ -49,22 +49,28 @@ namespace MCPackServer.Pages.RequisitionsModule
         Requisitions SelectedRequisition = new();
         List<Requisitions> RequisitionsTableItems = new();
         List<RequisitionArticles> SelectedArticles = new();
-        List<Clients> ClientsList = new();
+        List<UserInformationView> UsersList = new();
         #endregion
 
         protected override async Task OnInitializedAsync()
         {
             var AuthenticationState = await _authenticationStateProvider.GetAuthenticationStateAsync();
             var user = AuthenticationState.User;
-            try
+            if (null != user)
             {
-                CurrentUser = await _service.GetByKeyAsync<AspNetUsers>(user.Identity.Name, "UserName");
+                try
+                {
+                    CanCreate = (await _authorizationService.AuthorizeAsync(user, Constants.Permissions.Requisitions.Create)).Succeeded;
+                    CanEdit = (await _authorizationService.AuthorizeAsync(user, Constants.Permissions.Requisitions.Edit)).Succeeded;
+                    CanDelete = (await _authorizationService.AuthorizeAsync(user, Constants.Permissions.Requisitions.Delete)).Succeeded;
+
+                    CurrentUser = await _service.GetByKeyAsync<AspNetUsers>(user?.Identity?.Name ?? string.Empty, "UserName");
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex);
+                }
             }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex);
-            }
-            
         }
 
         protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -84,7 +90,12 @@ namespace MCPackServer.Pages.RequisitionsModule
             DataManagerRequest request = new()
             {
                 Take = state.PageSize,
-                Skip = state.PageSize * state.Page
+                Skip = state.PageSize * state.Page,
+                Where = new()
+                {
+                    new WhereFilter { Field = nameof(Requisitions.RequisitionNumber), Value = NumberFilter },
+                    new WhereFilter { Field = nameof(Requisitions.UserId), Value = UserIdFilter }
+                }
             };
             string field = state.SortLabel ?? "Id";
             string order = state.SortDirection == SortDirection.Ascending ? "ASC" : "DESC";
@@ -109,7 +120,7 @@ namespace MCPackServer.Pages.RequisitionsModule
         private async Task CreateRequisition()
         {
             string number = string.Empty;
-            if (null != RequisitionsTableItems)
+            if (null != RequisitionsTableItems && RequisitionsTableItems.Any())
                 number = (RequisitionsTableItems.Max(r => int.Parse(r.RequisitionNumber)) + 1).ToString("d5");
             else number = "00001";
             Parameters = new()
@@ -119,7 +130,8 @@ namespace MCPackServer.Pages.RequisitionsModule
                 {
                     RequisitionNumber = number,
                     UserId = CurrentUser.Id,
-                    IssuedDate = DateTime.Now
+                    IssuedDate = DateTime.Now,
+                    RequiredDate = DateTime.Now
                 }
             };
             var dialog = Dialogs.Show<RequisitionsDialog>("Añadir nueva requisición", Parameters);
@@ -270,24 +282,34 @@ namespace MCPackServer.Pages.RequisitionsModule
         #endregion
         #endregion
 
-        private async Task<IEnumerable<int?>> ClientsServerReload(string filter)
+        private async Task<IEnumerable<string>> UsersServerReload(string filter)
         {
-            List<int?> result = new();
-            List<WhereFilter> filters = new()
-            {
-                new WhereFilter { Field = "MarketName", Value = filter }
-            };
+            List<string> result = new();
             DataManagerRequest dm = new()
             {
-                Where = filters
+                Where = new()
+                {
+                    new WhereFilter { Field = nameof(AspNetUsers.UserName), Value = filter }
+                }
             };
-            var items = await _service.GetForGridAsync<Clients>(dm);
+            var items = await _service.GetForGridAsync<UserInformationView>(dm);
             if (null != items)
             {
-                ClientsList = items.ToList();
-                ClientsList.ForEach(c => result.Add(c.Id));
+                UsersList = items.ToList();
+                UsersList.ForEach(c => result.Add(c.Id));
             }
             return result;
+        }
+
+        private string GetUserName(string Id)
+        {
+            string UserName = string.Empty;
+            if (!string.IsNullOrEmpty(Id))
+            {
+                var match = UsersList.FirstOrDefault(c => c.Id == Id);
+                if (match != null) UserName = match.UserName;
+            }
+            return UserName;
         }
         private void RemoveTab(MudTabPanel? tabPanel = null, RequisitionArticles? selectedArticle = null)
         {

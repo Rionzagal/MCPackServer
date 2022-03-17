@@ -77,6 +77,18 @@ namespace MCPackServer.Pages.RolesModule
                         });
                 }
             }
+            foreach (var claim in PermissionModules.GetSpecialPermissions())
+            {
+                if (!Reference.AspNetRoleClaims.Any(c => claim == c.ClaimValue))
+                {
+                    PermissionList.Add(new AspNetRoleClaims()
+                    {
+                        ClaimType = "Permission",
+                        RoleId = Reference.Id,
+                        ClaimValue = claim
+                    });
+                }
+            }
             PermissionGrouping = new()
             {
                 GroupName = "Módulo",

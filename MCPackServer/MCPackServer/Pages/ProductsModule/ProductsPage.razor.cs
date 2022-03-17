@@ -14,7 +14,6 @@ namespace MCPackServer.Pages.ProductsModule
         private bool CanCreate, CanEdit, CanDelete = true;
         #region Visible Flags
         private bool VisibleProductInformation = false;
-        private bool VisibleCreateProduct, VisibleEditProduct = false;
         #endregion
         #endregion
 
@@ -38,7 +37,21 @@ namespace MCPackServer.Pages.ProductsModule
 
         protected override async Task OnInitializedAsync()
         {
-            await base.OnInitializedAsync();
+            var _authenticationState = await _authenticationStateProvider.GetAuthenticationStateAsync();
+            var user = _authenticationState.User;
+            if (null != user)
+            {
+                try
+                {
+                    CanCreate = (await _authorizationService.AuthorizeAsync(user, Constants.Permissions.Products.Create)).Succeeded;
+                    CanEdit = (await _authorizationService.AuthorizeAsync(user, Constants.Permissions.Products.Edit)).Succeeded;
+                    CanDelete = (await _authorizationService.AuthorizeAsync(user, Constants.Permissions.Products.Delete)).Succeeded;
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.ToString());
+                }
+            }
         }
 
         #region MC-products related methods

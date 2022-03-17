@@ -24,6 +24,7 @@ namespace MCPackServer.Pages.RolesModule
         #region Permission State
         #region Permissions
         public bool CanCreate, CanEdit, CanDelete = false;
+        private bool CanAddPermissions, CanDeletePermissions = false;
         private bool VisibleRoleInformation = false;
         #endregion
         #endregion
@@ -56,6 +57,15 @@ namespace MCPackServer.Pages.RolesModule
         {
             var AuthenticationState = await _authenticationStateProvider.GetAuthenticationStateAsync();
             var user = AuthenticationState.User;
+            if (null != user)
+            {
+                CanCreate = (await _authorizationService.AuthorizeAsync(user, Constants.Permissions.Roles.Create)).Succeeded;
+                CanEdit = (await _authorizationService.AuthorizeAsync(user, Constants.Permissions.Roles.Edit)).Succeeded;
+                CanDelete = (await _authorizationService.AuthorizeAsync(user, Constants.Permissions.Roles.Delete)).Succeeded;
+
+                CanAddPermissions = (await _authorizationService.AuthorizeAsync(user, Constants.Permissions.RoleClaims.Create)).Succeeded;
+                CanDeletePermissions = (await _authorizationService.AuthorizeAsync(user, Constants.Permissions.RoleClaims.Delete)).Succeeded;
+            }
         }
 
         #region RolesTable methods
@@ -223,7 +233,7 @@ namespace MCPackServer.Pages.RolesModule
         {
             bool? delete = await Dialogs.ShowMessageBox(
                 "Advertencia",
-                $"Se eliminarán {permissions.Count()} permisos de rol",
+                $"Se eliminarán {permissions.Count()} permisos de rol.",
                 yesText: "Confirmar",
                 cancelText: "Cancelar");
             if (delete.HasValue)

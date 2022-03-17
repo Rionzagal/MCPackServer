@@ -3,9 +3,9 @@
 @inject IQuotesService _quotesService
 @inject IProvidersService _providersService
 
-@attribute [Authorize]
+@attribute [Authorize (Policy = @Constants.Permissions.Articles.View)]
 
-<MudText Typo="Typo.h3" Align="Align.Center">GESTIÓN DE ARTÍCULOS DE COMPRA Y COTIZACIONES</MudText>
+<MudText Typo="Typo.h3" Align="Align.Center">CATÁLOGO DE MATERIALES Y COTIZACIONES</MudText>
 
 <MudExpansionPanels MultiExpansion>
     <MudExpansionPanel @ref="GroupsPanel" Text="@($"Grupo seleccionado: {SelectedGroup.Name ?? "N/A"}")">
@@ -13,10 +13,11 @@
             <MudCardHeader>
                 <CardHeaderContent>
                     <MudAutocomplete T="ArticleGroups" Label="Seleccionar grupo" @bind-Value="SelectedGroup" Clearable
-                                     SearchFunc="GroupsServerReload" ToStringFunc="new Func<ArticleGroups, string>(GroupName)" />
+                                     OnClearButtonClick="() => SelectedGroup = new()" SearchFunc="GroupsServerReload" 
+                                     ToStringFunc="new Func<ArticleGroups, string>(GroupName)" />
                 </CardHeaderContent>
                 <CardHeaderActions>
-                    @if (true)
+                    @if (CanCreateGroup)
                     {
                         <MudTooltip Text="Añadir nuevo grupo">
                             <MudIconButton Icon="@Icons.Material.Filled.Add" Color="Color.Default"
@@ -32,14 +33,14 @@
                 </MudContainer>
             </MudCardContent>
             <MudCardActions>
-                @if (0 != SelectedGroup.Id)
+                @if (0 != SelectedGroup.Id && CanEditGroup)
                 {
                     <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="mx-1"
                                OnClick="async () => await EditGroup()">
                         Editar
                     </MudButton>
                 }
-                @if (0 != SelectedGroup.Id)
+                @if (0 != SelectedGroup.Id && CanEditGroup)
                 {
                     <MudButton Variant="Variant.Filled" Color="Color.Error" Class="mx-1"
                                OnClick="async () => await DeleteGroup()">
@@ -55,10 +56,11 @@
             <MudCardHeader>
                 <CardHeaderContent>
                     <MudAutocomplete T="ArticleFamilies" Label="Seleccionar familia" @bind-Value="SelectedFamily" Clearable
-                                     SearchFunc="FamiliesServerReload" ToStringFunc="new Func<ArticleFamilies, string>(FamilyName)" />
+                                     OnClearButtonClick="() => SelectedFamily = new()" SearchFunc="FamiliesServerReload" 
+                                     ToStringFunc="new Func<ArticleFamilies, string>(FamilyName)" />
                 </CardHeaderContent>
                 <CardHeaderActions>
-                    @if (true)
+                    @if (CanCreateFamily)
                     {
                         <MudTooltip Text="Añadir nueva familia">
                             <MudIconButton Icon="@Icons.Material.Filled.Add" Color="Color.Default"
@@ -74,14 +76,14 @@
                 </MudContainer>
             </MudCardContent>
             <MudCardActions>
-                @if (true && 0 != SelectedFamily.Id)
+                @if (CanEditFamily && 0 != SelectedFamily.Id)
                 {
                     <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="mx-1"
                                OnClick="async () => await EditFamily()">
                         Editar
                     </MudButton>
                 }
-                @if (true && 0 != SelectedFamily.Id)
+                @if (CanDeleteFamily && 0 != SelectedFamily.Id)
                 {
                     <MudButton Variant="Variant.Filled" Color="Color.Error" Class="mx-1" 
                                OnClick="async () => await DeleteFamily()" >
@@ -100,10 +102,13 @@
                 <ToolBarContent>
                     <MudText Typo="Typo.h6">Artículos registrados</MudText>
                     <MudSpacer />
-                    <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="mx-1"
+                    @if (CanCreateArticle)
+                    {
+                        <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="mx-1"
                                OnClick="async () => await CreateArticle()" >
-                        Añadir
-                    </MudButton>
+                            Añadir
+                        </MudButton>
+                    }
                     <MudButton Variant="Variant.Filled" Class="mx-1"
                                OnClick="DeleteArticleSearchFilters">
                         Borrar filtros de búsqueda
@@ -115,25 +120,25 @@
                 <HeaderContent>
                     <MudTHeadRow>
                         <MudTh><MudTableSortLabel SortLabel="Name" T="PurchaseArticles">Nomrbe</MudTableSortLabel></MudTh>
-                        <MudTh><MudTableSortLabel SortLabel="TradeMark" T="PurchaseArticles">Marca comercial</MudTableSortLabel></MudTh>
+                        <MudTh><MudTableSortLabel SortLabel="TradeMark" T="PurchaseArticles">Marca</MudTableSortLabel></MudTh>
                         <MudTh><MudTableSortLabel SortLabel="Code" T="PurchaseArticles">Código</MudTableSortLabel></MudTh>
                     </MudTHeadRow>
                     <MudTHeadRow>
                         <MudTh>
-                            <MudTextField T="string" @bind-Value="NameFilter" Placeholder="Buscar por nombre" />
+                            <MudTextField T="string" @bind-Value="NameFilter" Placeholder="Buscar por nombre" Clearable />
                         </MudTh>
                         <MudTh>
-                            <MudTextField T="string" @bind-Value="TradeMarkFilter" Placeholder="Buscar por marca" />
+                            <MudTextField T="string" @bind-Value="TradeMarkFilter" Placeholder="Buscar por marca" Clearable />
                         </MudTh>
                         <MudTh>
-                            <MudTextField T="string" @bind-Value="CodeFilter" Placeholder="Buscar por código" />
+                            <MudTextField T="string" @bind-Value="CodeFilter" Placeholder="Buscar por código" Clearable />
                         </MudTh>
                     </MudTHeadRow>
                 </HeaderContent>
                 <RowTemplate>
                     <MudTd DataLabel="Nombre">@context.Name</MudTd>
-                    <MudTd DataLabel="Marca comercial">@context.TradeMark</MudTd>
-                    <MudTd DataLabel="Código">@context.Code</MudTd>
+                    <MudTd DataLabel="Marca comercial">@(context.TradeMark ?? "N/A")</MudTd>
+                    <MudTd DataLabel="Código">@($"{SelectedGroup.Code}-{SelectedFamily.Code}-{context.Code}")</MudTd>
                 </RowTemplate>
                 <NoRecordsContent>
                     <MudText>Sin artículos encontrados</MudText>
@@ -156,7 +161,7 @@
         <MudTabs @ref="ArticleInformationTabs" Elevation="2" Rounded ApplyEffectsToContainer Color="Color.Primary">
             <Header>
                 <MudTooltip Text="Cerrar artículo">
-                    <MudIconButton Icon="@Icons.Material.Filled.Close" Color="Color.Warning"
+                    <MudIconButton Icon="@Icons.Material.Filled.Close"
                                    OnClick="(_) => { SelectedArticle = new(); VisibleArticleInformation = false; }" />
                 </MudTooltip>
                 @if (CanEditArticle)
@@ -179,146 +184,159 @@
                 {
                     <MudTooltip Text="Cerrar cotización">
                         <MudIconButton Class="ml-2 pa-1" Icon="@Icons.Material.Filled.Close"
-                                       Color="Color.Error" OnClick="(_) => RemoveTab(tabPanel: context)" />
+                                       OnClick="(_) => RemoveTab(tabPanel: context)" />
                     </MudTooltip>
                 }
             </TabPanelHeader>
             <ChildContent>
                 <MudTabPanel Text="Información General" ID="@Guid.NewGuid()" Tag="@Guid.NewGuid()">
-                    <MudPaper Elevation="0" Class="m-3" Style="height:500px; overflow-y:scroll;">
-                        <div class="form-group">
-                            <MudText Typo="Typo.subtitle2" Align="Align.Left">Código:</MudText>
-                            <MudTextField T="string" @bind-Text="@SelectedArticle.Code" ReadOnly />
-                        </div>
-                        <div class="form-group">
-                            <MudText Typo="Typo.subtitle2" Align="Align.Left">Nombre:</MudText>
-                            <MudTextField T="string" @bind-Text="@SelectedArticle.Name" ReadOnly />
-                        </div>
-                        <div class="form-group">
-                            <MudText Typo="Typo.subtitle2" Align="Align.Left">Descripción:</MudText>
-                            <MudTextField T="string" @bind-Text="@SelectedArticle.Description" ReadOnly />
-                        </div>
-                        <div class="form-group">
-                            <MudText Typo="Typo.subtitle2" Align="Align.Left">Unidad:</MudText>
-                            <MudTextField T="string" @bind-Text="@SelectedArticle.Unit" ReadOnly />
-                        </div>
-                        <div class="form-group">
-                            <MudText Typo="Typo.subtitle2" Align="Align.Left">Marca:</MudText>
-                            <MudTextField T="string" @bind-Text="@(SelectedArticle.TradeMark)" ReadOnly />
-                        </div>
-                        <div class="form-group">
-                            <MudText Typo="Typo.subtitle2" Align="Align.Left">Modelo:</MudText>
-                            <MudTextField T="string" @bind-Text="@(SelectedArticle.Model)" ReadOnly />
-                        </div>
-                    </MudPaper>
+                    <MudGrid Class="m-3" Style="width: inherit; height:500px; overflow-y:scroll;">
+                        <MudItem xs="12">
+                            <MudText Typo="Typo.subtitle1" Align="Align.Left">Código</MudText>
+                            <MudTextField Variant="Variant.Outlined" Value="@($"{SelectedGroup.Code}-{SelectedFamily.Code}-{SelectedArticle.Code}")" ReadOnly />
+                        </MudItem>
+                        <MudItem xs="12">
+                            <MudText Typo="Typo.subtitle1" Align="Align.Left">Nombre</MudText>
+                            <MudTextField Variant="Variant.Outlined" Value="@SelectedArticle.Name" ReadOnly />
+                        </MudItem>
+                        <MudItem xs="12">
+                            <MudText Typo="Typo.subtitle1" Align="Align.Left">Descripción</MudText>
+                            <MudTextField Variant="Variant.Outlined" Value="@SelectedArticle.Description" ReadOnly />
+                        </MudItem>
+                        <MudItem xs="4">
+                            <MudText Typo="Typo.subtitle1" Align="Align.Left">Marca</MudText>
+                            <MudTextField Variant="Variant.Outlined" Value="@(SelectedArticle.TradeMark ?? "N/A")" ReadOnly />
+                        </MudItem>
+                        <MudItem xs="4">
+                            <MudText Typo="Typo.subtitle1" Align="Align.Left">Modelo</MudText>
+                            <MudTextField Variant="Variant.Outlined" Value="@(SelectedArticle.Model ?? "N/A")" ReadOnly />
+                        </MudItem>
+                        <MudItem xs="4">
+                            <MudText Typo="Typo.subtitle1" Align="Align.Left">Unidad</MudText>
+                            <MudTextField Variant="Variant.Outlined" Value="@SelectedArticle.Unit" ReadOnly />
+                        </MudItem>
+                    </MudGrid>
                 </MudTabPanel>
-                <MudTabPanel Text="Cotizaciones" ID="@Guid.NewGuid()" Tag="@Guid.NewGuid()" >
-                    <MudPaper Elevation="0" Class="my-3" Style="height:500px;">
-                        <MudTable @ref="QuoteTable" T="Quotes" Dense Hover FixedHeader
-                                  CustomHeader Striped Height="400px" OnRowClick="OnSelectedQuoteRow"
-                                  ServerData="@(new Func<TableState, Task<TableData<Quotes>>>(QuotesServerReload))">
-                            <ToolBarContent>
-                                <MudText Typo="Typo.h6">Cotizaciones registradas</MudText>
-                                <MudSpacer />
-                                <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="mx-1"
-                                           OnClick="async () => await CreateQuote()" >
-                                    Añadir cotización
-                                </MudButton>
-                                <MudButton Variant="Variant.Filled" Class="mx-1" OnClick="DeleteQuoteFilters">
-                                    Borrar filtros de búsqueda
-                                </MudButton>
-                                <MudButton Variant="Variant.Outlined" Class="ml-1" OnClick="FilterQuotes">
-                                    <MudIcon Icon="@Icons.Material.Filled.Search" /> Buscar
-                                </MudButton>
-                            </ToolBarContent>
-                            <HeaderContent>
-                                <MudTHeadRow>
-                                    <MudTh><MudTableSortLabel SortLabel="ProviderId" T="Quotes">Proveedor</MudTableSortLabel></MudTh>
-                                    <MudTh><MudTableSortLabel SortLabel="SKU" T="Quotes">SKU</MudTableSortLabel></MudTh>
-                                    <MudTh><MudTableSortLabel SortLabel="Price" T="Quotes">Precio ($)</MudTableSortLabel></MudTh>
-                                    <MudTh><MudTableSortLabel SortLabel="Currency" T="Quotes">Divisa</MudTableSortLabel></MudTh>
-                                    <MudTh><MudTableSortLabel SortLabel="DateUpdated" T="Quotes">Fecha de actualización</MudTableSortLabel></MudTh>
-                                </MudTHeadRow>
-                                <MudTHeadRow>
-                                    <MudTh>
-                                        <MudAutocomplete T="int" Label="Buscar por proveedor" @bind-Value="ProviderFilter"
-                                                         SearchFunc="f => ProvidersServerReload(f, false)" Clearable
-                                                         ToStringFunc="new Func<int, string>(GetProviderName)"
-                                                         OnClearButtonClick="() => ProviderFilter = 0" />
-                                    </MudTh>
-                                    <MudTh />
-                                    <MudTh />
-                                    <MudTh>
-                                        <MudTextField T="string" @bind-Value="CurrencyFilter" Placeholder="Buscar por divisa" Clearable />
-                                    </MudTh>
-                                    <MudTh />
-                                </MudTHeadRow>
-                            </HeaderContent>
-                            <RowTemplate>
-                                <MudTd DataLabel="Proveedor">@context.Provider.MarketName.</MudTd>
-                                <MudTd DataLabel="SKU">@context.SKU</MudTd>
-                                <MudTd DataLabel="Precio">$ @context.Price.ToString("n2")</MudTd>
-                                <MudTd DataLabel="Divisa">@context.Currency</MudTd>
-                                <MudTd DataLabel="Fecha de actualización">@context.DateUpdated.ToShortDateString()</MudTd>
-                            </RowTemplate>
-                            <NoRecordsContent>
-                                <MudText>Sin cotizaciones encontradas</MudText>
-                            </NoRecordsContent>
-                            <LoadingContent>
-                                <MudText>Cargando cotizaciones...</MudText>
-                            </LoadingContent>
-                            <PagerContent>
-                                <MudTablePager />
-                            </PagerContent>
-                        </MudTable>
-                    </MudPaper>
-                </MudTabPanel>
-                @foreach (var quote in SelectedQuotes)
+                @if (CanViewQuote)
                 {
-                    <MudTabPanel Text="@($"Cotización: {quote.Provider.MarketName}")" Tag="@quote.Id" ID="@quote.Id">
-                        <MudCard Class="m-3" Elevation="0">
-                            <MudCardHeader Style="height:100px;">
-                                <CardHeaderContent>
-                                    <MudText Typo="Typo.subtitle1">
-                                        <b>Artículo cotizado con:</b> @quote.Provider.MarketName
-                                    </MudText>
-                                </CardHeaderContent>
-                            </MudCardHeader>
-                            <MudCardContent Style="height:300px; overflow-y:scroll;">
-                                <div class="form-group">
-                                    <MudText Typo="Typo.subtitle2" Align="Align.Left">SKU:</MudText>
-                                    <MudTextField T="string" @bind-Text="@quote.SKU" ReadOnly />
-                                </div>
-                                <div class="form-group">
-                                    <MudText Typo="Typo.subtitle2" Align="Align.Left">Precio sugerido:</MudText>
-                                    <MudNumericField T="float" @bind-Value="@quote.Price"
-                                                     AdornmentText="$" Adornment="Adornment.Start" ReadOnly />
-                                </div>
-                                <div class="form-group">
-                                    <MudText Typo="Typo.subtitle2" Align="Align.Left">Precio con descuento:</MudText>
-                                    <MudNumericField T="float" Value="@(quote.Price*(1 - quote.Provider.Discount/100))"
-                                                     AdornmentText="$" Adornment="Adornment.Start" ReadOnly />
-                                </div>
-                                <div class="form-group">
-                                    <MudText Typo="Typo.subtitle2" Align="Align.Left">Última fecha de actualización:</MudText>
-                                    <MudDatePicker Date="@quote.DateUpdated" ReadOnly />
-                                </div>
-                            </MudCardContent>
-                            <MudCardActions Style="height:100px;">
-                                <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="mx-1"
-                                           OnClick="async () => await EditQuote(quote)" >
-                                    Actualizar
-                                </MudButton>
-                                @if (CanDeleteQuote)
-                                {
-                                    <MudButton Variant="Variant.Filled" Color="Color.Error" Class="mx-1"
-                                               OnClick="async () => await DeleteQuote(quote)" >
-                                        Eliminar
+                    <MudTabPanel Text="Cotizaciones" ID="@Guid.NewGuid()" Tag="@Guid.NewGuid()" >
+                        <MudPaper Elevation="0" Class="my-3" Style="height:500px;">
+                            <MudTable @ref="QuoteTable" T="Quotes" Dense Hover FixedHeader
+                                      CustomHeader Striped Height="400px" OnRowClick="OnSelectedQuoteRow"
+                                      ServerData="@(new Func<TableState, Task<TableData<Quotes>>>(QuotesServerReload))">
+                                <ToolBarContent>
+                                    <MudText Typo="Typo.h6">Cotizaciones registradas</MudText>
+                                    <MudSpacer />
+                                    @if (CanCreateQuote)
+                                    {
+                                        <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="mx-1"
+                                               OnClick="async () => await CreateQuote()" >
+                                            Añadir cotización
+                                        </MudButton>                                     
+                                    }
+                                    <MudButton Variant="Variant.Filled" Class="mx-1" OnClick="DeleteQuoteFilters">
+                                        Borrar filtros de búsqueda
                                     </MudButton>
-                                }
-                            </MudCardActions>
-                        </MudCard>
+                                    <MudButton Variant="Variant.Outlined" Class="ml-1" OnClick="FilterQuotes">
+                                        <MudIcon Icon="@Icons.Material.Filled.Search" /> Buscar
+                                    </MudButton>
+                                </ToolBarContent>
+                                <HeaderContent>
+                                    <MudTHeadRow>
+                                        <MudTh><MudTableSortLabel SortLabel="ProviderId" T="Quotes">Proveedor</MudTableSortLabel></MudTh>
+                                        <MudTh><MudTableSortLabel SortLabel="SKU" T="Quotes">SKU</MudTableSortLabel></MudTh>
+                                        <MudTh><MudTableSortLabel SortLabel="Price" T="Quotes">Precio</MudTableSortLabel></MudTh>
+                                        <MudTh><MudTableSortLabel SortLabel="Currency" T="Quotes">Divisa</MudTableSortLabel></MudTh>
+                                        <MudTh><MudTableSortLabel SortLabel="DateUpdated" T="Quotes">Fecha de actualización</MudTableSortLabel></MudTh>
+                                    </MudTHeadRow>
+                                    <MudTHeadRow>
+                                        <MudTh>
+                                            <MudAutocomplete T="int" Label="Buscar por proveedor" @bind-Value="ProviderFilter"
+                                                             SearchFunc="f => ProvidersServerReload(f, false)" Clearable
+                                                             ToStringFunc="new Func<int, string>(GetProviderName)"
+                                                             OnClearButtonClick="() => ProviderFilter = 0" />
+                                        </MudTh>
+                                        <MudTh />
+                                        <MudTh />
+                                        <MudTh>
+                                            <MudSelect T="string" @bind-Value="CurrencyFilter" Clearable Placeholder="Moneda">
+                                                <MudSelectItem Value="@("MXN")" />
+                                                <MudSelectItem Value="@("USD")" />
+                                            </MudSelect>
+                                        </MudTh>
+                                        <MudTh />
+                                    </MudTHeadRow>
+                                </HeaderContent>
+                                <RowTemplate>
+                                    <MudTd DataLabel="Proveedor">@context.Provider.MarketName</MudTd>
+                                    <MudTd DataLabel="SKU">@(context.SKU ?? "N/A")</MudTd>
+                                    <MudTd DataLabel="Precio">$@context.Price.ToString("n2")</MudTd>
+                                    <MudTd DataLabel="Divisa">@context.Currency</MudTd>
+                                    <MudTd DataLabel="Fecha de actualización">@context.DateUpdated.ToShortDateString()</MudTd>
+                                </RowTemplate>
+                                <NoRecordsContent>
+                                    <MudText>Sin cotizaciones encontradas</MudText>
+                                </NoRecordsContent>
+                                <LoadingContent>
+                                    <MudText>Cargando cotizaciones...</MudText>
+                                </LoadingContent>
+                                <PagerContent>
+                                    <MudTablePager />
+                                </PagerContent>
+                            </MudTable>
+                        </MudPaper>
                     </MudTabPanel>
+                    @foreach (var quote in SelectedQuotes)
+                    {
+                        <MudTabPanel Text="@($"Cotización: {quote.Provider.MarketName}")" Tag="@quote.Id" ID="@quote.Id">
+                            <MudCard Class="m-3" Elevation="0">
+                                <MudCardHeader Style="height:100px;">
+                                    <CardHeaderContent>
+                                        <MudText Typo="Typo.subtitle1">
+                                            <b>Artículo cotizado con:</b> @quote.Provider.MarketName
+                                        </MudText>
+                                    </CardHeaderContent>
+                                </MudCardHeader>
+                                <MudCardContent Style="height:300px; overflow-y:scroll;">
+                                    <MudGrid>
+                                        <MudItem xs="12">
+                                            <MudText Typo="Typo.subtitle1" Align="Align.Left">SKU</MudText>
+                                            <MudTextField Value="@(quote.SKU ?? "N/A")" Variant="Variant.Outlined" ReadOnly />
+                                        </MudItem>
+                                        <MudItem xs="6">
+                                            <MudText Typo="Typo.subtitle1" Align="Align.Left">Precio sugerido</MudText>
+                                            <MudTextField Value="@($"${quote.Price.ToString("n2")} {quote.Currency}")" Variant="Variant.Outlined" ReadOnly />
+                                        </MudItem>
+                                        <MudItem xs="6">
+                                            <MudText Typo="Typo.subtitle1" Align="Align.Left">Precio con descuento</MudText>
+                                            <MudTextField Value="@($"${(quote.Price*(1 - quote.Provider.Discount/100)).ToString("n2")} {quote.Currency}")"
+                                                Variant="Variant.Outlined" ReadOnly />
+                                        </MudItem>
+                                        <MudItem xs="12">
+                                            <MudText Typo="Typo.subtitle1" Align="Align.Left">Última fecha de actualización</MudText>
+                                            <MudTextField Value="@quote.DateUpdated" Format="dddd, MMM dd yyyy" Variant="Variant.Outlined" ReadOnly />
+                                        </MudItem>
+                                    </MudGrid>
+                                </MudCardContent>
+                                <MudCardActions Style="height:100px;">
+                                    @if (CanEditQuote)
+                                    {
+                                        <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="mx-1"
+                                               OnClick="async () => await EditQuote(quote)" >
+                                            Actualizar
+                                        </MudButton>
+                                    }
+                                    @if (CanDeleteQuote)
+                                    {
+                                        <MudButton Variant="Variant.Filled" Color="Color.Error" Class="mx-1"
+                                                   OnClick="async () => await DeleteQuote(quote)" >
+                                            Eliminar
+                                        </MudButton>
+                                    }
+                                </MudCardActions>
+                            </MudCard>
+                        </MudTabPanel>
+                    }
                 }
             </ChildContent>
         </MudTabs>

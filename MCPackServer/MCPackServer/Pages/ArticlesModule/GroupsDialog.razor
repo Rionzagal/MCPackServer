@@ -7,7 +7,7 @@
     <DialogContent>
         @if (_processing)
         {
-            <MudProgressCircular Class="m-sm-n1" Size="Size.Large" Indeterminate="true" />
+            <MudProgressCircular Class="m-sm-n1" Size="Size.Large" Indeterminate />
             <MudText Class="m-sm-2">Esperando respuesta de servidor...</MudText>
         }
         else
@@ -23,19 +23,19 @@
                 }
                 <MudForm Model="Model" @ref="Form">
                     <div class="form-group">
-                        <MudTextField T="string" Label="Nombre" Required="true"
+                        <MudTextField T="string" Label="Nombre" Required
                                       RequiredError="Insertar nombre"
                                       @bind-Value="Model.Name" 
                                       ReadOnly="@Disabled"/>
                     </div>
                     <div class="form-group">
-                        <MudTextField T="string" Label="Código" Required="true"
+                        <MudTextField T="string" Label="Código" Required
                                       RequiredError="Insertar código"
                                       @bind-Value="Model.Code"
                                       ReadOnly="@Disabled"/>
                     </div>
                     <div class="form-group">
-                        <MudTextField T="string" Label="Descripción" Required="true"
+                        <MudTextField T="string" Label="Descripción" Required
                                       RequiredError="Insertar descripción"
                                       @bind-Value="Model.Description" 
                                       ReadOnly="@Disabled"/>

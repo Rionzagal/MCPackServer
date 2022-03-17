@@ -72,13 +72,22 @@ namespace MCPackServer.Constants
                 Users
                 ,Roles
                 ,Clients
-                ,Contacts
                 ,Providers
                 ,Products
                 ,Articles
                 ,Projects
                 ,PurchaseOrders
                 ,Requisitions
+            };
+        }
+
+        public static List<string> GetSpecialPermissions()
+        {
+            return new List<string>()
+            {
+                Permissions.ProjectSpecial.ClientChange
+                ,Permissions.Reports.View
+                ,Permissions.Reports.Create
             };
         }
     }

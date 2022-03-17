@@ -1,25 +1,21 @@
-USE [MC-PACK-DB]
-GO
+USE mcpackdb;
 
-DELETE FROM AspNetRoles
-
---Create application roles in AspNetRoles table
-INSERT INTO [dbo].[AspNetRoles]
-           ([Id],[Name],[NormalizedName],[ConcurrencyStamp])
+INSERT INTO mcpackdb.aspnetroles
+           (`Id`,`Name`,`NormalizedName`,`ConcurrencyStamp`)
      VALUES
-           ('6E4134C5-FE58-478F-A6EE-DE4A1A87CC16','Developer','DEVELOPER',NEWID())
-GO
+           ('6E4134C5-FE58-478F-A6EE-DE4A1A87CC16','Developer','DEVELOPER',uuid())
+;
 
-INSERT INTO [dbo].[AspNetRoles]
-           ([Id],[Name],[NormalizedName],[ConcurrencyStamp])
+INSERT INTO mcpackdb.aspnetroles
+           (`Id`,`Name`,`NormalizedName`,`ConcurrencyStamp`)
      VALUES
-           ('AABE1774-BA38-4EE6-89E6-0405E1F1A6A6','Admin','ADMIN',NEWID())
-GO
+           ('AABE1774-BA38-4EE6-89E6-0405E1F1A6A6','Admin','ADMIN',uuid())
+;
 
---Add permissions for each role
 -- DEVELOPER
-INSERT INTO [dbo].[AspNetRoleClaims]
-			([RoleId],[ClaimType],[ClaimValue])
+DELETE FROM mcpackdb.aspnetroleclaims;
+INSERT INTO mcpackdb.aspnetroleclaims
+			(`RoleId`,`ClaimType`,`ClaimValue`)
      VALUES
            ('6E4134C5-FE58-478F-A6EE-DE4A1A87CC16','Permission','Permissions.Menu.Users')
 		   ,('6E4134C5-FE58-478F-A6EE-DE4A1A87CC16','Permission','Permissions.Users.View')
@@ -83,10 +79,17 @@ INSERT INTO [dbo].[AspNetRoleClaims]
 		   ,('6E4134C5-FE58-478F-A6EE-DE4A1A87CC16','Permission','Permissions.Requisitions.Create')
 		   ,('6E4134C5-FE58-478F-A6EE-DE4A1A87CC16','Permission','Permissions.Requisitions.Edit')
 		   ,('6E4134C5-FE58-478F-A6EE-DE4A1A87CC16','Permission','Permissions.Requisitions.Delete')
-GO
+           ,('6E4134C5-FE58-478F-A6EE-DE4A1A87CC16','Permission','Permissions.Reports.View')
+           ,('6E4134C5-FE58-478F-A6EE-DE4A1A87CC16','Permission','Permissions.Reports.Create')
+           ,('6E4134C5-FE58-478F-A6EE-DE4A1A87CC16','Permission','Permissions.ProjectSpecial.ClientChange')
+		   ,('6E4134C5-FE58-478F-A6EE-DE4A1A87CC16','Permission','Permissions.RoleClaims.View')
+		   ,('6E4134C5-FE58-478F-A6EE-DE4A1A87CC16','Permission','Permissions.RoleClaims.Create')
+		   ,('6E4134C5-FE58-478F-A6EE-DE4A1A87CC16','Permission','Permissions.RoleClaims.Edit')
+		   ,('6E4134C5-FE58-478F-A6EE-DE4A1A87CC16','Permission','Permissions.RoleClaims.Delete')
+;
 -- ADMIN
-INSERT INTO [dbo].[AspNetRoleClaims]
-			([RoleId],[ClaimType],[ClaimValue])
+INSERT INTO mcpackdb.aspnetroleclaims
+			(`RoleId`,`ClaimType`,`ClaimValue`)
      VALUES
            ('AABE1774-BA38-4EE6-89E6-0405E1F1A6A6','Permission','Permissions.Menu.Users')
 		   ,('AABE1774-BA38-4EE6-89E6-0405E1F1A6A6','Permission','Permissions.Users.View')
@@ -150,6 +153,11 @@ INSERT INTO [dbo].[AspNetRoleClaims]
 		   ,('AABE1774-BA38-4EE6-89E6-0405E1F1A6A6','Permission','Permissions.Requisitions.Create')
 		   ,('AABE1774-BA38-4EE6-89E6-0405E1F1A6A6','Permission','Permissions.Requisitions.Edit')
 		   ,('AABE1774-BA38-4EE6-89E6-0405E1F1A6A6','Permission','Permissions.Requisitions.Delete')
-GO
-
-INSERT INTO AspNetUserRoles (UserId, RoleId) VALUES ('ced5ac1c-24df-424f-9dbc-31964e5f9906', '6E4134C5-FE58-478F-A6EE-DE4A1A87CC16')
+           ,('AABE1774-BA38-4EE6-89E6-0405E1F1A6A6','Permission','Permissions.Reports.View')
+           ,('AABE1774-BA38-4EE6-89E6-0405E1F1A6A6','Permission','Permissions.Reports.Create')
+           ,('AABE1774-BA38-4EE6-89E6-0405E1F1A6A6','Permission','Permissions.ProjectSpecial.ClientChange')
+		   ,('AABE1774-BA38-4EE6-89E6-0405E1F1A6A6','Permission','Permissions.RoleClaims.View')
+		   ,('AABE1774-BA38-4EE6-89E6-0405E1F1A6A6','Permission','Permissions.RoleClaims.Create')
+		   ,('AABE1774-BA38-4EE6-89E6-0405E1F1A6A6','Permission','Permissions.RoleClaims.Edit')
+		   ,('AABE1774-BA38-4EE6-89E6-0405E1F1A6A6','Permission','Permissions.RoleClaims.Delete')
+;

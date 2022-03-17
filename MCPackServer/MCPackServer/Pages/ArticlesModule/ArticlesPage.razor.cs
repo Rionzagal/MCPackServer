@@ -1,5 +1,6 @@
 ﻿using MCPackServer.Entities;
 using MCPackServer.Models;
+using Microsoft.AspNetCore.Authorization;
 using MudBlazor;
 
 namespace MCPackServer.Pages.ArticlesModule
@@ -78,7 +79,34 @@ namespace MCPackServer.Pages.ArticlesModule
 
         protected override async Task OnInitializedAsync()
         {
-            await base.OnInitializedAsync();
+            var _authenticationState = await _authenticationStateProvider.GetAuthenticationStateAsync();
+            var user = _authenticationState.User;
+            if (user != null)
+            {
+                try
+                {
+                    CanCreateArticle = (await _authorizationService.AuthorizeAsync(user, Constants.Permissions.Articles.Create)).Succeeded;
+                    CanEditArticle = (await _authorizationService.AuthorizeAsync(user, Constants.Permissions.Articles.Edit)).Succeeded;
+                    CanDeleteArticle = (await _authorizationService.AuthorizeAsync(user, Constants.Permissions.Articles.Delete)).Succeeded;
+
+                    CanCreateFamily = (await _authorizationService.AuthorizeAsync(user, Constants.Permissions.ArticleFamilies.Create)).Succeeded;
+                    CanEditFamily = (await _authorizationService.AuthorizeAsync(user, Constants.Permissions.ArticleFamilies.Edit)).Succeeded;
+                    CanDeleteFamily = (await _authorizationService.AuthorizeAsync(user, Constants.Permissions.ArticleFamilies.Delete)).Succeeded;
+
+                    CanCreateGroup = (await _authorizationService.AuthorizeAsync(user, Constants.Permissions.ArticleGroups.Create)).Succeeded;
+                    CanEditGroup = (await _authorizationService.AuthorizeAsync(user, Constants.Permissions.ArticleGroups.Edit)).Succeeded;
+                    CanDeleteGroup = (await _authorizationService.AuthorizeAsync(user, Constants.Permissions.ArticleGroups.Delete)).Succeeded;
+
+                    CanViewQuote = (await _authorizationService.AuthorizeAsync(user, Constants.Permissions.Quotes.View)).Succeeded;
+                    CanCreateQuote = (await _authorizationService.AuthorizeAsync(user, Constants.Permissions.Quotes.Create)).Succeeded;
+                    CanEditQuote = (await _authorizationService.AuthorizeAsync(user, Constants.Permissions.Quotes.Edit)).Succeeded;
+                    CanDeleteQuote = (await _authorizationService.AuthorizeAsync(user, Constants.Permissions.Quotes.Delete)).Succeeded;
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.ToString());
+                }
+            }
         }
         protected override void OnAfterRender(bool firstRender)
         {

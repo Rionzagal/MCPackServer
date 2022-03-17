@@ -4,7 +4,9 @@
 @inject RoleManager<IdentityRole> _roleManager
 @inject IRolesService _rolesService
 
-<MudText Typo="Typo.h3" Align="Align.Center">Gestión de roles de usuario</MudText>
+@attribute [Authorize (Roles = "Admin, Developer", Policy = @Constants.Permissions.Roles.View)]
+
+<MudText Typo="Typo.h3" Align="Align.Center">GESTIÓN DE ROLES DE USUARIO</MudText>
 
 <MudTable Dense Hover Striped CustomHeader FixedHeader Height="400px"
           T="AspNetRoles" @ref="RolesTable" OnRowClick="OnSelectedRole"
@@ -12,10 +14,13 @@
     <ToolBarContent>
         <MudText Typo="Typo.h6">Puestos registrados</MudText>
         <MudSpacer />
-        <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="mx-1"
+        @if (CanCreate)
+        {
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="mx-1"
                    OnClick="AddRole">
-            Añadir
-        </MudButton>
+                Añadir
+            </MudButton>
+        }
     </ToolBarContent>
     <HeaderContent>
         <MudTHeadRow>
@@ -48,10 +53,12 @@
                     <MudIconButton Icon="@Icons.Material.Filled.Close"
                                    OnClick="() => { SelectedRole = new(); VisibleRoleInformation = false; }" />
                 </MudTooltip>
-                <MudTooltip Text="Eliminar">
-                    <MudIconButton Icon="@Icons.Material.Filled.Delete" Disabled="!CanDelete"
-                                   OnClick="async () => await DeleteRole(SelectedRole)"/>
-                </MudTooltip>
+                @if (CanDelete)
+                {
+                    <MudTooltip Text="Eliminar">
+                        <MudIconButton Icon="@Icons.Material.Filled.Delete" OnClick="async () => await DeleteRole(SelectedRole)"/>
+                    </MudTooltip>
+                }
             </Header>
             <ChildContent>
                 <MudTabPanel Text="Información general">
@@ -85,18 +92,14 @@
                         <ToolBarContent>
                             <MudText Typo="Typo.h6">Permisos de rol</MudText>
                             <MudSpacer />
-                            <MudButton Color="Color.Primary" Class="mx-3" Disabled="!CanEdit"
+                            @if (CanAddPermissions)
+                            {
+                                <MudButton Color="Color.Primary" Class="mx-3" Disabled="!CanEdit"
                                        Variant="Variant.Filled" OnClick="AddPermissions">
-                                Añadir permisos
-                            </MudButton>
+                                    Añadir
+                                </MudButton>
+                            }
                         </ToolBarContent>
-                        <HeaderContent>
-                            <MudTHeadRow>
-                                <MudTh />
-                                <MudTh>Tipo</MudTh>
-                                <MudTh>Valor</MudTh>
-                            </MudTHeadRow>
-                        </HeaderContent>
                         <GroupHeaderTemplate>
                             <MudTh Style="font-weight: 500;" colspan="2">@($"{context.GroupName}: {context.Key} ({context.Items.ToList().Count})")</MudTh>
                         </GroupHeaderTemplate>
@@ -111,10 +114,13 @@
                             <MudTFootRow Style="font-weight: 500;">
                                 <MudTd>Permisos totales: @SelectedRole.AspNetRoleClaims.Count</MudTd>
                                 <MudTd>
-                                    <MudButton Color="Color.Error" Class="mx-3" Disabled="!CanEdit"
+                                    @if (CanDeletePermissions)
+                                    {
+                                        <MudButton Color="Color.Error" Class="mx-3" Disabled="!CanEdit"
                                                Variant="Variant.Filled" OnClick="async () => await DeletePermissions(ClaimsTable.SelectedItems)">
-                                        Eliminar permisos seleccionados
-                                    </MudButton>
+                                            Eliminar permisos seleccionados
+                                        </MudButton>
+                                    }
                                 </MudTd>
                             </MudTFootRow>
                         </FooterContent>
@@ -133,10 +139,12 @@
                         <ToolBarContent>
                             <MudText Typo="Typo.h6">Usuarios en el rol</MudText>
                             <MudSpacer />
-                            <MudButton Color="Color.Primary" Class="mx-3" Disabled="!CanEdit"
-                                       OnClick="AddUser">
-                                Añadir usuario
-                            </MudButton>
+                            @if (CanEdit)
+                            {
+                                <MudButton Color="Color.Primary" Class="mx-3" OnClick="AddUser">
+                                    Añadir usuario
+                                </MudButton>
+                            }
                         </ToolBarContent>
                         <HeaderContent>
                             <MudTHeadRow>
@@ -154,7 +162,7 @@
                             <MudTd DataLabel="Sello de seguridad">@context.User.SecurityStamp</MudTd>
                             <MudTd DataLabel="Eliminar">
                                 <MudButton Variant="Variant.Outlined" Class="mx-3" Size="Size.Small"
-                                           Disabled="!CanEdit" OnClick="async () => await RemoveUser(context.User)" >
+                                           OnClick="async () => await RemoveUser(context.User)" Disabled="!CanEdit">
                                     <MudIcon Icon="@Icons.Material.Filled.Visibility" /> Visualizar
                                 </MudButton>
                             </MudTd>

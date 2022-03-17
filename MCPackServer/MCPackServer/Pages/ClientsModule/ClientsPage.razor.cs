@@ -25,7 +25,7 @@ namespace MCPackServer.Pages.ClientsModule
         #region Permission State
         #region Permissions
         public bool CanCreateClient, CanEditClient, CanDeleteClient = true;
-        public bool CanCreateContact, CanEditContact, CanDeleteContact = true;
+        public bool CanViewContact, CanCreateContact, CanEditContact, CanDeleteContact = true;
         #endregion
         #region Visible Flags
         public bool VisibleClientCreation = false;
@@ -82,7 +82,25 @@ namespace MCPackServer.Pages.ClientsModule
 
         protected override async Task OnInitializedAsync()
         {
-            await base.OnInitializedAsync();
+            var _authenticationState = await _authenticationStateProvider.GetAuthenticationStateAsync();
+            var user = _authenticationState.User;
+            if (null != user)
+            {
+                try
+                {
+                    CanCreateClient = (await _authorizationService.AuthorizeAsync(user, Constants.Permissions.Clients.Create)).Succeeded;
+                    CanEditClient = (await _authorizationService.AuthorizeAsync(user, Constants.Permissions.Clients.Edit)).Succeeded;
+                    CanDeleteClient = (await _authorizationService.AuthorizeAsync(user, Constants.Permissions.Clients.Delete)).Succeeded;
+
+                    CanCreateContact = (await _authorizationService.AuthorizeAsync(user, Constants.Permissions.Contacts.Create)).Succeeded;
+                    CanEditContact = (await _authorizationService.AuthorizeAsync(user, Constants.Permissions.Clients.Edit)).Succeeded;
+                    CanDeleteContact = (await _authorizationService.AuthorizeAsync(user, Constants.Permissions.Clients.Delete)).Succeeded;
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.ToString());
+                }
+            }
         }
         protected override void OnAfterRender(bool firstRender)
         {

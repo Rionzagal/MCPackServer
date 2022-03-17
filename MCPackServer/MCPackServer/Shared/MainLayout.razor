@@ -1,6 +1,6 @@
 ﻿@inherits LayoutComponentBase
 
-<MudThemeProvider />
+<MudThemeProvider Theme="MCPackLight" />
 <MudDialogProvider
                    FullWidth="true"
                    MaxWidth="MaxWidth.Large"
@@ -29,6 +29,8 @@
 </MudLayout>
 
 @code {
+    MCPackDefaultTheme MCPackLight = new MCPackDefaultTheme();
+
     bool _drawerOpen = true;
 
     void DrawerToggle()

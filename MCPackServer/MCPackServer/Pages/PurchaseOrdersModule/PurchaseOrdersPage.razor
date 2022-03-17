@@ -2,6 +2,8 @@
 @inject IPurchaseOrdersService _ordersService
 @inject IArticlesToPurchaseService _articlesService
 
+@attribute [Authorize (Policy = @Constants.Permissions.PurchaseOrders.View)]
+
 <MudText Typo="Typo.h3" Align="Align.Center">GESTIÓN DE ÓRDENES DE COMPRA</MudText>
 
 <MudTable @ref="OrdersTable" T="PurchaseOrders" Dense Hover FixedHeader Height="400px"
@@ -10,11 +12,11 @@
     <ToolBarContent>
         <MudText Typo="Typo.h6">Órdenes de compra registradas</MudText>
         <MudSpacer />
-        @if (true)
+        @if (CanCreate)
         {
             <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="mx-1"
                        OnClick="async () => await AddOrder()" >
-                Añadir órden de compra
+                Añadir
             </MudButton>
         }
         <MudButton Variant="Variant.Filled" Class="mx-1">
@@ -62,7 +64,7 @@
                     <MudIconButton Icon="@Icons.Material.Filled.Close" Color="Color.Warning"
                                    OnClick="() => { SelectedOrder = new(); VisibleOrderInformation = false; }" />
                 </MudTooltip>
-                @if (true)
+                @if (CanEdit)
                 {
                     <MudTooltip Text="Editar órden">
                         <MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Secondary"
@@ -73,7 +75,7 @@
                     <MudIconButton Icon="@Icons.Material.Filled.Report" Color="Color.Tertiary"
                                    OnClick="VewReport"/>
                 </MudTooltip>
-                @if (true)
+                @if (CanDelete)
                 {
                     <MudTooltip Text="Eliminar órden">
                         <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error"
@@ -161,10 +163,13 @@
                         <ToolBarContent>
                             <MudText Typo="Typo.h6">Artículos cotizados</MudText>
                             <MudSpacer />
-                            <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="mx-1"
+                            @if (CanEdit)
+                            {
+                                <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="mx-1"
                                        OnClick="async () => await AddArticles()">
-                                Añadir artículos
-                            </MudButton>
+                                    Añadir
+                                </MudButton>
+                            }
                         </ToolBarContent>
                         <HeaderContent>
                             <MudTh><MudTableSortLabel SortBy="new Func<ArticlesToPurchase, object>(x => x.Quote.Article.Code)" />Código</MudTh>
@@ -238,14 +243,17 @@
                                 </MudGrid>
                             </MudCardContent>
                             <MudCardActions Style="height: 100px">
-                                <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="mx-1"
+                                @if (CanEdit)
+                                {
+                                    <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="mx-1"
                                            OnClick="async () => await EditArticle(article)">
-                                    Editar
-                                </MudButton>
-                                <MudButton Variant="Variant.Filled" Color="Color.Error" Class="mx-1"
-                                           OnClick="async () => await DeleteArticle(article)">
-                                    Eliminar
-                                </MudButton>
+                                        Editar
+                                    </MudButton>
+                                    <MudButton Variant="Variant.Filled" Color="Color.Error" Class="mx-1"
+                                               OnClick="async () => await DeleteArticle(article)">
+                                        Eliminar
+                                    </MudButton>
+                                }
                             </MudCardActions>
                         </MudCard>
                     </MudTabPanel>

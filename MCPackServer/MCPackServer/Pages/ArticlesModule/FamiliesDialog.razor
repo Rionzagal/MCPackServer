@@ -9,7 +9,7 @@
     <DialogContent>
         @if (_processing)
         {
-            <MudProgressCircular Class="m-sm-n1" Size="Size.Large" Indeterminate="true" />
+            <MudProgressCircular Class="m-sm-n1" Size="Size.Large" Indeterminate />
             <MudText Class="m-sm-2">Esperando respuesta de servidor...</MudText>
         }
         else
@@ -24,24 +24,23 @@
                     </div>
                 }
                 <MudForm Model="Model" @ref="Form">
-                    <div class="form-group">
-                        <MudTextField T="string" Label="Nombre" Required="true"
-                                      RequiredError="Insertar nombre"
-                                      @bind-Value="Model.Name" 
-                                      ReadOnly="@Disabled"/>
-                    </div>
-                    <div class="form-group">
-                        <MudTextField T="string" Label="Código" Required="true"
-                                      RequiredError="Insertar código"
-                                      @bind-Value="Model.Code"
-                                      ReadOnly="@Disabled"/>
-                    </div>
-                    <div class="form-group">
-                        <MudTextField T="string" Label="Descripción" Required="true"
-                                      RequiredError="Insertar descripción"
-                                      @bind-Value="Model.Description" 
-                                      ReadOnly="@Disabled"/>
-                    </div>
+                    <MudGrid>
+                        <MudItem xs="12">
+                            <MudText Typo="Typo.subtitle1" Align="Align.Left">Nombre</MudText>
+                            <MudTextField T="string" Placeholder="Nombre" Required RequiredError="Este campo es obligatorio"
+                                          @bind-Value="Model.Name" Variant="Variant.Outlined" ReadOnly="@Disabled"/>
+                        </MudItem>
+                        <MudItem xs="12">
+                            <MudText Typo="Typo.subtitle1" Align="Align.Left">Código</MudText>
+                            <MudTextField T="string" Placeholder="Código" Required RequiredError="Este campo es obligatorio"
+                                          @bind-Value="Model.Code" Variant="Variant.Outlined" ReadOnly="@Disabled"/>
+                        </MudItem>
+                        <MudItem xs="12">
+                            <MudText Typo="Typo.subtitle1" Align="Align.Left">Descripción</MudText>
+                            <MudTextField T="string" Placeholder="Descripción" Required RequiredError="Este campo es obligatorio"
+                                          @bind-Value="Model.Description" Variant="Variant.Outlined" ReadOnly="@Disabled"/>
+                        </MudItem>
+                    </MudGrid>
                 </MudForm>
             </MudContainer>
         }

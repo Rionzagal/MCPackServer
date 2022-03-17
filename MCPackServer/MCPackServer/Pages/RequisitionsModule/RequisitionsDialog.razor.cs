@@ -72,6 +72,7 @@ namespace MCPackServer.Pages.RequisitionsModule
             };
             var items = await _requisitionsService.GetForGridAsync<Requisitions>(dm);
             if (null != items) ExistentRequisitions = items.ToList();
+            _ = await UsersServerReload(string.Empty);
         }
 
         private async Task Submit()

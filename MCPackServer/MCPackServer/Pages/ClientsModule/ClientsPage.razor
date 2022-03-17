@@ -2,7 +2,7 @@
 @inject IClientsService _clientsService
 @inject IContactsService _contactsService
 
-@attribute [Authorize]
+@attribute [Authorize (Policy = @Constants.Permissions.Clients.View)]
 
 <MudText Typo="Typo.h3" Align="Align.Center">GESTIÓN Y MANEJO DE CLIENTES</MudText>
 
@@ -12,10 +12,13 @@
     <ToolBarContent>
         <MudText Typo="Typo.h6">Clientes registrados</MudText>
         <MudSpacer />
-        <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="mx-1"
+        @if (CanCreateClient)
+        {
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="mx-1"
                    OnClick="AddClient" >
-            Añadir
-        </MudButton>
+                Añadir
+            </MudButton>
+        }
         <MudButton Variant="Variant.Filled" OnClick="DeleteClientFilters" Class="mx-1">
             Borrar criterios de búsqueda
         </MudButton>
@@ -83,12 +86,18 @@
                     <MudIconButton Icon="@Icons.Material.Filled.Close" 
                                    OnClick="(_) => { SelectedClient = new(); VisibleClientInformation = false; }" />
                 </MudTooltip>
-                <MudTooltip Text="Editar información de cliente">
-                    <MudIconButton Icon="@Icons.Material.Filled.Edit" OnClick="EditClient" />
-                </MudTooltip>
-                <MudTooltip Text="Eliminar cliente">
-                    <MudIconButton Icon="@Icons.Material.Filled.Delete" OnClick="DeleteClient" />
-                </MudTooltip>
+                @if (CanEditClient)
+                {
+                    <MudTooltip Text="Editar información de cliente">
+                        <MudIconButton Icon="@Icons.Material.Filled.Edit" OnClick="EditClient" />
+                    </MudTooltip>
+                }
+                @if (CanDeleteClient)
+                {
+                    <MudTooltip Text="Eliminar cliente">
+                        <MudIconButton Icon="@Icons.Material.Filled.Delete" OnClick="DeleteClient" />
+                    </MudTooltip>
+                }
             </Header>
             <TabPanelHeader>
                 @if (context.Text.StartsWith("Contacto:"))
@@ -148,81 +157,93 @@
                         </div>
                     </MudPaper>
                 </MudTabPanel>
-                <MudTabPanel Text="Contactos asociados">
-                    <MudPaper Elevation="0" Class="m-3" Style="height:500px; overflow-y:scroll;">
-                        <MudTable Dense Hover T="Contacts" @ref="@ContactsTable" CustomHeader
-                                  FixedHeader Height="400px"
-                                  ServerData="@(new Func<TableState, Task<TableData<Contacts>>>(ContactsServerReload))"
-                                  OnRowClick="OnSelectedContactRow" Striped>
-                            <ToolBarContent>
-                                <MudText Typo="Typo.h6">Contactos registrados</MudText>
-                                <MudSpacer />
-                                <MudButton Variant="Variant.Filled" Color="Color.Primary"
-                                           OnClick="CreateContact" >
-                                    Añadir contacto
-                                </MudButton>
-                            </ToolBarContent>
-                            <HeaderContent>
-                                <MudTh><MudTableSortLabel SortLabel="FullName" T="Contacts">Nombre</MudTableSortLabel></MudTh>
-                                <MudTh><MudTableSortLabel SortLabel="Position" T="Contacts">Puesto</MudTableSortLabel></MudTh>
-                                <MudTh><MudTableSortLabel SortLabel="EmailAddress" T="Contacts">Correo electrónico</MudTableSortLabel></MudTh>
-                                <MudTh><MudTableSortLabel SortLabel="MobilePhone" T="Contacts">Teléfono celular</MudTableSortLabel></MudTh>
-                            </HeaderContent>
-                            <RowTemplate>
-                                <MudTd DataLabel="Nombre">@context.FullName</MudTd>
-                                <MudTd DataLabel="Puesto">@context.Position</MudTd>
-                                <MudTd DataLabel="Correo electrónico">@context.EmailAddress</MudTd>
-                                <MudTd DataLabel="Teléfono celular">@context.MobilePhone</MudTd>
-                            </RowTemplate>
-                            <NoRecordsContent>
-                                <MudText>No se encontraron contactos asociados al cliente.</MudText>
-                            </NoRecordsContent>
-                            <LoadingContent>
-                                <MudText>Cargando contactos...</MudText>
-                            </LoadingContent>
-                            <PagerContent>
-                                <MudTablePager />
-                            </PagerContent>
-                        </MudTable>
-                    </MudPaper>
-                </MudTabPanel>
-                @foreach (var contact in SelectedContacts)
+                @if (CanViewContact)
                 {
-                    <MudTabPanel Text="@($"Contacto: {contact.FullName}")" Tag="@contact.Id" ID="@contact.Id">
-                        <MudCard Class="m-3" Elevation="0">
-                            <MudCardHeader Style="height:100px;">
-                                <CardHeaderContent>
-                                    <MudText Typo="Typo.subtitle1">
-                                        Nombre de contacto: @contact.FullName
-                                    </MudText>
-                                </CardHeaderContent>
-                            </MudCardHeader>
-                            <MudCardContent Style="height:300px; overflow-y:scroll;">
-                                <div class="form-group">
-                                    <MudText Typo="Typo.subtitle2" Align="Align.Left">Puesto:</MudText>
-                                    <MudTextField T="string" @bind-Text="@contact.Position" ReadOnly />
-                                </div>
-                                <div class="form-group">
-                                    <MudText Typo="Typo.subtitle2" Align="Align.Left">Correo electrónico:</MudText>
-                                    <MudTextField T="string" @bind-Text="@contact.EmailAddress" ReadOnly />
-                                </div>
-                                <div class="form-group">
-                                    <MudText Typo="Typo.subtitle2" Align="Align.Left">Número de teléfono:</MudText>
-                                    <MudTextField T="string" @bind-Text="@contact.MobilePhone" ReadOnly />
-                                </div>
-                            </MudCardContent>
-                            <MudCardActions Style="height:100px;">
-                                <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="mx-1"
-                                           OnClick="async (_) => await EditContact(contact)" >
-                                    Editar
-                                </MudButton>
-                                <MudButton Variant="Variant.Filled" Color="Color.Error" Class="mx-1"
-                                           OnClick="(_) => DeleteContact(contact)" >
-                                    Eliminar
-                                </MudButton>
-                            </MudCardActions>
-                        </MudCard>
+                    <MudTabPanel Text="Contactos asociados">
+                        <MudPaper Elevation="0" Class="m-3" Style="height:500px; overflow-y:scroll;">
+                            <MudTable Dense Hover T="Contacts" @ref="@ContactsTable" CustomHeader
+                                      FixedHeader Height="400px"
+                                      ServerData="@(new Func<TableState, Task<TableData<Contacts>>>(ContactsServerReload))"
+                                      OnRowClick="OnSelectedContactRow" Striped>
+                                <ToolBarContent>
+                                    <MudText Typo="Typo.h6">Contactos registrados</MudText>
+                                    <MudSpacer />
+                                    @if (CanCreateContact)
+                                    {
+                                        <MudButton Variant="Variant.Filled" Color="Color.Primary"
+                                               OnClick="CreateContact" >
+                                            Añadir contacto
+                                        </MudButton>
+                                    }
+                                </ToolBarContent>
+                                <HeaderContent>
+                                    <MudTh><MudTableSortLabel SortLabel="FullName" T="Contacts">Nombre</MudTableSortLabel></MudTh>
+                                    <MudTh><MudTableSortLabel SortLabel="Position" T="Contacts">Puesto</MudTableSortLabel></MudTh>
+                                    <MudTh><MudTableSortLabel SortLabel="EmailAddress" T="Contacts">Correo electrónico</MudTableSortLabel></MudTh>
+                                    <MudTh><MudTableSortLabel SortLabel="MobilePhone" T="Contacts">Teléfono celular</MudTableSortLabel></MudTh>
+                                </HeaderContent>
+                                <RowTemplate>
+                                    <MudTd DataLabel="Nombre">@context.FullName</MudTd>
+                                    <MudTd DataLabel="Puesto">@context.Position</MudTd>
+                                    <MudTd DataLabel="Correo electrónico">@context.EmailAddress</MudTd>
+                                    <MudTd DataLabel="Teléfono celular">@context.MobilePhone</MudTd>
+                                </RowTemplate>
+                                <NoRecordsContent>
+                                    <MudText>No se encontraron contactos asociados al cliente.</MudText>
+                                </NoRecordsContent>
+                                <LoadingContent>
+                                    <MudText>Cargando contactos...</MudText>
+                                </LoadingContent>
+                                <PagerContent>
+                                    <MudTablePager />
+                                </PagerContent>
+                            </MudTable>
+                        </MudPaper>
                     </MudTabPanel>
+                    @foreach (var contact in SelectedContacts)
+                    {
+                        <MudTabPanel Text="@($"Contacto: {contact.FullName}")" Tag="@contact.Id" ID="@contact.Id">
+                            <MudCard Class="m-3" Elevation="0">
+                                <MudCardHeader Style="height:100px;">
+                                    <CardHeaderContent>
+                                        <MudText Typo="Typo.subtitle1">
+                                            Nombre de contacto: @contact.FullName
+                                        </MudText>
+                                    </CardHeaderContent>
+                                </MudCardHeader>
+                                <MudCardContent Style="height:300px; overflow-y:scroll;">
+                                    <div class="form-group">
+                                        <MudText Typo="Typo.subtitle2" Align="Align.Left">Puesto:</MudText>
+                                        <MudTextField T="string" @bind-Text="@contact.Position" ReadOnly />
+                                    </div>
+                                    <div class="form-group">
+                                        <MudText Typo="Typo.subtitle2" Align="Align.Left">Correo electrónico:</MudText>
+                                        <MudTextField T="string" @bind-Text="@contact.EmailAddress" ReadOnly />
+                                    </div>
+                                    <div class="form-group">
+                                        <MudText Typo="Typo.subtitle2" Align="Align.Left">Número de teléfono:</MudText>
+                                        <MudTextField T="string" @bind-Text="@contact.MobilePhone" ReadOnly />
+                                    </div>
+                                </MudCardContent>
+                                <MudCardActions Style="height:100px;">
+                                    @if (CanEditContact)
+                                    {
+                                        <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="mx-1"
+                                                   OnClick="async (_) => await EditContact(contact)" >
+                                            Editar
+                                        </MudButton>
+                                    }
+                                    @if (CanDeleteContact)
+                                    {
+                                        <MudButton Variant="Variant.Filled" Color="Color.Error" Class="mx-1"
+                                                   OnClick="(_) => DeleteContact(contact)" >
+                                            Eliminar
+                                        </MudButton>
+                                    }
+                                </MudCardActions>
+                            </MudCard>
+                        </MudTabPanel>
+                    }
                 }
             </ChildContent>
         </MudTabs>

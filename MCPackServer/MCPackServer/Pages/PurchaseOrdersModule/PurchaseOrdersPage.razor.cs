@@ -60,6 +60,21 @@ namespace MCPackServer.Pages.PurchaseOrdersModule
 
         protected override async Task OnInitializedAsync()
         {
+            var _authenticationState = await _authenticationStateProvider.GetAuthenticationStateAsync();
+            var user = _authenticationState.User;
+            if (null != user)
+            {
+                try
+                {
+                    CanCreate = (await _authorizationService.AuthorizeAsync(user, Constants.Permissions.PurchaseOrders.Create)).Succeeded;
+                    CanEdit = (await _authorizationService.AuthorizeAsync(user, Constants.Permissions.PurchaseOrders.Edit)).Succeeded;
+                    CanDelete = (await _authorizationService.AuthorizeAsync(user, Constants.Permissions.PurchaseOrders.Delete)).Succeeded;
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex);
+                }
+            }
             try
             {
                 DataManagerRequest request = new();

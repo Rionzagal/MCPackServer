@@ -3,17 +3,17 @@
 @inject IRequisitionsService _requisitionsService
 @inject IRequisitionArticlesService _articlesService
 
-@attribute [Authorize]
+@attribute [Authorize (Policy = @Constants.Permissions.Requisitions.View)]
 
 <MudText Typo="Typo.h3" Align="Align.Center">GESTIÓN DE REQUISICIONES</MudText>
 
-<MudTable @ref="RequisitionsTable" T="Requisitions" Dense="true" Hover="true" FixedHeader="true" Height="400px"
-          CustomHeader="true" Striped="true" OnRowClick="OnSelectedRequisition"
+<MudTable @ref="RequisitionsTable" T="Requisitions" Dense Hover FixedHeader Height="400px"
+          CustomHeader Striped OnRowClick="OnSelectedRequisition"
           ServerData="new Func<TableState, Task<TableData<Requisitions>>>(RequisitionsServerReload)">
     <ToolBarContent>
         <MudText Typo="Typo.h6">Requisiciones registradas</MudText>
         <MudSpacer />
-        @if (true)
+        @if (CanCreate)
         {
             <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="mx-1"
                        OnClick="CreateRequisition">
@@ -33,17 +33,25 @@
             <MudTh><MudTableSortLabel SortLabel="RequisitionNumber" T="Requisitions">Número</MudTableSortLabel></MudTh>
             <MudTh><MudTableSortLabel SortLabel="IssuedDate" T="Requisitions">Fecha de emisión</MudTableSortLabel></MudTh>
             <MudTh><MudTableSortLabel SortLabel="RequiredDate" T="Requisitions">Fecha de requerimiento</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortLabel="UserId" T="Requisitions">Remitente</MudTableSortLabel></MudTh>
         </MudTHeadRow>
         <MudTHeadRow>
+            <MudTh>
+                <MudTextField @bind-Value="NumberFilter" Clearable OnClearButtonClick="() => NumberFilter = string.Empty" />
+            </MudTh>
             <MudTh />
-            <MudTh></MudTh>
             <MudTh />
+            <MudTh>
+                <MudAutocomplete T="string" @bind-Value="UserIdFilter" SearchFunc="async (f) => await UsersServerReload(f)"
+                    ToStringFunc="new Func<string, string>(GetUserName)" Clearable OnClearButtonClick="() => UserIdFilter = string.Empty" />
+            </MudTh>
         </MudTHeadRow>
     </HeaderContent>
     <RowTemplate>
         <MudTd DataLabel="Número">@context.RequisitionNumber</MudTd>
-        <MudTd DataLabel="Fecha de emisión">@context.IssuedDate</MudTd>
-        <MudTd DataLabel="Fecha de requerimiento">@context.RequiredDate</MudTd>
+        <MudTd DataLabel="Fecha de emisión">@(context.IssuedDate?.ToShortDateString() ?? "N/A")</MudTd>
+        <MudTd DataLabel="Fecha de requerimiento">@(context.RequiredDate?.ToShortDateString() ?? "N/A")</MudTd>
+        <MudTd DataLabel="Remitente">@context.User.UserName</MudTd>
     </RowTemplate>
     <NoRecordsContent>
         <MudText>Sin requisiciones encontradas</MudText>
@@ -63,8 +71,8 @@
             PRESENTANDO INFORMACIÓN PARA REQUISICIÓN: @SelectedRequisition.RequisitionNumber
         </MudText>
 
-        <MudTabs @ref="RequisitionsInformationTabs" Elevation="2" Rounded="true"
-                 ApplyEffectsToContainer="true" Color="Color.Primary">
+        <MudTabs @ref="RequisitionsInformationTabs" Elevation="2" Rounded
+                 ApplyEffectsToContainer Color="Color.Primary">
             <Header>
                 <MudTooltip Text="Cerrar Producto">
                     <MudIconButton Icon="@Icons.Material.Filled.Close" Color="Color.Warning"
@@ -74,14 +82,14 @@
                                                 VisibleRequisitionInformation = false;
                                             }" />
                 </MudTooltip>
-                @if (true)
+                @if (CanEdit)
                 {
                     <MudTooltip Text="Editar Proyecto">
                         <MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Secondary"
                                        OnClick="async () => await EditRequisition(SelectedRequisition)" />
                     </MudTooltip>
                 }
-                @if (true)
+                @if (CanDelete)
                 {
                     <MudTooltip Text="Eliminar proyecto">
                         <MudIconButton Icon="@Icons.Material.Filled.Delete" Color="Color.Error"
@@ -126,16 +134,19 @@
                     </MudGrid>
                 </MudTabPanel>
                 <MudTabPanel Text="Productos">
-                    <MudTable @ref="ArticlesTable" T="RequisitionArticles" Dense="true" Hover="true" FixedHeader="true" Height="400px"
-                              CustomHeader="true" Striped="true" OnRowClick="OnSelectedProduct"
+                    <MudTable @ref="ArticlesTable" T="RequisitionArticles" Dense Hover FixedHeader Height="400px"
+                              CustomHeader Striped OnRowClick="OnSelectedProduct"
                               Items="SelectedRequisition.RequisitionArticles">
                         <ToolBarContent>
                             <MudText Typo="Typo.h6">Productos del proyecto</MudText>
                             <MudSpacer />
-                            <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="mx-1"
+                            @if (CanEdit)
+                            {
+                                <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="mx-1"
                                        OnClick="AddProduct" >
-                                Añadir
-                            </MudButton>
+                                    Añadir
+                                </MudButton>
+                            }
                         </ToolBarContent>
                         <HeaderContent>
                             <MudTHeadRow>
@@ -197,14 +208,17 @@
                                 </MudGrid>
                             </MudCardContent>
                             <MudCardActions Style="height: 100px">
-                                <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="mx-1"
+                                @if (CanEdit)
+                                {
+                                    <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="mx-1"
                                            OnClick="async (_) => await EditProduct(product)">
-                                    Editar
-                                </MudButton>
-                                <MudButton Variant="Variant.Filled" Color="Color.Error" Class="mx-1"
-                                           OnClick="async (_) => await DeleteProduct(product)">
-                                    Eliminar
-                                </MudButton>
+                                        Editar
+                                    </MudButton>
+                                    <MudButton Variant="Variant.Filled" Color="Color.Error" Class="mx-1"
+                                               OnClick="async (_) => await DeleteProduct(product)">
+                                        Eliminar
+                                    </MudButton>
+                                }
                             </MudCardActions>
                         </MudCard>
                     </MudTabPanel>

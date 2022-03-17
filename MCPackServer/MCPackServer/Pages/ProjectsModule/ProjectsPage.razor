@@ -2,7 +2,7 @@
 @inject IProjectsService _projectsService
 @inject IProjectProductsService _productsService
 
-@attribute [Authorize]
+@attribute [Authorize (Policy = @Constants.Permissions.Projects.View)]
 
 <MudText Typo="Typo.h3" Align="Align.Center">GESTIÓN DE PROYECTOS</MudText>
 
@@ -202,10 +202,13 @@
                         <ToolBarContent>
                             <MudText Typo="Typo.h6">Productos del proyecto</MudText>
                             <MudSpacer />
-                            <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="mx-1"
-                                       OnClick="AddProduct" Disabled="!CanEditProjects">
-                                Añadir
-                            </MudButton>
+                            @if (CanEditProjects)
+                            {
+                                <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="mx-1"
+                                       OnClick="AddProduct" >
+                                    Añadir
+                                </MudButton>
+                            }
                             <MudButton Variant="Variant.Outlined" Class="ml-1"
                                        OnClick="async () => await ProductsTable.ReloadServerData()">
                                 <MudIcon Icon="@Icons.Material.Filled.Search" /> Buscar
@@ -279,16 +282,17 @@
                                 </MudGrid>
                             </MudCardContent>
                             <MudCardActions Style="height: 100px">
-                                <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="mx-1"
-                                           OnClick="async () => await EditProduct(product)"
-                                           Disabled="!CanEditProjects">
-                                    Editar
-                                </MudButton>
-                                <MudButton Variant="Variant.Filled" Color="Color.Error" Class="mx-1"
-                                           OnClick="async () => await DeleteProduct(product)"
-                                           Disabled="!CanEditProjects">
-                                    Eliminar
-                                </MudButton>
+                               @if (CanEditProjects)
+                               {
+                                    <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="mx-1"
+                                           OnClick="async () => await EditProduct(product)" >
+                                        Editar
+                                    </MudButton>
+                                    <MudButton Variant="Variant.Filled" Color="Color.Error" Class="mx-1"
+                                               OnClick="async () => await DeleteProduct(product)" >
+                                        Eliminar
+                                    </MudButton>
+                               }
                             </MudCardActions>
                         </MudCard>
                     </MudTabPanel>

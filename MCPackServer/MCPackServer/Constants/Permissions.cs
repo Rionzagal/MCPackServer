@@ -126,5 +126,16 @@
             public const string Edit = "Permissions.Requisitions.Edit";
             public const string Delete = "Permissions.Requisitions.Delete";
         }
+
+        public static class Reports
+        {
+            public const string View = "Permissions.Reports.View";
+            public const string Create = "Permissions.Reports.Create";
+        }
+
+        public static class ProjectSpecial
+        {
+            public const string ClientChange = "Permissions.ProjectSpecial.ClientChange";
+        }
     }
 }
