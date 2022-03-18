@@ -1,3 +1,6 @@
+![MySQLBadge](https://img.shields.io/badge/MySQL-005C84?style=for-the-badge&logo=mysql&logoColor=white)
+![C#Badge](https://img.shields.io/badge/C%23-239120?style=for-the-badge&logo=c-sharp&logoColor=white)
+
 # MC-PACK Manager Server application
 
 This application is designed for general management of the **MC-Engineering S.A. de C.V.** company, containing different modules such as *"Purchase module", "Materials' catalog and quotes"*, among others. This application is built as a *Blazor Server app*, using [*.NET 6*](https://dotnet.microsoft.com/en-us/download/dotnet/6.0) and [*ASP-NET Core*](https://github.com/dotnet/aspnetcore) for component development, due to their long-term support. This app uses a [*MySQL*](https://www.mysql.com/) database for storing the relevant data, as well as [*Entity Framework*](https://docs.microsoft.com/en-us/ef/) and [*Dapper*](https://www.nuget.org/packages/Dapper/) to access and interact with it. This app uses the [*ASP-NET Core Identity Framework*](https://docs.microsoft.com/en-us/aspnet/core/security/authentication/identity?view=aspnetcore-6.0&tabs=visual-studio) to enable user management and security levels, since it would be dangerous to let any user mingle with sensitive data, such as the company providers, clients, or even other users... 
