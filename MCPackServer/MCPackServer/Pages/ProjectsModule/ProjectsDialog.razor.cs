@@ -1,5 +1,6 @@
 ﻿using MCPackServer.Entities;
 using MCPackServer.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
 using Newtonsoft.Json.Linq;
@@ -31,6 +32,7 @@ namespace MCPackServer.Pages.ProjectsModule
         private bool Disabled;
         private Color ButtonColor;
         private bool _processing = false;
+        private bool CanChangeClient = true;
         #endregion
 
         #region API elements
@@ -54,6 +56,13 @@ namespace MCPackServer.Pages.ProjectsModule
                 TitleIcon = Icons.Material.Filled.Edit;
                 Disabled = false;
                 ButtonColor = Color.Primary;
+
+                var _authState = await _authenticationStateProvider.GetAuthenticationStateAsync();
+                var user = _authState.User;
+                if (user != null)
+                {
+                    CanChangeClient = (await _authorizationService.AuthorizeAsync(user, Constants.Permissions.ProjectSpecial.ClientChange)).Succeeded;
+                }
             }
             else if (States.Delete == State) //representing a Delete dialog
             {
@@ -86,8 +95,8 @@ namespace MCPackServer.Pages.ProjectsModule
                 {
                     Where = new List<WhereFilter>()
                     {
-                        new WhereFilter { Field = "ClientId", Value = Model.ClientId.ToString() },
-                        new WhereFilter { Field = "Type", Value = Model.Type }
+                        new WhereFilter { Field = nameof(Projects.ClientId), Value = Model.ClientId.ToString() },
+                        new WhereFilter { Field = nameof(Projects.Type), Value = "Refacciones" }
                     }
                 };
                 var projects = await _service.GetForGridAsync<Projects>(request);
@@ -98,7 +107,7 @@ namespace MCPackServer.Pages.ProjectsModule
             {
                 if (States.Add == State) response = await _projectsService.AddAsync(Model);
                 else if (States.Edit == State) response = await _projectsService.UpdateAsync(Model);
-                else if (States.Edit == State) response = await _projectsService.RemoveAsync(Model);
+                else if (States.Delete == State) response = await _projectsService.RemoveAsync(Model);
                 Dialog.Close(DialogResult.Ok(response));
             }
             else

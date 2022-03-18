@@ -38,22 +38,22 @@
         </MudTHeadRow>
         <MudTHeadRow>
             <MudTh>
-                <MudTextField T="string" @bind-Value="MarketNameFilter" Placeholder="Buscar por nombre comercial" />
+                <MudTextField T="string" @bind-Value="MarketNameFilter" Placeholder="Buscar por nombre comercial" Clearable />
             </MudTh>
             <MudTh>
-                <MudTextField T="string" @bind-Value="LegalNameFilter" Placeholder="Buscar por razón social" />
+                <MudTextField T="string" @bind-Value="LegalNameFilter" Placeholder="Buscar por razón social" Clearable />
             </MudTh>
             <MudTh>
-                <MudTextField T="string" @bind-Value="CityFilter" Placeholder="Buscar por ciudad" />
+                <MudTextField T="string" @bind-Value="CityFilter" Placeholder="Buscar por ciudad" Clearable />
             </MudTh>
             <MudTh>
-                <MudTextField T="string" @bind-Value="ProvinceFilter" Placeholder="Buscar por provincia/estado" />
+                <MudTextField T="string" @bind-Value="ProvinceFilter" Placeholder="Buscar por provincia/estado" Clearable />
             </MudTh>
             <MudTh>
-                <MudTextField T="string" @bind-Value="PhoneNumberFilter" Placeholder="Buscar por número de teléfono" />
+                <MudTextField T="string" @bind-Value="PhoneNumberFilter" Placeholder="Buscar por número de teléfono" Clearable />
             </MudTh>
             <MudTh>
-                <MudTextField T="string" @bind-Value="WebsiteFilter" Placeholder="Buscar por sitio web" />
+                <MudTextField T="string" @bind-Value="WebsiteFilter" Placeholder="Buscar por sitio web" Clearable />
             </MudTh>
         </MudTHeadRow>
     </HeaderContent>
@@ -110,52 +110,52 @@
             </TabPanelHeader>
             <ChildContent>
                 <MudTabPanel Text="Información General">
-                    <MudPaper Elevation="0" Class="m-3" Style="height:500px; overflow-y:scroll;">
-                        <div class="form-group">
-                            <MudText Typo="Typo.subtitle2" Align="Align.Left">Nombre comercial:</MudText>
-                            <MudTextField T="string" @bind-Text="@SelectedClient.MarketName" ReadOnly />
-                        </div>
-                        <div class="form-group">
-                            <MudText Typo="Typo.subtitle2" Align="Align.Left">Razón social:</MudText>
-                            <MudTextField T="string" @bind-Text="@SelectedClient.LegalName" ReadOnly />
-                        </div>
-                        <div class="form-group">
-                            <MudText Typo="Typo.subtitle2" Align="Align.Left">Sitio Web:</MudText>
-                            <MudTextField T="string" @bind-Text="@SelectedClient.Website" ReadOnly />
-                        </div>
-                        <div class="form-group">
-                            <MudText Typo="Typo.subtitle2" Align="Align.Left">Condición de pago:</MudText>
-                            <MudTextField T="string" @bind-Text="@SelectedClient.PaymentCondition" ReadOnly />
-                        </div>
-                    </MudPaper>
+                    <MudGrid Class="m-3" Style="width:inherit; height:500px; overflow-y:scroll;">
+                        <MudItem xs="6">
+                            <MudText Typo="Typo.subtitle2" Align="Align.Start">Nombre comercial</MudText>
+                            <MudTextField Variant="Variant.Outlined" Value="@SelectedClient.MarketName" ReadOnly />
+                        </MudItem>
+                        <MudItem xs="6">
+                            <MudText Typo="Typo.subtitle2" Align="Align.Start">Razón social</MudText>
+                            <MudTextField Variant="Variant.Outlined" Value="@SelectedClient.LegalName" ReadOnly />
+                        </MudItem>
+                        <MudItem xs="12">
+                            <MudText Typo="Typo.subtitle2" Align="Align.Start">Sitio Web</MudText>
+                            <MudTextField Variant="Variant.Outlined" Value="@SelectedClient.Website" ReadOnly />
+                        </MudItem>
+                        <MudItem xs="12">
+                            <MudText Typo="Typo.subtitle2" Align="Align.Start">Condición de pago</MudText>
+                            <MudTextField Variant="Variant.Outlined" Value="@SelectedClient.PaymentCondition" ReadOnly />
+                        </MudItem>
+                    </MudGrid>
                 </MudTabPanel>
                 <MudTabPanel Text="Localización">
-                    <MudPaper Elevation="0" Class="m-3" Style="height:500px; overflow-y:scroll;">
-                        <div class="form-group">
-                            <MudText Typo="Typo.subtitle2" Align="Align.Left">Número de teléfono:</MudText>
-                            <MudTextField T="string" @bind-Text="@SelectedClient.PhoneNumber" ReadOnly />
-                        </div>
-                        <div class="form-group">
-                            <MudText Typo="Typo.subtitle2" Align="Align.Left">Domicilio fiscal:</MudText>
-                            <MudTextField T="string" @bind-Text="@SelectedClient.FiscalAddress" ReadOnly />
-                        </div>
-                        <div class="form-group">
-                            <MudText Typo="Typo.subtitle2" Align="Align.Left">Ciudad:</MudText>
-                            <MudTextField T="string" @bind-Text="@SelectedClient.City" ReadOnly />
-                        </div>
-                        <div class="form-group">
-                            <MudText Typo="Typo.subtitle2" Align="Align.Left">Provincia/Estado:</MudText>
-                            <MudTextField T="string" @bind-Text="@SelectedClient.Province" ReadOnly />
-                        </div>
-                        <div class="form-group">
-                            <MudText Typo="Typo.subtitle2" Align="Align.Left">País:</MudText>
-                            <MudTextField T="string" @bind-Text="@SelectedClient.Country" ReadOnly />
-                        </div>
-                        <div class="form-group">
-                            <MudText Typo="Typo.subtitle2" Align="Align.Left">Código postal:</MudText>
-                            <MudTextField T="string" @bind-Text="@SelectedClient.PostalCode" ReadOnly />
-                        </div>
-                    </MudPaper>
+                    <MudGrid Class="m-3" Style="width:inherit; height:500px; overflow-y:scroll;">
+                        <MudItem xs="12">
+                            <MudText Typo="Typo.subtitle1" Align="Align.Start">Número de teléfono</MudText>
+                            <MudTextField Variant="Variant.Outlined" Value="@SelectedClient.PhoneNumber" ReadOnly />
+                        </MudItem>
+                        <MudItem xs="6">
+                            <MudText Typo="Typo.subtitle1" Align="Align.Start">Domicilio fiscal</MudText>
+                            <MudTextField Variant="Variant.Outlined" Value="@SelectedClient.FiscalAddress" ReadOnly />
+                        </MudItem>
+                        <MudItem xs="6">
+                            <MudText Typo="Typo.subtitle1" Align="Align.Start">Código postal</MudText>
+                            <MudTextField Variant="Variant.Outlined" Value="@SelectedClient.PostalCode" ReadOnly />
+                        </MudItem>
+                        <MudItem xs="4">
+                            <MudText Typo="Typo.subtitle1" Align="Align.Start">Ciudad</MudText>
+                            <MudTextField Variant="Variant.Outlined" Value="@SelectedClient.City" ReadOnly />
+                        </MudItem>
+                        <MudItem xs="4">
+                            <MudText Typo="Typo.subtitle1" Align="Align.Start">Provincia/Estado</MudText>
+                            <MudTextField Variant="Variant.Outlined" Value="@SelectedClient.Province" ReadOnly />
+                        </MudItem>
+                        <MudItem xs="4">
+                            <MudText Typo="Typo.subtitle1" Align="Align.Start">País</MudText>
+                            <MudTextField Variant="Variant.Outlined" Value="@SelectedClient.Country" ReadOnly />
+                        </MudItem>
+                    </MudGrid>
                 </MudTabPanel>
                 @if (CanViewContact)
                 {
@@ -213,16 +213,16 @@
                                 </MudCardHeader>
                                 <MudCardContent Style="height:300px; overflow-y:scroll;">
                                     <div class="form-group">
-                                        <MudText Typo="Typo.subtitle2" Align="Align.Left">Puesto:</MudText>
-                                        <MudTextField T="string" @bind-Text="@contact.Position" ReadOnly />
+                                        <MudText Typo="Typo.subtitle1" Align="Align.Start">Puesto</MudText>
+                                        <MudTextField Variant="Variant.Outlined" Value="@contact.Position" ReadOnly />
                                     </div>
                                     <div class="form-group">
-                                        <MudText Typo="Typo.subtitle2" Align="Align.Left">Correo electrónico:</MudText>
-                                        <MudTextField T="string" @bind-Text="@contact.EmailAddress" ReadOnly />
+                                        <MudText Typo="Typo.subtitle1" Align="Align.Start">Correo electrónico</MudText>
+                                        <MudTextField Variant="Variant.Outlined" Value="@contact.EmailAddress" ReadOnly />
                                     </div>
                                     <div class="form-group">
-                                        <MudText Typo="Typo.subtitle2" Align="Align.Left">Número de teléfono:</MudText>
-                                        <MudTextField T="string" @bind-Text="@contact.MobilePhone" ReadOnly />
+                                        <MudText Typo="Typo.subtitle1" Align="Align.Start">Número de teléfono</MudText>
+                                        <MudTextField Variant="Variant.Outlined" Value="@contact.MobilePhone" ReadOnly />
                                     </div>
                                 </MudCardContent>
                                 <MudCardActions Style="height:100px;">

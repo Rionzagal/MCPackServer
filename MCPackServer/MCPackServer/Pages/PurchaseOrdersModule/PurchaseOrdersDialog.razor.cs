@@ -73,7 +73,7 @@ namespace MCPackServer.Pages.PurchaseOrdersModule
             await Form.Validate();
             if (Form.IsValid)
             {
-                if (States.Add != State) Model.IssuedDate = DateTime.Now;
+                if (States.Add == State) Model.IssuedDate = DateTime.Now;
                 if (States.Add == State) response = await _ordersService.AddAsync(Model);
                 else if (States.Edit == State) response = await _ordersService.UpdateAsync(Model);
                 else if (States.Delete == State) response = await _ordersService.RemoveAsync(Model);

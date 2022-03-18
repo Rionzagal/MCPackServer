@@ -158,15 +158,24 @@ namespace MCPackServer.Services
                 string query = $"DELETE FROM {tableName} WHERE ";
                 var properties = entity.GetType()
                     .GetProperties()
-                    .Where(x => x.GetAccessors()[0].IsFinal || !x.GetAccessors()[0].IsVirtual);
-                foreach (var property in properties)
+                    .Where(x => x.GetAccessors()[0].IsFinal || !x.GetAccessors()[0].IsVirtual)
+                    .ToList();
+                if (properties.Any(x => "Id" == x.Name))
                 {
-                    object? value = property.GetValue(entity);
-                    if (null != value)
+                    var id = properties.Single(x => "Id" == x.Name);
+                    query += $"Id = {id.GetValue(entity)}";
+                }
+                else
+                {
+                    foreach (var property in properties)
                     {
-                        parameters.Add(property.Name, value);
-                        if (property.Name != properties.First().Name) query += "AND ";
-                        query += $"{property.Name} LIKE CONCAT('%', @{property.Name}, '%') ";
+                        object? value = property.GetValue(entity);
+                        if (null != value)
+                        {
+                            parameters.Add(property.Name, value);
+                            if (property.Name != properties.First().Name) query += "AND ";
+                            query += $"{property.Name} LIKE CONCAT('%', @{property.Name}, '%') ";
+                        }
                     }
                 }
                 await conn.ExecuteAsync(query, parameters, transaction);

@@ -7,7 +7,7 @@
     <DialogContent>
         @if (_processing)
         {
-            <MudProgressCircular Class="m-sm-n1" Size="Size.Large" Indeterminate="true" />
+            <MudProgressCircular Class="m-sm-n1" Size="Size.Large" Indeterminate />
             <MudText Class="m-sm-2">Esperando respuesta de servidor...</MudText>
         }
         else
@@ -25,7 +25,7 @@
         <MudGrid>
             <MudItem xs="12">
                 <MudText Typo="Typo.subtitle1" Align="Align.Start">Tipo de producto</MudText>
-                <MudTextField Label="Tipo de producto" Required RequiredError="Este campo es obligatorio"
+                <MudTextField Placeholder="Tipo de producto" Required RequiredError="Este campo es obligatorio"
                               @bind-Value="Model.Type" ReadOnly="@Disabled" Variant="Variant.Outlined" />
             </MudItem>
             <MudItem xs="12">
@@ -35,29 +35,29 @@
             </MudItem>
             <MudItem xs="12">
                 <MudText Typo="Typo.subtitle1" Align="Align.Start">Modelo</MudText>
-                <MudTextField Label="Modelo" Required RequiredError="Este campo es obligatorio"
+                <MudTextField Placeholder="Modelo" Required RequiredError="Este campo es obligatorio"
                               @bind-Value="Model.Model" ReadOnly="@Disabled" Variant="Variant.Outlined" />
             </MudItem>
             <MudItem xs="12">
                 <MudText Typo="Typo.subtitle1" Align="Align.Start">Descripción</MudText>
-                <MudTextField Label="Descripción" @bind-Value="Model.Description"
+                <MudTextField Placeholder="Descripción" @bind-Value="Model.Description"
                               ReadOnly="@Disabled" Lines="3" Variant="Variant.Outlined"/>
             </MudItem>
             <MudItem xs="12">
                 <MudText Typo="Typo.subtitle1" Align="Align.Start">Observaciones</MudText>
-                <MudTextField Label="Observaciones" @bind-Value="Model.Observations"
+                <MudTextField Placeholder="Observaciones" @bind-Value="Model.Observations"
                               ReadOnly="@Disabled" Lines="3" Variant="Variant.Outlined" />
             </MudItem>
             <MudItem xs="12">
                 <MudText Typo="Typo.subtitle1" Align="Align.Start">Precio sugerido</MudText>
-                <MudNumericField T="float" Label="Precio sugerido" Required RequiredError="Este campo es obligatorio"
+                <MudNumericField T="float" Placeholder="Precio sugerido" Required RequiredError="Este campo es obligatorio"
                                  @bind-Value="Model.SugestedPrice" HideSpinButtons Min="0.0f" Variant="Variant.Outlined"
                                  AdornmentIcon="@Icons.Material.Filled.AttachMoney" Adornment="Adornment.Start"
                                  Format="N2" ReadOnly="@Disabled" />
             </MudItem>
             <MudItem xs="12">
                 <MudText Typo="Typo.subtitle1" Align="Align.Start">Moneda de cotización</MudText>
-                <MudSelect T="string" Label="Moneda de cotización" Required RequiredError="Este campo es obligatorio"
+                <MudSelect T="string" Placeholder="Moneda de cotización" Required RequiredError="Este campo es obligatorio"
                               @bind-Value="Model.Currency" ReadOnly="Disabled" Variant="Variant.Outlined" >
                               <MudSelectItem T="string" Value="@("MXN")" />
                               <MudSelectItem T="string" Value="@("USD")" />

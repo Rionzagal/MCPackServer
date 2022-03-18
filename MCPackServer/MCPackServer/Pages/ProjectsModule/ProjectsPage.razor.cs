@@ -33,7 +33,8 @@ namespace MCPackServer.Pages.ProjectsModule
 
         #region Search filters
         private int? ClientIdFilter = null;
-        private string DescriptionFilter = string.Empty;
+        private string NumberFilter = string.Empty;
+        private string TypeFilter = string.Empty;
         private int? ProductIdFilter = null;
         #endregion
 
@@ -66,8 +67,9 @@ namespace MCPackServer.Pages.ProjectsModule
         {
             List<WhereFilter> filters = new()
             {
-                new WhereFilter { Field = "ClientId", Value = ClientIdFilter.HasValue ? ClientIdFilter.Value.ToString() : string.Empty },
-                new WhereFilter { Field = "Description", Value = DescriptionFilter }
+                new WhereFilter { Field = nameof(Projects.ClientId), Value = ClientIdFilter.HasValue ? ClientIdFilter.Value.ToString() : string.Empty },
+                new WhereFilter { Field = nameof(Projects.ProjectNumber), Value = NumberFilter ?? string.Empty },
+                new WhereFilter { Field = nameof(Projects.Type), Value = TypeFilter ?? string.Empty }
             };
             DataManagerRequest request = new()
             {
@@ -81,7 +83,7 @@ namespace MCPackServer.Pages.ProjectsModule
             int? count = await _projectsService.GetTotalCountAsync<Projects>(request);
             return new TableData<Projects>
             {
-                Items = items,
+                Items = items ?? new List<Projects>(),
                 TotalItems = count ?? 0
             };
         }
@@ -98,6 +100,12 @@ namespace MCPackServer.Pages.ProjectsModule
             {
                 ["State"] = ProjectsDialog.States.Add,
                 ["Model"] = new Projects()
+                {
+                    Type = "Proyecto",
+                    AdmissionDate = DateTime.Today,
+                    CommitmentDate = DateTime.Today,
+                    DeliveryDate = DateTime.Today
+                }
             };
             var dialog = Dialogs.Show<ProjectsDialog>("Añadir nuevo proyecto", Parameters);
             var result = await dialog.Result;

@@ -10,7 +10,7 @@
     <DialogContent>
         @if (_processing)
         {
-            <MudProgressCircular Class="m-sm-n1" Size="Size.Large" Indeterminate="true" />
+            <MudProgressCircular Class="m-sm-n1" Size="Size.Large" Indeterminate />
             <MudText Class="m-sm-2">Esperando respuesta de servidor...</MudText>
         }
         else
@@ -25,70 +25,62 @@
             </div>
          }
         <MudForm Model="Model" @ref="Form">
-            <div class="form-group">
-                <MudTextField T="string" Label="Nombre comercial de cliente" Required="true"
-                              RequiredError="Insertar Nombre comercial de cliente"
-                              @bind-Value="Model.MarketName"
-                              ReadOnly="@Disabled"/>
-            </div>
-            <div class="form-group">
-                <MudTextField T="string" Label="Razón social de cliente" Required="true"
-                              RequiredError="Insertar Razón social de cliente"
-                              @bind-Value="Model.LegalName" 
-                              ReadOnly="@Disabled"/>
-            </div>
-            <div class="form-group">
-                <MudTextField T="string" Label="Sitio web de cliente" Required="false"
-                              @bind-Value="Model.Website" 
-                              ReadOnly="@Disabled"/>
-            </div>
-            <div class="form-group">
-                <MudTextField T="string" Label="Número telefónico de cliente" Required="true"
-                              RequiredError="Insertar número telefónico de cliente"
-                              Validation="@(new Func<string, IEnumerable<string>>(ValidatePhone))"
-                              InputType="InputType.Telephone"
-                              @bind-Value="Model.PhoneNumber" 
-                              ReadOnly="@Disabled"/>
-            </div>
-            <div class="form-group">
-                <MudTextField T="string" Label="Domicilio fiscal de cliente" Required="true"
-                              RequiredError="Insertar domicilio fiscal de cliente"
-                              @bind-Value="Model.FiscalAddress" 
-                              ReadOnly="@Disabled"/>
-            </div>
-            <div class="form-group">
-                <MudTextField T="string" Label="Código postal" Required="true"
-                              RequiredError="Insertar código postal de cliente"
-                              @bind-Value="Model.PostalCode" 
-                              ReadOnly="@Disabled"/>
-            </div>
-            <div class="form-group">
-                <MudTextField T="string" Label="Ciudad" Required="true"
-                              RequiredError="Insertar ciudad de domicilio del cliente"
-                              Validation="@(new Func<string, IEnumerable<string>>(ValidateName))"
-                              @bind-Value="Model.City" 
-                              ReadOnly="@Disabled"/>
-            </div>
-            <div class="form-group">
-                <MudTextField T="string" Label="Provincia/Estado" Required="true"
-                              RequiredError="Insertar provincia/estado de domicilio del cliente"
-                              Validation="@(new Func<string, IEnumerable<string>>(ValidateName))"
-                              @bind-Value="Model.Province" 
-                              ReadOnly="@Disabled"/>
-            </div>
-            <div class="form-group">
-                <MudTextField T="string" Label="País" Required="true"
-                              RequiredError="Insertar país de domicilio del cliente"
-                              Validation="@(new Func<string, IEnumerable<string>>(ValidateName))"
-                              @bind-Value="Model.Country" 
-                              ReadOnly="@Disabled"/>
-            </div>
-            <div class="form-group">
-                <MudTextField T="string" Label="Condición de pago" Required="true"
-                              RequiredError="Inisertar condición de pago del cliente"
-                              @bind-Value="Model.PaymentCondition" 
-                              ReadOnly="@Disabled"/>
-            </div>
+            <MudGrid>
+                <MudItem xs="6">
+                    <MudText Typo="Typo.subtitle1" Align="Align.Start">Nombre comercial de cliente</MudText>
+                    <MudTextField T="string" Placeholder="Nombre comercial de cliente" Required RequiredError="Este campo es obligatorio" 
+                                  @bind-Value="Model.MarketName" ReadOnly="@Disabled" Variant="Variant.Outlined" />
+                </MudItem>
+                <MudItem xs="6">
+                    <MudText Typo="Typo.subtitle1" Align="Align.Start">Razón social de cliente</MudText>
+                    <MudTextField T="string" Placeholder="Razón social de cliente" Required RequiredError="Este campo es obligatorio"
+                                  @bind-Value="Model.LegalName" ReadOnly="@Disabled" Variant="Variant.Outlined"/>
+                </MudItem>
+                <MudItem xs="6">
+                    <MudText Typo="Typo.subtitle1" Align="Align.Start">Sitio web de cliente</MudText>
+                    <MudTextField T="string" Placeholder="Sitio web de cliente" @bind-Value="Model.Website" 
+                                  ReadOnly="@Disabled" Variant="Variant.Outlined" />
+                </MudItem>
+                <MudItem xs="6">
+                    <MudText Typo="Typo.subtitle1" Align="Align.Start">Número telefónico de cliente</MudText>
+                    <MudTextField T="string" Placeholder="Número telefónico de cliente" Required RequiredError="Este campo es obligatorio"
+                                  Validation="@(new Func<string, IEnumerable<string>>(ValidatePhone))" InputType="InputType.Telephone"
+                                  @bind-Value="Model.PhoneNumber" ReadOnly="@Disabled" Variant="Variant.Outlined" />
+                </MudItem>
+                <MudItem xs="6">
+                    <MudText Typo="Typo.subtitle1" Align="Align.Start">Domicilio fiscal de cliente</MudText>
+                    <MudTextField T="string" Placeholder="Domicilio fiscal de cliente" Required RequiredError="Este campo es obligatorio"
+                                  @bind-Value="Model.FiscalAddress" ReadOnly="@Disabled" Variant="Variant.Outlined" />
+                </MudItem>
+                <MudItem xs="6">
+                    <MudText Typo="Typo.subtitle1" Align="Align.Start">Código postal</MudText>
+                    <MudTextField T="string" Placeholder="Código postal" Required RequiredError="Este campo es obligatorio"
+                                  @bind-Value="Model.PostalCode" ReadOnly="@Disabled" Variant="Variant.Outlined" />
+                </MudItem>
+                <MudItem xs="4">
+                    <MudText Typo="Typo.subtitle1" Align="Align.Start">Ciudad</MudText>
+                    <MudTextField T="string" Placeholder="Ciudad" Required RequiredError="Este campo es obligatorio"
+                                  Validation="@(new Func<string, IEnumerable<string>>(ValidateName))" Variant="Variant.Outlined"
+                                  @bind-Value="Model.City" ReadOnly="@Disabled"/>
+                </MudItem>
+                <MudItem xs="4">
+                    <MudText Typo="Typo.subtitle1" Align="Align.Start">Provincia/Estado</MudText>
+                    <MudTextField T="string" Placeholder="Provincia/Estado" Required RequiredError="Este campo es obligatorio"
+                                  Validation="@(new Func<string, IEnumerable<string>>(ValidateName))" Variant="Variant.Outlined"
+                                  @bind-Value="Model.Province" ReadOnly="@Disabled"/>
+                </MudItem>
+                <MudItem xs="4">
+                    <MudText Typo="Typo.subtitle1" Align="Align.Start">País</MudText>
+                    <MudTextField T="string" Placeholder="País" Required RequiredError="Este campo es obligatorio"
+                                  Validation="@(new Func<string, IEnumerable<string>>(ValidateName))" Variant="Variant.Outlined"
+                                  @bind-Value="Model.Country" ReadOnly="@Disabled"/>
+                </MudItem>
+                <MudItem xs="12">
+                    <MudText Typo="Typo.subtitle1" Align="Align.Start">Condición de pago</MudText>
+                    <MudTextField T="string" Placeholder="Condición de pago" Required RequiredError="Este campo es obligatorio"
+                                  @bind-Value="Model.PaymentCondition" ReadOnly="@Disabled" Variant="Variant.Outlined"/>
+                </MudItem>
+            </MudGrid>
         </MudForm>
         @if (States.Delete == (States)State)
         {

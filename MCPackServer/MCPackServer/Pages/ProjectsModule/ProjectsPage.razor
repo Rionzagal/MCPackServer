@@ -29,15 +29,17 @@
     </ToolBarContent>
     <HeaderContent>
         <MudTHeadRow>
-            <MudTh><MudTableSortLabel SortLabel="ProjectNumber" T="Projects">Número de proyecto</MudTableSortLabel></MudTh>
-            <MudTh><MudTableSortLabel SortLabel="ClientId" T="Projects">Cliente</MudTableSortLabel></MudTh>
-            <MudTh><MudTableSortLabel SortLabel="AdmissionDate" T="Projects">Fecha de admisión</MudTableSortLabel></MudTh>
-            <MudTh><MudTableSortLabel SortLabel="CommitmentDate" T="Projects">Fecha de compromiso</MudTableSortLabel></MudTh>
-            <MudTh><MudTableSortLabel SortLabel="DeliveryDate" T="Projects">Fecha de entrega</MudTableSortLabel></MudTh>
-            <MudTh><MudTableSortLabel SortLabel="PaymentConditions" T="Projects">Condiciones de pago</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortLabel="@nameof(Projects.ProjectNumber)" T="Projects">Número de proyecto</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortLabel="@nameof(Projects.ClientId)" T="Projects">Cliente</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortLabel="@nameof(Projects.AdmissionDate)" T="Projects">Fecha de admisión</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortLabel="@nameof(Projects.CommitmentDate)" T="Projects">Fecha de compromiso</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortLabel="@nameof(Projects.DeliveryDate)" T="Projects">Fecha de entrega</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortLabel="@nameof(Projects.Type)" T="Projects">Tipo de proyecto</MudTableSortLabel></MudTh>
         </MudTHeadRow>
         <MudTHeadRow>
-            <MudTh />
+            <MudTh>
+                <MudTextField @bind-Value="NumberFilter" Clearable Placeholder="Buscar por número" />
+            </MudTh>
             <MudTh>
                 <MudAutocomplete T="int?" Label="Buscar por cliente" @bind-Value="ClientIdFilter"
                                  SearchFunc="f => ClientsServerReload(f)" Clearable
@@ -47,22 +49,28 @@
             <MudTh />
             <MudTh />
             <MudTh />
-            <MudTh />
+            <MudTh>
+                <MudSelect @bind-Value="TypeFilter" T="string" Placeholder="Buscar por tipo" Clearable >
+                    <MudSelectItem T="string" Value="@("Proyecto")" />
+                    <MudSelectItem T="string" Value="@("Refacciones")" />
+                    <MudSelectItem T="string" Value="@("Servicio")" />
+                </MudSelect>
+            </MudTh>
         </MudTHeadRow>
     </HeaderContent>
     <RowTemplate>
-        <MudTd DataLabel="ID">@context.Id</MudTd>
+        <MudTd DataLabel="ID">@context.ProjectNumber</MudTd>
         <MudTd DataLabel="Cliente">@context.Client.MarketName</MudTd>
         <MudTd DataLabel="Fecha de ingreso">
-            @(context.AdmissionDate.HasValue ? context.AdmissionDate.Value.Date.ToShortDateString() : "N/A")
+            @(context.AdmissionDate?.Date.ToShortDateString() ?? "N/A")
         </MudTd>
         <MudTd DataLabel="Fecha de compromiso de entrega">
-            @(context.CommitmentDate.HasValue ? context.CommitmentDate.Value.Date.ToShortDateString() : "N/A")
+            @(context.CommitmentDate?.Date.ToShortDateString() ?? "N/A")
         </MudTd>
         <MudTd DataLabel="Fecha de entrega estimada">
-            @(context.DeliveryDate.HasValue ? context.DeliveryDate.Value.Date.ToShortDateString() : "N/A")
+            @(context.DeliveryDate?.Date.ToShortDateString() ?? "N/A")
         </MudTd>
-        <MudTd DataLabel="Condiciones de pago">@context.PaymentConditions</MudTd>
+        <MudTd DataLabel="Condiciones de pago">@context.Type</MudTd>
     </RowTemplate>
     <NoRecordsContent>
         <MudText>Sin proyectos encontrados</MudText>
@@ -122,76 +130,77 @@
                     <MudGrid Class="m-3" Style="height:500px; overflow-y:scroll; width: inherit">
                         <MudItem xs="12">
                             <MudText Typo="Typo.subtitle1">No. de proyecto</MudText>
-                            <MudTextField Value="SelectedProject.Id" ReadOnly />
+                            <MudTextField Value="SelectedProject.ProjectNumber" ReadOnly Variant="Variant.Outlined" />
                         </MudItem>
                         <MudItem xs="4">
                             <MudText Typo="Typo.subtitle1">Cliente</MudText>
                             <MudTextField Value="@(null != SelectedProject.Client ? SelectedProject.Client.MarketName : "N/A")"
-                                          ReadOnly />
+                                          ReadOnly Variant="Variant.Outlined" />
                         </MudItem>
                         <MudItem xs="4">
                             <MudText Typo="Typo.subtitle1">Tipo de proyecto</MudText>
-                            <MudTextField Value="SelectedProject.Type" ReadOnly />
+                            <MudTextField Value="SelectedProject.Type" ReadOnly Variant="Variant.Outlined" />
                         </MudItem>
                         <MudItem xs="4">
                             <MudText Typo="Typo.subtitle1">Precio total</MudText>
-                            <MudTextField Value="@($"${total.ToString("n2")} {SelectedProject.AgreedCurrency}")" ReadOnly />
+                            <MudTextField Value="@($"${total.ToString("n2")} {SelectedProject.AgreedCurrency}")" ReadOnly 
+                            Variant="Variant.Outlined" />
                         </MudItem>
                         <MudItem xs="12">
                             <MudText Typo="Typo.subtitle1">Descripción</MudText>
-                            <MudTextField Value="@SelectedProject.Description" Lines="5" ReadOnly />
+                            <MudTextField Value="@SelectedProject.Description" Lines="5" ReadOnly Variant="Variant.Outlined" />
                         </MudItem>
                         <MudItem xs="6">
                             <MudText Typo="Typo.subtitle1">Fecha de ingreso</MudText>
-                            <MudTextField Value="@SelectedProject.AdmissionDate" Format="dddd, MMM dd yyyy" ReadOnly />
+                            <MudTextField Value="@SelectedProject.AdmissionDate" Format="dddd, MMM dd yyyy" ReadOnly Variant="Variant.Outlined" />
                         </MudItem>
                         <MudItem xs="6">
                             <MudText Typo="Typo.subtitle1">Tiempos de entrega</MudText>
-                            <MudTextField Value="@SelectedProject.DeliveryTime" ReadOnly />
+                            <MudTextField Value="@SelectedProject.DeliveryTime" ReadOnly Variant="Variant.Outlined" />
                         </MudItem>
                         <MudItem xs="6">
                             <MudText Typo="Typo.subtitle1">Fecha compromiso de entrega</MudText>
-                            <MudTextField Value="@SelectedProject.CommitmentDate" Format="dddd, MMM dd yyyy" ReadOnly />
+                            <MudTextField Value="@SelectedProject.CommitmentDate" Format="dddd, MMM dd yyyy" ReadOnly Variant="Variant.Outlined" />
                         </MudItem>
                         <MudItem xs="6">
                             <MudText Typo="Typo.subtitle1">Fecha de entrega estimada</MudText>
-                            <MudTextField Value="@SelectedProject.DeliveryDate" Format="dddd, MMM dd yyyy" ReadOnly />
+                            <MudTextField Value="@SelectedProject.DeliveryDate" Format="dddd, MMM dd yyyy" ReadOnly Variant="Variant.Outlined" />
                         </MudItem>
                         <MudItem xs="6">
                             <MudText Typo="Typo.subtitle1">Estatus</MudText>
-                            <MudTextField Value="@(SelectedProject.RealDeliveryDate.HasValue ? "Entregado" : "En proceso")" ReadOnly />
+                            <MudTextField Value="@(SelectedProject.RealDeliveryDate.HasValue ? "Entregado" : "En proceso")" ReadOnly Variant="Variant.Outlined" />
                         </MudItem>
                         <MudItem xs="6">
                             <MudText Typo="Typo.subtitle1">Fecha de entrega real</MudText>
-                            <MudTextField Value="SelectedProject.RealDeliveryDate" Format="dddd, MMM dd yyyy" ReadOnly />
+                            <MudTextField Value="SelectedProject.RealDeliveryDate" Format="dddd, MMM dd yyyy" ReadOnly Variant="Variant.Outlined" />
                         </MudItem>
                         <MudItem xs="12">
                             <MudText Typo="Typo.subtitle1">Condición de pago</MudText>
-                            <MudTextField Value="@SelectedProject.PaymentConditions" ReadOnly />
+                            <MudTextField Value="@SelectedProject.PaymentConditions" ReadOnly Variant="Variant.Outlined" />
                         </MudItem>
                         <MudItem xs="4">
                             <MudText Typo="Typo.subtitle1">Moneda de cotización</MudText>
-                            <MudTextField Value="@SelectedProject.AgreedCurrency" ReadOnly />
+                            <MudTextField Value="@SelectedProject.AgreedCurrency" ReadOnly Variant="Variant.Outlined" />
                         </MudItem>
                         <MudItem xs="4">
                             <MudText Typo="Typo.subtitle1">Moneda acordada</MudText>
-                            <MudTextField Value="@SelectedProject.PaymentCurrency" ReadOnly />
+                            <MudTextField Value="@SelectedProject.PaymentCurrency" ReadOnly Variant="Variant.Outlined" />
                         </MudItem>
                         <MudItem xs="4">
                             <MudText Typo="Typo.subtitle1">Aplica I.V.A.</MudText>
-                            <MudCheckBox Checked="SelectedProject.HasTaxes" ReadOnly />
+                            <MudCheckBox Checked="SelectedProject.HasTaxes" ReadOnly Variant="Variant.Outlined" />
                         </MudItem>
                         <MudItem xs="6">
                             <MudText Typo="Typo.subtitle1">Vendedor</MudText>
-                            <MudTextField Value="@SelectedProject.SalesPerson" ReadOnly />
+                            <MudTextField Value="@SelectedProject.SalesPerson" ReadOnly Variant="Variant.Outlined" />
                         </MudItem>
                         <MudItem xs="6">
                             <MudText Typo="Typo.subtitle1">Comisión</MudText>
-                            <MudTextField Value="@($"${commission.ToString("n2")} {SelectedProject.AgreedCurrency}")" ReadOnly />
+                            <MudTextField Value="@($"${commission.ToString("n2")} {SelectedProject.AgreedCurrency}")" ReadOnly Variant="Variant.Outlined" />
                         </MudItem>
                         <MudItem xs="12">
                             <MudText Typo="Typo.subtitle1">Observaciones</MudText>
-                            <MudTextField Value="@SelectedProject.Observations" Lines="5" ReadOnly />
+                            <MudTextField Value="@SelectedProject.Observations" Lines="5" ReadOnly Variant="Variant.Outlined" />
                         </MudItem>
                     </MudGrid>
                 </MudTabPanel>

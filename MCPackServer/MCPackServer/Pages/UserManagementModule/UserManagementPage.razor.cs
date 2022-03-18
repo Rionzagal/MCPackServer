@@ -129,7 +129,13 @@ namespace MCPackServer.Pages.UserManagementModule
                     List<string> errors = new();
                     if (null != response.Errors && response.Errors.Any())
                         errors = response.Errors.Select(e => e.Description).ToList();
-                    if (response.Succeeded) Snackbar.Add("Usuario eliminado exitosamente.", Severity.Info);
+                    if (response.Succeeded)
+                    {
+                        Snackbar.Add("Usuario eliminado exitosamente.", Severity.Info);
+                        VisibleUserInformation = false;
+                        SelectedUser = new();
+                        UsrersTable.ReloadServerData();
+                    }
                     else
                         errors.ForEach(item =>
                         {

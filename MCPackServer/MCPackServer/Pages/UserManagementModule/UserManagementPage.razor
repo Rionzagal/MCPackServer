@@ -35,8 +35,7 @@
             <MudTh><MudTableSortLabel SortLabel="ShortName" T="UserInformationView">Nombre</MudTableSortLabel></MudTh>
             <MudTh><MudTableSortLabel SortLabel="UserName" T="UserInformationView">Nombre de usuario</MudTableSortLabel></MudTh>
             <MudTh><MudTableSortLabel SortLabel="Email" T="UserInformationView">Correo electrónico</MudTableSortLabel></MudTh>
-            <MudTh><MudTableSortLabel SortLabel="Gender" T="UserInformationView">Género</MudTableSortLabel></MudTh>
-            <MudTh>Usuario Activo</MudTh>
+            <MudTh>Estado</MudTh>
         </MudTHeadRow>
         <MudTHeadRow>
             <MudTh>
@@ -52,13 +51,6 @@
                 <MudTextField T="string" @bind-Value="EmailFilter" Clearable Placeholder="Correo electrónico" />
             </MudTh>
             <MudTh>
-                <MudSelect T="string" @bind-Value="GenderFilter" Clearable Placeholder="Género de usuario">
-                    <MudSelectItem Value="@("Femenino")" />
-                    <MudSelectItem Value="@("Masculino")" />
-                    <MudSelectItem Value="@("Otro")" />
-                </MudSelect>
-            </MudTh>
-            <MudTh>
                 <MudSelect T="string" @bind-Value="StatusFilter" Clearable Placeholder="Estatus de usuario" >
                     <MudSelectItem Value="@("Activo")" />
                     <MudSelectItem Value="@("Inactivo")" />
@@ -71,8 +63,7 @@
         <MudTd DataLabel="Nombre">@context.ShortName</MudTd>
         <MudTd DataLabel="Nombre de usuario">@context.UserName</MudTd>
         <MudTd DataLabel="Correo electrónico">@context.Email</MudTd>
-        <MudTd DataLabel="Género">@context.Gender</MudTd>
-        <MudTd DataLabel="Usuario Activo">@context.Active</MudTd>
+        <MudTd DataLabel="Usuario Activo">@(context.Active ? "Activo" : "Inactivo")</MudTd>
     </RowTemplate>
     <NoRecordsContent>
         <MudText>Sin usuarios encontrados</MudText>

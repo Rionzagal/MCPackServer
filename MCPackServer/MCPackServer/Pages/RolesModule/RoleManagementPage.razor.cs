@@ -80,7 +80,8 @@ namespace MCPackServer.Pages.RolesModule
             string order = SortDirection.Ascending == state.SortDirection ? "ASC" : "DESC";
             var response = await _rolesService.GetForGridAsync<AspNetRoles>(RolesDm, field, order);
             if (null != response) RolesTableItems = response.ToList();
-            int? count = await _rolesService.GetTotalCountAsync<AspNetRoles>(RolesDm);
+            RolesTableItems.Remove(RolesTableItems.Single(x => "Developer" == x.Name));
+            int? count = await _rolesService.GetTotalCountAsync<AspNetRoles>(RolesDm) - 1;
             return new TableData<AspNetRoles>()
             {
                 Items = RolesTableItems,
