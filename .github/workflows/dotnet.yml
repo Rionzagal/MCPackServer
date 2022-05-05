@@ -20,6 +20,6 @@ jobs:
     - name: Restore dependencies
       run: dotnet restore ./MCPackServer/MCPackServer.sln
     - name: Build 
-      run: dotnet build --source ./MCPackServer/MCPackServer.sln --no-restore
+      run: dotnet build ./MCPackServer/MCPackServer.sln --no-restore
     - name: Test
       run: dotnet test --no-build --verbosity normal
