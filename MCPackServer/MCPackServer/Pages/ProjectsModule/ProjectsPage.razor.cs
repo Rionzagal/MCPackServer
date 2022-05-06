@@ -87,10 +87,11 @@ namespace MCPackServer.Pages.ProjectsModule
                 TotalItems = count ?? 0
             };
         }
-        private void OnSelectedProject(TableRowClickEventArgs<Projects> args)
+        private async void OnSelectedProject(TableRowClickEventArgs<Projects> args)
         {
             SelectedProject = args.Item;
             VisibleProjectInformation = true;
+            SelectedProject.ProjectProducts = await ProductsServerReload(args.Item.Id);
         }
         #endregion
         #region Projects CRUD methods
@@ -192,7 +193,6 @@ namespace MCPackServer.Pages.ProjectsModule
                 Where = filters
             };
             var items = await _productsService.GetForGridAsync<ProjectProducts>(request, "ProductId");
-            int? count = await _productsService.GetTotalCountAsync<ProjectProducts>(request);
             if (null != items)
             {
                 subtotal = 0f;

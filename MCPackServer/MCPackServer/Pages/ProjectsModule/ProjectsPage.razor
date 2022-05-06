@@ -87,7 +87,7 @@
 {
     <MudPaper Class="my-3" Elevation="0">
         <MudText Typo="Typo.h6" Align="Align.Center" Class="mt-3">
-            PRESENTANDO INFORMACIÓN PARA PROYECTO: @SelectedProject.Id
+            PRESENTANDO INFORMACIÓN PARA PROYECTO: @SelectedProject.ProjectNumber
         </MudText>
 
         <MudTabs @ref="ProjectsInformationTabs" Elevation="2" Rounded
@@ -206,7 +206,7 @@
                 </MudTabPanel>
                 <MudTabPanel Text="Productos">
                     <MudTable @ref="ProductsTable" T="ProjectProducts" Dense Hover FixedHeader Height="400px"
-                              CustomHeader Striped OnRowClick="OnSelectedProduct"
+                              CustomHeader Striped OnRowClick="OnSelectedProduct" 
                               Items="SelectedProject.ProjectProducts">
                         <ToolBarContent>
                             <MudText Typo="Typo.h6">Productos del proyecto</MudText>
@@ -226,14 +226,16 @@
                         <HeaderContent>
                             <MudTHeadRow>
                                 <MudTh><MudTableSortLabel SortLabel="ProductId" T="ProjectProducts">Productos</MudTableSortLabel></MudTh>
-                                <MudTh>Precio de venta</MudTh>
+                                <MudTh>Descripción</MudTh>
                                 <MudTh><MudTableSortLabel SortLabel="Quantity" T="ProjectProducts">Cantidad</MudTableSortLabel></MudTh>
+                                <MudTh><MudTableSortLabel SortLabel="SalePrice" T="ProjectProducts">Precio de venta</MudTableSortLabel></MudTh>
                             </MudTHeadRow>
                         </HeaderContent>
                         <RowTemplate>
                             <MudTd DataLabel="Código">@context.Product.Code</MudTd>
                             <MudTd DataLabel="Descripción">@context.Product.Description</MudTd>
                             <MudTd DataLabel="Cantidad">@context.Quantity</MudTd>
+                            <MudTd DataLabel="Precio de venta">@($"$ {context.SalePrice.ToString("n2")} {SelectedProject.AgreedCurrency}")</MudTd>
                         </RowTemplate>
                         <NoRecordsContent>
                             <MudText>Sin productos encontrados para el proyecto</MudText>

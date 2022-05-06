@@ -118,7 +118,12 @@ namespace MCPackServer.Services
             }
             catch (Exception ex)
             {
-                response.Failure(error: ex.Message);
+                List<string> Errors = new();
+                if (null != ex.InnerException)
+                    Errors.Add(ex.InnerException.Message);
+                else
+                    Errors.Add(ex.Message);
+                response.Failure(errors: Errors);
             }
             return response;
         }
