@@ -24,8 +24,8 @@ namespace MCPackServer.Pages.ClientsModule
 
         #region Permission State
         #region Permissions
-        public bool CanCreateClient, CanEditClient, CanDeleteClient = true;
-        public bool CanViewContact, CanCreateContact, CanEditContact, CanDeleteContact = true;
+        public bool CanCreateClient, CanEditClient, CanDeleteClient = false;
+        public bool CanViewContact, CanCreateContact, CanEditContact, CanDeleteContact = false;
         #endregion
         #region Visible Flags
         public bool VisibleClientCreation = false;
@@ -92,6 +92,7 @@ namespace MCPackServer.Pages.ClientsModule
                     CanEditClient = (await _authorizationService.AuthorizeAsync(user, Constants.Permissions.Clients.Edit)).Succeeded;
                     CanDeleteClient = (await _authorizationService.AuthorizeAsync(user, Constants.Permissions.Clients.Delete)).Succeeded;
 
+                    CanViewContact = (await _authorizationService.AuthorizeAsync(user, Constants.Permissions.Contacts.View)).Succeeded;
                     CanCreateContact = (await _authorizationService.AuthorizeAsync(user, Constants.Permissions.Contacts.Create)).Succeeded;
                     CanEditContact = (await _authorizationService.AuthorizeAsync(user, Constants.Permissions.Clients.Edit)).Succeeded;
                     CanDeleteContact = (await _authorizationService.AuthorizeAsync(user, Constants.Permissions.Clients.Delete)).Succeeded;

@@ -44,7 +44,7 @@ namespace MCPackServer.Pages.ProjectsModule
         {
             if (States.Add == State) //representing an Add dialog
             {
-                Title = $"Añadir nuevo producto al proyecto {Model.ProjectId}";
+                Title = $"Añadir nuevo producto a proyecto seleccionado";
                 TitleIcon = Icons.Material.Filled.Create;
                 Disabled = false;
                 ButtonColor = Color.Success;
@@ -52,14 +52,14 @@ namespace MCPackServer.Pages.ProjectsModule
             }
             else if (States.Edit == State) //representing an Edit dialog
             {
-                Title = "Editar proyecto seleccionado";
+                Title = "Editar producto de proyecto";
                 TitleIcon = Icons.Material.Filled.Edit;
                 Disabled = false;
                 ButtonColor = Color.Primary;
             }
             else if (States.Delete == State) //representing a Delete dialog
             {
-                Title = "Eliminar proyecto seleccionado";
+                Title = "Eliminar producto seleccionado de proyecto";
                 TitleIcon = Icons.Material.Filled.Delete;
                 Disabled = true;
                 ButtonColor = Color.Error;
