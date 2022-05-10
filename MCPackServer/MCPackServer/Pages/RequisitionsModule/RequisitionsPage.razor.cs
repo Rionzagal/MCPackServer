@@ -83,8 +83,8 @@ namespace MCPackServer.Pages.RequisitionsModule
             }
         }
 
-        #region Projects related methods
-        #region Projects table related methods
+        #region Requisitions related methods
+        #region Requisitions table related methods
         private async Task<TableData<Requisitions>> RequisitionsServerReload(TableState state)
         {
             DataManagerRequest request = new()

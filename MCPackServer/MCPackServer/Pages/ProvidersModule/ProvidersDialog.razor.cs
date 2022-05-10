@@ -75,7 +75,12 @@ namespace MCPackServer.Pages.ProvidersModule
             await Form.Validate();
             if (Form.IsValid)
             {
-                if (States.Add == State) response = await _service.AddAsync(Model);
+                if (States.Add == State)
+                {
+                    if (string.IsNullOrEmpty(Model.Website)) 
+                        Model.Website = "N/A";
+                    response = await _service.AddAsync(Model);
+                }
                 else if (States.Edit == State) response = await _service.UpdateAsync(Model);
                 else if (States.Delete == State)
                 {

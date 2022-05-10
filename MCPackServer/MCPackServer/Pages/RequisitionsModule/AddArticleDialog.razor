@@ -50,9 +50,9 @@
                         <MudTd DataLabel="Código">@context.Article.Code</MudTd>
                         <MudTd DataLabel="Name">@context.Article.Name</MudTd>
                         <MudTd DataLabel="Proyecto">
-                            <MudNumericField T="int" @bind-Value="@context.ProjectId" Required
-                                             Validation="new Func<int, string>(ProjectValidation)"
-                                             HideSpinButtons HelperText="Proyecto de destino" />
+                            <MudAutocomplete T="int" @bind-Value="context.ProjectId"
+                                 SearchFunc="f => ProjectsServerReload(f)"
+                                 ToStringFunc="new Func<int, string>(GetProjectNumber)" />                        
                         </MudTd>
                         <MudTd DataLabel="Quantity">
                             <MudNumericField T="int" @bind-Value="@context.Quantity" Required

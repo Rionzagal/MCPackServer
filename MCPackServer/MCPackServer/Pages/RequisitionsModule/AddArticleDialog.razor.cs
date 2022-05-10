@@ -61,9 +61,7 @@ namespace MCPackServer.Pages.RequisitionsModule
             #endregion
 
             #region Get projects
-            DataManagerRequest ProjectsDm = new();
-            var projectsResponse = await _projectsService.GetForGridAsync<Projects>(ProjectsDm);
-            if (null != projectsResponse) projects = projectsResponse.ToList();
+            await ProjectsServerReload();
             #endregion
         }
 
@@ -127,6 +125,41 @@ namespace MCPackServer.Pages.RequisitionsModule
             return familyName;
         }
 
+        private async Task<IEnumerable<int>> ProjectsServerReload(string filter = "")
+        {
+            List<int> result = new();
+            List<WhereFilter> filters = new()
+            {
+                new WhereFilter { Field = nameof(Projects.ProjectNumber), Value = filter }
+            };
+            DataManagerRequest dm = new()
+            {
+                Where = filters,
+            };
+            var response = await _service.GetForGridAsync<Projects>(dm);
+            if (null != response && response.Any())
+            {
+                projects = response.ToList();
+                foreach (var project in projects)
+                {
+                    result.Add(project.Id);
+                }
+            }
+            return result;
+        }
+
+        private string GetProjectNumber(int id)
+        {
+            string projectNumber = string.Empty;
+            if (id != 0)
+            {
+                var match = projects.FirstOrDefault(f => f.Id == id);
+                if (match != null)
+                    projectNumber = match.ProjectNumber;
+            }
+            return projectNumber;
+        }
+
         private async Task<TableData<RequisitionArticles>> ArticlesServerReload(TableState state)
         {
             List<RequisitionArticles> requestedArticles = new();
@@ -174,12 +207,6 @@ namespace MCPackServer.Pages.RequisitionsModule
             }
             return new TableData<RequisitionArticles>() 
             { Items = requestedArticles, TotalItems = TotalCount ?? 0 };
-        }
-
-        private string ProjectValidation(int input)
-        {
-            if (!projects.Any(p => input == p.Id)) return "Inserte un número de proyecto válido.";
-            return null;
         }
     }
 }
