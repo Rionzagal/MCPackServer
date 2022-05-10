@@ -20,64 +20,66 @@
                 {
                     <div class="form-group">
                         <MudText Typo="Typo.subtitle1" Align="Align.Center">
-                            ¿Está seguro de eliminar producto del proyecto @Model.ProjectId?
+                            ¿Está seguro de eliminar producto del proyecto seleccionado?
                         </MudText>
                     </div>
                 }
-            <MudForm Model="Model" @ref="Form">
-                @if ((int)States.Add == State)
-                {
-                <div class="form-group">
-                    @if (SearchForCode)
-                     {
-                        <MudAutocomplete T="int" @bind-Value="Model.ProductId" Label="Producto"
-                                         SearchFunc="(f) => ProductsServerReload(f, SearchForCode)"
-                                         ToStringFunc="new Func<int, string>(GetProductCode)"
-                                         Required="true" RequiredError="Seleccione un producto" />
-                     }
-                     else
-                     {
-                        <MudAutocomplete T="int" @bind-Value="Model.ProductId" Label="Producto"
-                                         SearchFunc="(f) => ProductsServerReload(f, SearchForCode)"
-                                         ToStringFunc="new Func<int, string>(GetProductDescription)"
-                                         Required="true" RequiredError="Seleccione un producto" />
-                     }
-                </div>
-                <div class="form-group">
-                    <MudSwitch @bind-Checked="SearchForCode">
-                        @($"Buscar por: {(SearchForCode ? "Código" : "Descripción")}")
-                    </MudSwitch>
-                </div>
-                }
-                else
-                {
+                <MudForm Model="Model" @ref="Form">
+                    @if ((int)States.Add == State)
+                    {
+                        <div class="form-group">
+                            @if (SearchForCode)
+                             {
+                                <MudAutocomplete T="int" @bind-Value="Model.ProductId" Label="Producto"
+                                                 SearchFunc="(f) => ProductsServerReload(f, SearchForCode)"
+                                                 ToStringFunc="new Func<int, string>(GetProductCode)"
+                                                 Required="true" RequiredError="Seleccione un producto"
+                                                 Variant="Variant.Outlined"/>
+                             }
+                             else
+                             {
+                                <MudAutocomplete T="int" @bind-Value="Model.ProductId" Label="Producto"
+                                                 SearchFunc="(f) => ProductsServerReload(f, SearchForCode)"
+                                                 ToStringFunc="new Func<int, string>(GetProductDescription)"
+                                                 Required="true" RequiredError="Seleccione un producto"
+                                                 Variant="Variant.Outlined"/>
+                             }
+                        </div>
+                        <div class="form-group">
+                            <MudSwitch @bind-Checked="SearchForCode">
+                                @($"Buscar por: {(SearchForCode ? "Código" : "Descripción")}")
+                            </MudSwitch>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="form-group">
+                            <MudText Typo="Typo.subtitle1">
+                                Código de producto: @Model.Product.Code
+                            </MudText>
+                        </div>
+                        <div class="form-group">
+                            <MudTextField T="string" Text="@Model.Product.Description" Label="Descripción"
+                                          Lines="5" ReadOnly Required="false" Variant="Variant.Outlined"/>
+                        </div>
+                    }
                     <div class="form-group">
-                        <MudText Typo="Typo.subtitle1">
-                            Código de producto: @Model.Product.Code
-                        </MudText>
+                        <MudNumericField T="int" @bind-Value="Model.Quantity" Label="Cantidad"
+                                         Min="1" Step="1" Required="true" ReadOnly="@Disabled"
+                                         RequiredError="Inserte cantidad" Variant="Variant.Outlined"/>
                     </div>
                     <div class="form-group">
-                        <MudTextField T="string" Text="@Model.Product.Description" Label="Descripción"
-                                      Lines="5" ReadOnly="true" Required="false" />
+                        <MudNumericField T="float" @bind-Value="Model.SalePrice" Label="Precio de venta"
+                                         Min="0.0f" HideSpinButtons="true" Adornment="Adornment.Start"
+                                         AdornmentIcon="@Icons.Material.Filled.AttachMoney"
+                                         Required="true" ReadOnly="@Disabled" Variant="Variant.Outlined"
+                                         RequiredError="Inserte precio de venta"/>
                     </div>
-                }
-                <div class="form-group">
-                    <MudNumericField T="int" @bind-Value="Model.Quantity" Label="Cantidad"
-                                     Min="1" Step="1" Required="true" ReadOnly="@Disabled"
-                                     RequiredError="Inserte cantidad" />
-                </div>
-                <div class="form-group">
-                    <MudNumericField T="float" @bind-Value="Model.SalePrice" Label="Precio de venta"
-                                     Min="0.0f" HideSpinButtons="true" Adornment="Adornment.Start"
-                                     AdornmentIcon="@Icons.Material.Filled.AttachMoney"
-                                     Required="true" ReadOnly="@Disabled"
-                                     RequiredError="Inserte precio de venta"/>
-                </div>
-                <div class="form-group">
-                    <MudTextField T="string" @bind-Value="Model.Observations" Label="Observaciones"
-                                  Required="false" ReadOnly="@Disabled" Lines="5"/>
-                </div>
-            </MudForm>
+                    <div class="form-group">
+                        <MudTextField T="string" @bind-Value="Model.Observations" Label="Observaciones"
+                                      Required="false" ReadOnly="@Disabled" Lines="5" Variant="Variant.Outlined"/>
+                    </div>
+                </MudForm>
             </MudContainer>
         }
     </DialogContent>
