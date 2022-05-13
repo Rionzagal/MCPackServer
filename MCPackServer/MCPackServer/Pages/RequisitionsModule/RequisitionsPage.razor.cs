@@ -116,7 +116,7 @@ namespace MCPackServer.Pages.RequisitionsModule
             VisibleRequisitionInformation = true;
         }
         #endregion
-        #region Projects CRUD methods
+        #region Requisitions CRUD methods
         private async Task CreateRequisition()
         {
             string number = string.Empty;
@@ -142,7 +142,12 @@ namespace MCPackServer.Pages.RequisitionsModule
                 if (response.IsSuccessful)
                     Snackbar.Add("Requisición añadida con éxito.", Severity.Success);
                 else
-                    Snackbar.Add("Error al añadir requisición.", Severity.Error);
+                {
+                    foreach (var error in response.Errors)
+                    {
+                        Snackbar.Add(error , Severity.Error);
+                    }
+                }
                 await RequisitionsTable.ReloadServerData();
             }
         }
@@ -161,7 +166,12 @@ namespace MCPackServer.Pages.RequisitionsModule
                 if (response.IsSuccessful)
                     Snackbar.Add("Requisición editada con éxito.", Severity.Success);
                 else
-                    Snackbar.Add("Error al editar requisición.", Severity.Error);
+                {
+                    foreach (var error in response.Errors)
+                    {
+                        Snackbar.Add(error, Severity.Error);
+                    }
+                }
                 await RequisitionsTable.ReloadServerData();
             }
         }
@@ -184,7 +194,12 @@ namespace MCPackServer.Pages.RequisitionsModule
                     Snackbar.Add("Requisición eliminada con éxito.", Severity.Info);
                 }
                 else
-                    Snackbar.Add("Error al eliminar requisición.", Severity.Error);
+                {
+                    foreach (var error in response.Errors)
+                    {
+                        Snackbar.Add(error, Severity.Error);
+                    }
+                }
                 await RequisitionsTable.ReloadServerData();
             }
         }
@@ -253,7 +268,12 @@ namespace MCPackServer.Pages.RequisitionsModule
                     Snackbar.Add("Artículo editado con éxito.", Severity.Success);
                 }
                 else
-                    Snackbar.Add("Error al editar artículo.", Severity.Error);
+                {
+                    foreach (var error in response.Errors)
+                    {
+                        Snackbar.Add(error, Severity.Error);
+                    }
+                }
             }
         }
         private async Task DeleteProduct(RequisitionArticles product)
@@ -276,7 +296,12 @@ namespace MCPackServer.Pages.RequisitionsModule
                     Snackbar.Add("Artículo eliminado con éxito", Severity.Info);
                 }
                 else
-                    Snackbar.Add("Error al eliminar el artículo", Severity.Error);
+                {
+                    foreach (var error in response.Errors)
+                    {
+                        Snackbar.Add(error, Severity.Error);
+                    }
+                }
             }
         }
         #endregion

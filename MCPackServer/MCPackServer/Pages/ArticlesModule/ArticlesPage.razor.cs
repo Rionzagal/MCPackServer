@@ -177,7 +177,12 @@ namespace MCPackServer.Pages.ArticlesModule
                     Snackbar.Add("Artículo añadido con éxito.", Severity.Success);
                 }
                 else
-                    Snackbar.Add("Error al añadir artículo.", Severity.Error);
+                {
+                    foreach (var error in response.Errors)
+                    {
+                        Snackbar.Add(error, Severity.Error);
+                    }
+                }
                 await ArticleTable.ReloadServerData();
             }
         }
@@ -200,7 +205,12 @@ namespace MCPackServer.Pages.ArticlesModule
                     Snackbar.Add("Artículo editado con éxito.", Severity.Success);
                 }
                 else
-                    Snackbar.Add("Error al editar artículo.", Severity.Error);
+                {
+                    foreach (var error in response.Errors)
+                    {
+                        Snackbar.Add(error, Severity.Error);
+                    }
+                }
                 await ArticleTable.ReloadServerData();
             }
         }
@@ -225,7 +235,12 @@ namespace MCPackServer.Pages.ArticlesModule
                     SelectedArticle = new();
                 }
                 else
-                    Snackbar.Add("Error al eliminar artículo.", Severity.Error);
+                {
+                    foreach (var error in response.Errors)
+                    {
+                        Snackbar.Add(error, Severity.Error);
+                    }
+                }
                 await ArticleTable.ReloadServerData();
             }
         }

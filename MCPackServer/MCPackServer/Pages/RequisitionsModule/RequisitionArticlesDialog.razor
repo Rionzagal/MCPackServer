@@ -42,9 +42,9 @@
                         </MudItem>
                         <MudItem xs="6">
                             <MudText Typo="Typo.subtitle1">Proyecto de destino</MudText>
-                            <MudTextField @bind-Value="Model.ProjectId" Required 
-                                          RequiredError="Inserte un proyecto de destino" 
-                                          ReadOnly="@Disabled" />
+                            <MudAutocomplete T="int" SearchFunc="f => ProjectsServerReload(f)" @bind-Value="Model.ProjectId"
+                                ToStringFunc="new Func<int, string>(GetProjectNumber)"
+                                Required RequiredError="Este campo es obligatorio." />
                         </MudItem>
                         <MudItem xs="6">
                             <MudText Typo="Typo.subtitle1">Cantidad</MudText>

@@ -36,18 +36,12 @@ namespace MCPackServer.Pages.RequisitionsModule
 
         #region API elements
         private MudForm Form;
+        private List<Projects> ProjectsList = new();
         #endregion
 
         protected override async Task OnInitializedAsync()
         {
-            if (States.Add == State) //representing an Add dialog
-            {
-                Title = "Añadir nuevo proyecto";
-                TitleIcon = Icons.Material.Filled.Create;
-                Disabled = false;
-                ButtonColor = Color.Success;
-            }
-            else if (States.Edit == State) //representing an Edit dialog
+            if (States.Edit == State) //representing an Edit dialog
             {
                 Title = "Editar artículo seleccionado";
                 TitleIcon = Icons.Material.Filled.Edit;
@@ -65,6 +59,39 @@ namespace MCPackServer.Pages.RequisitionsModule
             {
                 Dialog.Cancel();
             }
+
+            await ProjectsServerReload();
+        }
+
+        private async Task<IEnumerable<int>> ProjectsServerReload(string filter = "")
+        {
+            List<int> result = new();
+            DataManagerRequest request = new()
+            {
+                Where = new()
+                {
+                    new WhereFilter { Field = nameof(Projects.ProjectNumber), Value = filter }
+                }
+            };
+            var items = await _service.GetForGridAsync<Projects>(request);
+            if (null != items)
+            {
+                ProjectsList = items.ToList();
+                ProjectsList.ForEach(p => result.Add(p.Id));
+            }
+            return result;
+        }
+
+        private string GetProjectNumber(int Id)
+        {
+            string ProjectNumber = string.Empty;
+            if (Id != 0)
+            {
+                var match = ProjectsList.FirstOrDefault(p => p.Id == Id);
+                if (match != null)
+                    ProjectNumber = match.ProjectNumber;
+            }
+            return ProjectNumber;
         }
 
         private async Task Submit()

@@ -17,7 +17,8 @@
         public void Failure(IEnumerable<string>? errors = null, string? error = null)
         {
             IsSuccessful = false;
-            if (!string.IsNullOrEmpty(error)) Errors.Add(error);
+            if (!string.IsNullOrEmpty(error))
+                Errors.Add(error);
             if (null != errors && errors.Any())
             {
                 foreach (var item in errors)
