@@ -6,6 +6,6 @@ namespace MCPackServer.Services.Interfaces
 {
     public interface IContactsService : IBaseService
     {
-        Task<ActionResponse<Contacts>> ClearUnaligned();
+        Task<ActionResponse<List<Contacts>>> ClearUnaligned();
     }
 }

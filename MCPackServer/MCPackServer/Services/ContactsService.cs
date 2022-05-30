@@ -13,12 +13,17 @@ namespace MCPackServer.Services
         {
         }
 
-        public async Task<ActionResponse<Contacts>> ClearUnaligned()
+        public async Task<ActionResponse<List<Contacts>>> ClearUnaligned()
         {
             using IDbConnection conn = Connection;
             conn.Open();
             using IDbTransaction transaction = conn.BeginTransaction();
-            ActionResponse<Contacts> response = new("Delete");
+            List<Contacts> contacts = _context.Contacts
+                .Where(c => !_context.AssociatedContactsView
+                    .Select(ac => ac.Id)
+                    .Contains(c.Id))
+                .ToList();
+            ActionResponse<List<Contacts>> response = new(contacts, Actions.Delete);
             try
             {
                 string query = "DELETE FROM Contacts WHERE Id NOT IN " +
@@ -31,8 +36,9 @@ namespace MCPackServer.Services
             {
                 conn.Close();
                 transaction.Rollback();
-                response.Failure(error: ex.Message);
+                response.Failure(ex);
             }
+            await LogResponse(response);
             return response;
         }
     }

@@ -250,7 +250,7 @@ namespace MCPackServer.Pages.PurchaseOrdersModule
             };
             var response = await _articlesService.GetForGridAsync<ArticlesToPurchase>(request, "QuoteId", "DESC");
             if (null != response) articles = response.ToList();
-            subtotal = 0f;
+            subtotal = 0;
             foreach (var item in articles)
             {
                 subtotal += item.SalePrice * item.Quantity;

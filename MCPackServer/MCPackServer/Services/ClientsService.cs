@@ -78,8 +78,8 @@ namespace MCPackServer.Services
 
         public async Task<ActionResponse<ClientContacts>> LinkContact(object clientId, object contactId)
         {
-            ActionResponse<ClientContacts> response = new("Add");
             ClientContacts Link = new() { ClientId = (int)clientId, ContactId = (int)contactId };
+            ActionResponse<ClientContacts> response = new(Link, Actions.Insert);
             try
             {
                 await _context.AddAsync(Link);
@@ -90,8 +90,9 @@ namespace MCPackServer.Services
             }
             catch (Exception ex)
             {
-                response.Failure(error: ex.Message);
+                response.Failure(ex);
             }
+            await LogResponse(response);
             return response;
         }
         public async Task<ActionResponse<ClientContacts>> RemoveContact(object clientId, object contactId)
@@ -99,7 +100,13 @@ namespace MCPackServer.Services
             using IDbConnection conn = Connection;
             conn.Open();
             using IDbTransaction transaction = conn.BeginTransaction();
-            ActionResponse<ClientContacts> response = new("Delete");
+            ActionResponse<ClientContacts> response = new(
+                new ClientContacts() 
+                { 
+                    ClientId = (int)clientId,
+                    ContactId = (int)contactId
+                },
+                Actions.Delete);
             DynamicParameters parameters = new();
             try
             {
@@ -114,17 +121,21 @@ namespace MCPackServer.Services
             {
                 conn.Close();
                 transaction.Rollback();
-                response.Failure(error: ex.Message);
+                response.Failure(ex);
             }
+            await LogResponse(response);
             return response;
         }
 
-        public async Task<ActionResponse<ClientContacts>> ClearContacts(object clientId)
+        public async Task<ActionResponse<List<ClientContacts>>> ClearContacts(object clientId)
         {
             using IDbConnection conn = Connection;
             conn.Open();
             using IDbTransaction transaction = conn.BeginTransaction();
-            ActionResponse<ClientContacts> response = new("Delete");
+            List<ClientContacts> contacts = (
+                from contact in _context.ClientContacts where contact.ClientId == (int)clientId select contact
+                ).ToList();
+            ActionResponse<List<ClientContacts>> response = new(contacts, Actions.Delete);
             DynamicParameters parameters = new();
             parameters.Add(nameof(clientId), clientId);
             string query = "DELETE FROM ClientContacts WHERE ClientId = @clientId";
@@ -134,12 +145,13 @@ namespace MCPackServer.Services
                 transaction.Commit();
                 response.Success();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 conn.Close();
                 transaction.Rollback();
-                response.Failure();
+                response.Failure(ex);
             }
+            await LogResponse(response);
             return response;
         }
     }

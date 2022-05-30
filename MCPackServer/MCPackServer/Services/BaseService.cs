@@ -5,7 +5,7 @@ using MCPackServer.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using MySql.Data.MySqlClient;
-using System;
+using System.Security;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -42,6 +42,46 @@ namespace MCPackServer.Services
                 }
             }
             return filters;
+        }
+
+        protected async Task LogResponse<T>(ActionResponse<T> response)
+        {
+            try
+            {
+                string CurrentUserId = (await GetByKeyAsync<Entities.AspNetUsers>(
+                System.Security.Claims.ClaimsPrincipal.Current?.Identity?.Name ?? "",
+                nameof(Entities.AspNetUsers.UserName)
+                ))?.Id ?? string.Empty;
+                string jsonMessage = response.IsSuccessful
+                    ? Newtonsoft.Json.JsonConvert.SerializeObject(response.Value)
+                    : Newtonsoft.Json.JsonConvert.SerializeObject(response.Errors);
+                Entities.Logs newLog = new()
+                {
+                    UserId = CurrentUserId,
+                    Message = response.IsSuccessful ? Newtonsoft.Json.JsonConvert.SerializeObject(new
+                        {
+                            Message = $"Action: {response.Action} completed successfuly in table {response.Value?.GetType().Name}",
+                            response.Value
+                        }) : Newtonsoft.Json.JsonConvert.SerializeObject(new
+                        {
+                            Message = $"Action: {response.Action} failed causing errors in table {response.Value?.GetType().Name}",
+                            response.Value,
+                            response.Errors
+                        }),
+                    Action = response.Action.ToString(),
+                    Succeeded = response.IsSuccessful,
+                    TableName = response.Value?.GetType().Name ?? "Not available",
+                    Exception = response.IsSuccessful ? "N/A" : response.ExceptionText,
+                    TimeOfAction = DateTime.Now
+                };
+                await _context.AddAsync(newLog);
+                await _context.SaveChangesAsync();
+                _context.Entry(newLog).State = EntityState.Detached;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
         }
 
         public virtual async Task<IEnumerable<T>> GetForGridAsync<T>(DataManagerRequest request, string sortField = "Id", string order = "", bool getAll = false) where T : class
@@ -104,35 +144,33 @@ namespace MCPackServer.Services
 
         public async Task<ActionResponse<T>> AddAsync<T>(T entity)
         {
-            ActionResponse<T> response = new("Insert");
+            ActionResponse<T> response = new(entity, Actions.Insert);
             try
             {
+                _ = entity ?? throw new ArgumentNullException(nameof(entity));
                 var properties = entity.GetType().GetProperties()
                     .Where(x => !x.GetAccessors()[0].IsFinal && x.GetAccessors()[0].IsVirtual).ToList();
                 properties.ForEach(x => x.SetValue(entity, null));
                 await _context.AddAsync(entity);
                 await _context.SaveChangesAsync();
                 _context.Entry(entity).State = EntityState.Detached;
-                response.Success();
                 response.AttachValue(entity);
+                response.Success();
             }
             catch (Exception ex)
             {
-                List<string> Errors = new();
-                if (null != ex.InnerException)
-                    Errors.Add(ex.InnerException.Message);
-                else
-                    Errors.Add(ex.Message);
-                response.Failure(errors: Errors);
+                response.Failure(ex);
             }
+            await LogResponse(response);
             return response;
         }
 
         public virtual async Task<ActionResponse<T>> UpdateAsync<T>(T entity)
         {
-            ActionResponse<T> response = new("Edit");
+            ActionResponse<T> response = new(entity, Actions.Update);
             try
             {
+                _ = entity ?? throw new ArgumentNullException(nameof(entity));
                 var properties = entity.GetType().GetProperties()
                     .Where(x => !x.GetAccessors()[0].IsFinal && x.GetAccessors()[0].IsVirtual).ToList();
                 properties.ForEach(x => x.SetValue(entity, null));
@@ -140,13 +178,14 @@ namespace MCPackServer.Services
                 _context.Entry(entity).State = EntityState.Modified;
                 await _context.SaveChangesAsync();
                 _context.Entry(entity).State = EntityState.Detached;
-                response.Success();
                 response.AttachValue(entity);
+                response.Success();
             }
             catch (Exception ex)
             {
-                response.Failure(error: ex.Message);
+                response.Failure(ex);
             }
+            await LogResponse(response);
             return response;
         }
 
@@ -155,9 +194,10 @@ namespace MCPackServer.Services
             using IDbConnection conn = Connection;
             conn.Open();
             using IDbTransaction transaction = conn.BeginTransaction();
-            ActionResponse<T> response = new("Delete");
+            ActionResponse<T> response = new(entity, Actions.Delete);
             try
             {
+                _ = entity ?? throw new ArgumentNullException(nameof(entity));
                 DynamicParameters parameters = new();
                 string tableName = entity.GetType().Name;
                 string query = $"DELETE FROM {tableName} WHERE ";
@@ -185,14 +225,16 @@ namespace MCPackServer.Services
                 }
                 await conn.ExecuteAsync(query, parameters, transaction);
                 transaction.Commit();
+                response.AttachValue(entity);
                 response.Success();
             }
             catch (Exception ex)
             {
                 transaction.Rollback();
                 conn.Close();
-                response.Failure(error: ex.Message);
+                response.Failure(ex);
             }
+            await LogResponse(response);
             return response;
         }
     }

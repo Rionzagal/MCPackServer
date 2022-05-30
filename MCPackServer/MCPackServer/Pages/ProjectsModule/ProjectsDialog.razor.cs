@@ -3,7 +3,7 @@ using MCPackServer.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
-using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -87,7 +87,7 @@ namespace MCPackServer.Pages.ProjectsModule
         {
             bool ProjectValid = true;
             _processing = true;
-            ActionResponse<Projects> response = new();
+            string response = string.Empty;
             if (States.Add == State)
             {
                 Model.Code = $"{Model.Id}C{Model.ClientId:4d}T{Model.Type.FirstOrDefault()}";
@@ -105,10 +105,13 @@ namespace MCPackServer.Pages.ProjectsModule
             await Form.Validate();
             if (Form.IsValid && ProjectValid)
             {
-                if (States.Add == State) response = await _projectsService.AddAsync(Model);
-                else if (States.Edit == State) response = await _projectsService.UpdateAsync(Model);
-                else if (States.Delete == State) response = await _projectsService.RemoveAsync(Model);
-                Dialog.Close(DialogResult.Ok(response));
+                if (States.Add == State) 
+                    response = JsonConvert.SerializeObject(await _projectsService.AddAsync(Model));
+                else if (States.Edit == State)
+                    response = JsonConvert.SerializeObject(await _projectsService.UpdateAsync(Model));
+                else if (States.Delete == State)
+                    response = JsonConvert.SerializeObject(await _projectsService.RemoveAsync(Model));
+                Dialog.Close(DialogResult.Ok(JsonConvert.DeserializeObject<ActionResponse<Projects>>(response)));
             }
             else
             {

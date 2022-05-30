@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using MudBlazor;
 using System.Text.RegularExpressions;
+using Newtonsoft.Json;
 
 namespace MCPackServer.Pages.ProvidersModule
 {
@@ -71,7 +72,7 @@ namespace MCPackServer.Pages.ProvidersModule
         private async Task Submit()
         {
             _processing = true;
-            ActionResponse<Providers> response = new();
+            string response = string.Empty;
             await Form.Validate();
             if (Form.IsValid)
             {
@@ -79,22 +80,20 @@ namespace MCPackServer.Pages.ProvidersModule
                 {
                     if (string.IsNullOrEmpty(Model.Website)) 
                         Model.Website = "N/A";
-                    response = await _service.AddAsync(Model);
+                    response = JsonConvert.SerializeObject(await _service.AddAsync(Model));
                 }
-                else if (States.Edit == State) response = await _service.UpdateAsync(Model);
+                else if (States.Edit == State)
+                    response = JsonConvert.SerializeObject(await _service.UpdateAsync(Model));
                 else if (States.Delete == State)
                 {
-                    response = await _service.RemoveAsync(Model);
-                    if (response.IsSuccessful)
-                    {
-                        var _clearResponse = await _contactsService.ClearUnaligned();
-                        if (_clearResponse.IsSuccessful)
-                            Snackbar.Add("Contactos correctamente eliminados.", Severity.Info);
-                        else
-                            Snackbar.Add("Error al eliminar contactos.", Severity.Error);
-                    }
+                    response = JsonConvert.SerializeObject(await _service.RemoveAsync(Model));
+                    var _clearResponse = await _contactsService.ClearUnaligned();
+                    if (_clearResponse.IsSuccessful)
+                        Snackbar.Add("Contactos correctamente eliminados.", Severity.Info);
+                    else
+                        Snackbar.Add("Error al eliminar contactos.", Severity.Error);
                 }
-                Dialog.Close(DialogResult.Ok(response));
+                Dialog.Close(DialogResult.Ok(JsonConvert.DeserializeObject<ActionResponse<Providers>>(response)));
             }
             else
             {

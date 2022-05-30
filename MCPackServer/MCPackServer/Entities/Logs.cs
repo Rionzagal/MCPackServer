@@ -24,6 +24,7 @@ namespace MCPackServer.Entities
         public DateTime? TimeOfAction { get; set; }
         [Required]
         public string Message { get; set; }
+        public string Exception { get; set; }
 
         [ForeignKey(nameof(UserId))]
         [InverseProperty(nameof(AspNetUsers.Logs))]

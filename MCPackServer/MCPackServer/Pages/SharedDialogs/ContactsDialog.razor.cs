@@ -2,7 +2,7 @@
 using MCPackServer.Models;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
-using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -74,15 +74,18 @@ namespace MCPackServer.Pages.SharedDialogs
         private async Task Submit()
         {
             _processing = true;
-            ActionResponse<Contacts> response = new();
+            string response = string.Empty;
             await Form.Validate();
             if (Form.IsValid)
             {
-                if (States.Add == State) response = await _service.AddAsync(Model);
-                else if (States.Edit == State) response = await _service.UpdateAsync(Model);
-                else if (States.Delete == State) response = await _service.RemoveAsync(Model);
+                if (States.Add == State)
+                    response = JsonConvert.SerializeObject(await _service.AddAsync(Model));
+                else if (States.Edit == State)
+                    response = JsonConvert.SerializeObject(await _service.UpdateAsync(Model));
+                else if (States.Delete == State)
+                    response = JsonConvert.SerializeObject(await _service.RemoveAsync(Model));
                 _processing = false;
-                Dialog.Close(DialogResult.Ok(response));
+                Dialog.Close(DialogResult.Ok(JsonConvert.DeserializeObject<ActionResponse<Contacts>>(response)));
             }
             else
             {
