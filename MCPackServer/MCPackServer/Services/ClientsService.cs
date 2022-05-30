@@ -90,8 +90,9 @@ namespace MCPackServer.Services
             }
             catch (Exception ex)
             {
-                response.Failure(error: ex.Message);
+                response.Failure(ex);
             }
+            await LogResponse(response, "");
             return response;
         }
         public async Task<ActionResponse<ClientContacts>> RemoveContact(object clientId, object contactId)
@@ -114,8 +115,9 @@ namespace MCPackServer.Services
             {
                 conn.Close();
                 transaction.Rollback();
-                response.Failure(error: ex.Message);
+                response.Failure(ex);
             }
+            await LogResponse(response, "");
             return response;
         }
 
@@ -134,12 +136,13 @@ namespace MCPackServer.Services
                 transaction.Commit();
                 response.Success();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 conn.Close();
                 transaction.Rollback();
-                response.Failure();
+                response.Failure(ex);
             }
+            await LogResponse(response, "");
             return response;
         }
     }

@@ -1,0 +1,79 @@
+﻿@page "/Logs"
+
+@attribute [Authorize(Roles = "Developer")]
+
+<MudText Typo="Typo.h3" Align="Align.Center">Módulo de registros de acciones</MudText>
+
+<MudTable Dense Hover Striped CustomHeader FixedHeader Height="400px" @ref="LogsTable" T="Logs"
+    OnRowClick="OnSelectedLog" ServerData="@(new Func<TableState, Task<TableData<Logs>>>(LogsServerReload))">
+    <HeaderContent>
+        <MudTHeadRow>
+            <MudTh><MudTableSortLabel SortLabel="Id" T="Logs">Id</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortLabel="TableName" T="Logs">Tabla de Acción</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortLabel="Action" T="Logs">Acción</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortLabel="TimeOfAction" T="Logs">Tiempo de Acción</MudTableSortLabel></MudTh>
+            <MudTh>Estatus</MudTh>
+        </MudTHeadRow>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="Id">@context.Id</MudTd>
+        <MudTd DataLabel="Table Name">@context.TableName</MudTd>
+        <MudTd DataLabel="Action">@context.Action</MudTd>
+        <MudTd DataLabel="Action Time">@context.TimeOfAction</MudTd>
+        <MudTd DataLabel="Status">@(context.Succeeded ? "Exitoso" : "Fallido")</MudTd>
+    </RowTemplate>
+    <PagerContent>
+        <MudTablePager />
+    </PagerContent>
+</MudTable>
+
+@if (VisibleLog)
+{
+    <MudPaper Class="my-3" Elevation="0">
+        <MudText Typo="Typo.h6" Align="Align.Center">Registro seleccionado: @SelectedLog.Id</MudText>
+        <MudTabs Elevation="2" Rounded ApplyEffectsToContainer Color="Color.Primary">
+            <Header>
+                 <MudTooltip Text="Cerrar registro">
+                    <MudIconButton Icon="@Icons.Material.Filled.Close" 
+                                   OnClick="() => { SelectedLog = new(); VisibleLog = false; }" />
+                </MudTooltip>
+            </Header>
+            <ChildContent>
+                <MudTabPanel Text="Información general">
+                    <MudGrid Class="m-3" Style="width: inherit; height:500px; overflow-y:scroll;">
+                        <MudItem xs="4">
+                            <MudText Typo="Typo.subtitle1" Align="Align.Left">Acción</MudText>
+                            <MudTextField Value="@SelectedLog.Action" ReadOnly />
+                        </MudItem>
+                        <MudItem xs="4">
+                            <MudText Typo="Typo.subtitle1" Align="Align.Left">Tabla</MudText>
+                            <MudTextField Value="@SelectedLog.TableName" ReadOnly />
+                        </MudItem>
+                        <MudItem xs="4">
+                            <MudText Typo="Typo.subtitle1" Align="Align.Left">Estado</MudText>
+                            <MudTextField Value="@(SelectedLog.Succeeded ? "Éxito" : "Fracaso")" ReadOnly />
+                        </MudItem>
+                        <MudItem xs="6">
+                            <MudText Typo="Typo.subtitle1" Align="Align.Left">Usuario</MudText>
+                            <MudTextField Value="@SelectedLog.UserId" ReadOnly />
+                        </MudItem>
+                        <MudItem xs="6">
+                            <MudText Typo="Typo.subtitle1" Align="Align.Left">Tiempo de registro</MudText>
+                            <MudTextField Value="@(SelectedLog.TimeOfAction?.ToLongDateString() ?? "N/A")" ReadOnly />
+                        </MudItem>
+                        <MudItem xs="12">
+                            <MudText Typo="Typo.subtitle1" Align="Align.Left">Contenido</MudText>
+                            <MudTextField Value="@SelectedLog.Message" ReadOnly Lines="5"/>
+                        </MudItem>
+                    </MudGrid>
+                </MudTabPanel>
+                @if (string.IsNullOrEmpty(SelectedLog.Exception))
+                {
+                    <MudTabPanel Text="Error">
+                        <MudTextField Value="@SelectedLog.Exception" ReadOnly Lines="20" />
+                    </MudTabPanel>
+                }
+            </ChildContent>
+        </MudTabs>
+    </MudPaper>
+}

@@ -5,7 +5,7 @@ using MCPackServer.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using MySql.Data.MySqlClient;
-using System;
+using System.Security;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -42,6 +42,39 @@ namespace MCPackServer.Services
                 }
             }
             return filters;
+        }
+
+        protected async Task LogResponse<T>(ActionResponse<T> response, string userId)
+        {
+            try
+            {
+                string CurrentUserId = (await GetByKeyAsync<Entities.AspNetUsers>(
+                System.Security.Claims.ClaimsPrincipal.Current?.Identity?.Name ?? "",
+                nameof(Entities.AspNetUsers.UserName)
+                ))?.Id ?? string.Empty;
+                string jsonMessage = response.IsSuccessful
+                    ? Newtonsoft.Json.JsonConvert.SerializeObject(response.Value)
+                    : Newtonsoft.Json.JsonConvert.SerializeObject(response.Errors);
+                Entities.Logs newLog = new()
+                {
+                    UserId = CurrentUserId,
+                    Message = response.IsSuccessful ?
+                        $"Action: {response.Action} completed successfuly in object {jsonMessage}"
+                        : $"Action: {response.Action} failed causing errors {jsonMessage}",
+                    Action = response.Action,
+                    Succeeded = response.IsSuccessful,
+                    TableName = response.Value?.GetType().Name ?? "Not available",
+                    Exception = response.IsSuccessful ? "N/A" : response.ExceptionText,
+                    TimeOfAction = DateTime.Now
+                };
+                await _context.AddAsync(newLog);
+                await _context.SaveChangesAsync();
+                _context.Entry(newLog).State = EntityState.Detached;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
         }
 
         public virtual async Task<IEnumerable<T>> GetForGridAsync<T>(DataManagerRequest request, string sortField = "Id", string order = "", bool getAll = false) where T : class
@@ -102,7 +135,7 @@ namespace MCPackServer.Services
             return await conn.QuerySingleAsync<T>(query, parameters);
         }
 
-        public async Task<ActionResponse<T>> AddAsync<T>(T entity)
+        public async Task<ActionResponse<T>> AddAsync<T>(T entity, string userId = "")
         {
             ActionResponse<T> response = new("Insert");
             try
@@ -113,22 +146,18 @@ namespace MCPackServer.Services
                 await _context.AddAsync(entity);
                 await _context.SaveChangesAsync();
                 _context.Entry(entity).State = EntityState.Detached;
-                response.Success();
                 response.AttachValue(entity);
+                response.Success();
             }
             catch (Exception ex)
             {
-                List<string> Errors = new();
-                if (null != ex.InnerException)
-                    Errors.Add(ex.InnerException.Message);
-                else
-                    Errors.Add(ex.Message);
-                response.Failure(errors: Errors);
+                response.Failure(ex);
             }
+            await LogResponse(response, userId);
             return response;
         }
 
-        public virtual async Task<ActionResponse<T>> UpdateAsync<T>(T entity)
+        public virtual async Task<ActionResponse<T>> UpdateAsync<T>(T entity, string userId = "")
         {
             ActionResponse<T> response = new("Edit");
             try
@@ -140,17 +169,18 @@ namespace MCPackServer.Services
                 _context.Entry(entity).State = EntityState.Modified;
                 await _context.SaveChangesAsync();
                 _context.Entry(entity).State = EntityState.Detached;
-                response.Success();
                 response.AttachValue(entity);
+                response.Success();
             }
             catch (Exception ex)
             {
-                response.Failure(error: ex.Message);
+                response.Failure(ex);
             }
+            await LogResponse(response, userId);
             return response;
         }
 
-        public virtual async Task<ActionResponse<T>> RemoveAsync<T>(T entity)
+        public virtual async Task<ActionResponse<T>> RemoveAsync<T>(T entity, string userId = "")
         {
             using IDbConnection conn = Connection;
             conn.Open();
@@ -185,14 +215,16 @@ namespace MCPackServer.Services
                 }
                 await conn.ExecuteAsync(query, parameters, transaction);
                 transaction.Commit();
+                response.AttachValue(entity);
                 response.Success();
             }
             catch (Exception ex)
             {
                 transaction.Rollback();
                 conn.Close();
-                response.Failure(error: ex.Message);
+                response.Failure(ex);
             }
+            await LogResponse(response, userId);
             return response;
         }
     }

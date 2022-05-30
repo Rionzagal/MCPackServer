@@ -86,8 +86,8 @@ namespace MCPackServer.Pages.ClientsModule
                 else
                 {
                     var clearResponse = await _clientsService.ClearContacts(Model.Id);
-                    if (clearResponse.IsSuccessful) response = await _clientsService.RemoveAsync(Model);
-                    else response.Failure(error: "Internal error while clearing contacts.");
+                    if (clearResponse.IsSuccessful) 
+                        response = await _clientsService.RemoveAsync(Model);
                     if (response.IsSuccessful && States.Delete == State)
                     {
                         var contactsResponse = await _contactsService.ClearUnaligned();

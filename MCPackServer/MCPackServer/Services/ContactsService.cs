@@ -31,8 +31,9 @@ namespace MCPackServer.Services
             {
                 conn.Close();
                 transaction.Rollback();
-                response.Failure(error: ex.Message);
+                response.Failure(ex);
             }
+            await LogResponse(response, "");
             return response;
         }
     }

@@ -18,6 +18,9 @@
             </MudNavGroup>
         </ChildContent>
     </AuthorizeView>
+    <AuthorizeView Roles="Developer">
+        <MudNavLink Href="Logs" Icon="@Icons.Material.Filled.EmergencyRecording">Registros</MudNavLink>
+    </AuthorizeView>
     <AuthorizeView Policy="@Constants.Permissions.Menu.Clients">
         <MudNavLink Href="Clients" Icon="@Icons.Material.Filled.AttachMoney">Clientes</MudNavLink>
     </AuthorizeView>
