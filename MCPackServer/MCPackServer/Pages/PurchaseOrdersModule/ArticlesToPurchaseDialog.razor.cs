@@ -8,7 +8,7 @@ using MCPackServer.Entities;
 using MCPackServer.Models;
 using System.Net.Http.Json;
 using System.Text.Json;
-using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
 
 namespace MCPackServer.Pages.PurchaseOrdersModule
 {
@@ -71,25 +71,18 @@ namespace MCPackServer.Pages.PurchaseOrdersModule
         private async Task Submit()
         {
             _processing = true;
-            ActionResponse<ArticlesToPurchase> response = new();
+            string response = string.Empty;
             await Form.Validate();
             if (Form.IsValid)
             {
-                ArticlesToPurchase element = new();
-                if (States.Add == State) response = await _articlesService.AddAsync(Model);
-                else if (States.Edit == State) response = await _articlesService.UpdateAsync(Model);
-                else if (States.Delete == State) response = await _articlesService.RemoveAsync(Model);
-                if (response.IsSuccessful)
-                {
-                    element = response.Value;
-                }
-                var result = new
-                {
-                    Success = response.IsSuccessful,
-                    Value = element
-                };
+                if (States.Add == State)
+                    response = JsonConvert.SerializeObject(await _articlesService.AddAsync(Model));
+                else if (States.Edit == State)
+                    response = JsonConvert.SerializeObject(await _articlesService.UpdateAsync(Model));
+                else if (States.Delete == State)
+                    response = JsonConvert.SerializeObject(await _articlesService.RemoveAsync(Model));
                 _processing = false;
-                Dialog.Close(DialogResult.Ok(JsonSerializer.Serialize(result)));
+                Dialog.Close(DialogResult.Ok(JsonConvert.DeserializeObject<ActionResponse<ArticlesToPurchase>>(response)));
             }
             else
             {

@@ -2,7 +2,7 @@
 using MCPackServer.Models;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
-using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -70,14 +70,17 @@ namespace MCPackServer.Pages.ProjectsModule
         private async Task Submit()
         {
             _processing = true;
-            ActionResponse<ProjectProducts> response = new();
+            string response = string.Empty;
             await Form.Validate();
             if (Form.IsValid)
             {
-                if (States.Add == State) response = await _productsService.AddAsync(Model);
-                else if (States.Edit == State) response = await _productsService.UpdateAsync(Model);
-                else if (States.Delete == State) response = await _productsService.RemoveAsync(Model);
-                Dialog.Close(DialogResult.Ok(response));
+                if (States.Add == State) 
+                    response = JsonConvert.SerializeObject(await _productsService.AddAsync(Model));
+                else if (States.Edit == State) 
+                    response = JsonConvert.SerializeObject(await _productsService.UpdateAsync(Model));
+                else if (States.Delete == State) 
+                    response = JsonConvert.SerializeObject(await _productsService.RemoveAsync(Model));
+                Dialog.Close(DialogResult.Ok(JsonConvert.DeserializeObject<ActionResponse<ProjectProducts>>(response)));
             }
             else
             {

@@ -2,7 +2,7 @@
 using MCPackServer.Models;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
-using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -76,29 +76,28 @@ namespace MCPackServer.Pages.ClientsModule
 
         private async Task Submit()
         {
-            ActionResponse<Clients> response = new();
+            string response = string.Empty;
             _processing = true;
             await Form.Validate();
             if (Form.IsValid)
             {
-                if (States.Add == State) response = await _clientsService.AddAsync(Model);
-                else if (States.Edit == State) response = await _clientsService.UpdateAsync(Model);
+                if (States.Add == State)
+                    response = JsonConvert.SerializeObject(await _clientsService.AddAsync(Model));
+                else if (States.Edit == State)
+                    response = JsonConvert.SerializeObject(await _clientsService.UpdateAsync(Model));
                 else
                 {
                     var clearResponse = await _clientsService.ClearContacts(Model.Id);
                     if (clearResponse.IsSuccessful) 
-                        response = await _clientsService.RemoveAsync(Model);
-                    if (response.IsSuccessful && States.Delete == State)
-                    {
-                        var contactsResponse = await _contactsService.ClearUnaligned();
-                        if (contactsResponse.IsSuccessful)
-                            Snackbar.Add("Contactos correctamente eliminados.", Severity.Info);
-                        else
-                            Snackbar.Add("Error al eliminar contactos.", Severity.Error);
-                    }
+                        response = JsonConvert.SerializeObject(await _clientsService.RemoveAsync(Model));
+                    var contactsResponse = await _contactsService.ClearUnaligned();
+                    if (contactsResponse.IsSuccessful)
+                        Snackbar.Add("Contactos correctamente eliminados.", Severity.Info);
+                    else
+                        Snackbar.Add("Error al eliminar contactos.", Severity.Error);
                 }
                 _processing = false;
-                Dialog.Close(DialogResult.Ok(response));
+                Dialog.Close(DialogResult.Ok(JsonConvert.DeserializeObject<ActionResponse<Clients>>(response)));
             }
             else
             {

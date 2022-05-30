@@ -2,7 +2,7 @@
 using MCPackServer.Entities;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
-using System.Text.Json;
+using Newtonsoft.Json;
 
 namespace MCPackServer.Pages.PurchaseOrdersModule
 {
@@ -52,27 +52,30 @@ namespace MCPackServer.Pages.PurchaseOrdersModule
         private async Task Submit()
         {
             _processing = true;
-            ActionResponse<PurchaseOrders> response = new();
             await Form.Validate();
+            List<ActionResponse<ArticlesToPurchase>> POArticlesResponses = new();
             if (Form.IsValid)
             {
                 int SuccessfulArticleResponse = 0;
-                response = await _ordersService.UpdateAsync(Model);
+                var response = await _ordersService.UpdateAsync(Model);
                 if (response.IsSuccessful)
                 {
                     foreach (var item in Model.ArticlesToPurchase)
                     {
                         item.EntryDate = DateTime.Now;
                         var ArticleResponse = await _articlesService.UpdateAsync(item);
+                        POArticlesResponses.Add(ArticleResponse);
                         if (ArticleResponse.IsSuccessful) SuccessfulArticleResponse++;
                     }
                 }
                 var result = new
                 {
                     SuccessOrderUpdate = response.IsSuccessful,
-                    SuccessfulArticlesUpdate = SuccessfulArticleResponse
+                    SuccessfulArticlesUpdate = SuccessfulArticleResponse,
+                    OrderUpdateResponse = response,
+                    ArticlesResponses = POArticlesResponses
                 };
-                Dialog.Close(DialogResult.Ok(JsonSerializer.Serialize(result)));
+                Dialog.Close(DialogResult.Ok(JsonConvert.SerializeObject(result)));
             }
             else
             {

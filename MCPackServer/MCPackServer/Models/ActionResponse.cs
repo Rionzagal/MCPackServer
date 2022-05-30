@@ -1,21 +1,23 @@
 ﻿namespace MCPackServer.Models
 {
+    public enum Actions { Insert, Update, Delete }
+
     public class ActionResponse<T>
     {
-        public ActionResponse(string? action = null)
+        public ActionResponse(T entity, Actions action)
         {
-            Action = action ?? string.Empty;
+            Value = entity ?? throw new ArgumentNullException(nameof(entity));
+            Action = action;
             IsSuccessful = false;
             Errors = new List<string>();
         }
         public bool IsSuccessful { get; private set; }
-        public string Action { get; private set; }
+        public Actions Action { get; private set; }
         public List<string> Errors { get; private set; }
         public string? ExceptionText { get; private set; }
-        public T? Value { get; private set; }
+        public T Value { get; private set; }
 
         public void Success() => IsSuccessful = true;
-
         public void Failure(Exception ex)
         {
             IsSuccessful = false;

@@ -44,7 +44,7 @@ namespace MCPackServer.Services
             return filters;
         }
 
-        protected async Task LogResponse<T>(ActionResponse<T> response, string userId)
+        protected async Task LogResponse<T>(ActionResponse<T> response)
         {
             try
             {
@@ -58,10 +58,17 @@ namespace MCPackServer.Services
                 Entities.Logs newLog = new()
                 {
                     UserId = CurrentUserId,
-                    Message = response.IsSuccessful ?
-                        $"Action: {response.Action} completed successfuly in object {jsonMessage}"
-                        : $"Action: {response.Action} failed causing errors {jsonMessage}",
-                    Action = response.Action,
+                    Message = response.IsSuccessful ? Newtonsoft.Json.JsonConvert.SerializeObject(new
+                        {
+                            Message = $"Action: {response.Action} completed successfuly in table {response.Value?.GetType().Name}",
+                            response.Value
+                        }) : Newtonsoft.Json.JsonConvert.SerializeObject(new
+                        {
+                            Message = $"Action: {response.Action} failed causing errors in table {response.Value?.GetType().Name}",
+                            response.Value,
+                            response.Errors
+                        }),
+                    Action = response.Action.ToString(),
                     Succeeded = response.IsSuccessful,
                     TableName = response.Value?.GetType().Name ?? "Not available",
                     Exception = response.IsSuccessful ? "N/A" : response.ExceptionText,
@@ -135,11 +142,12 @@ namespace MCPackServer.Services
             return await conn.QuerySingleAsync<T>(query, parameters);
         }
 
-        public async Task<ActionResponse<T>> AddAsync<T>(T entity, string userId = "")
+        public async Task<ActionResponse<T>> AddAsync<T>(T entity)
         {
-            ActionResponse<T> response = new("Insert");
+            ActionResponse<T> response = new(entity, Actions.Insert);
             try
             {
+                _ = entity ?? throw new ArgumentNullException(nameof(entity));
                 var properties = entity.GetType().GetProperties()
                     .Where(x => !x.GetAccessors()[0].IsFinal && x.GetAccessors()[0].IsVirtual).ToList();
                 properties.ForEach(x => x.SetValue(entity, null));
@@ -153,15 +161,16 @@ namespace MCPackServer.Services
             {
                 response.Failure(ex);
             }
-            await LogResponse(response, userId);
+            await LogResponse(response);
             return response;
         }
 
-        public virtual async Task<ActionResponse<T>> UpdateAsync<T>(T entity, string userId = "")
+        public virtual async Task<ActionResponse<T>> UpdateAsync<T>(T entity)
         {
-            ActionResponse<T> response = new("Edit");
+            ActionResponse<T> response = new(entity, Actions.Update);
             try
             {
+                _ = entity ?? throw new ArgumentNullException(nameof(entity));
                 var properties = entity.GetType().GetProperties()
                     .Where(x => !x.GetAccessors()[0].IsFinal && x.GetAccessors()[0].IsVirtual).ToList();
                 properties.ForEach(x => x.SetValue(entity, null));
@@ -176,18 +185,19 @@ namespace MCPackServer.Services
             {
                 response.Failure(ex);
             }
-            await LogResponse(response, userId);
+            await LogResponse(response);
             return response;
         }
 
-        public virtual async Task<ActionResponse<T>> RemoveAsync<T>(T entity, string userId = "")
+        public virtual async Task<ActionResponse<T>> RemoveAsync<T>(T entity)
         {
             using IDbConnection conn = Connection;
             conn.Open();
             using IDbTransaction transaction = conn.BeginTransaction();
-            ActionResponse<T> response = new("Delete");
+            ActionResponse<T> response = new(entity, Actions.Delete);
             try
             {
+                _ = entity ?? throw new ArgumentNullException(nameof(entity));
                 DynamicParameters parameters = new();
                 string tableName = entity.GetType().Name;
                 string query = $"DELETE FROM {tableName} WHERE ";
@@ -224,7 +234,7 @@ namespace MCPackServer.Services
                 conn.Close();
                 response.Failure(ex);
             }
-            await LogResponse(response, userId);
+            await LogResponse(response);
             return response;
         }
     }

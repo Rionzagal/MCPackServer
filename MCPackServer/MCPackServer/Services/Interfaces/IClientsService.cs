@@ -5,7 +5,7 @@ namespace MCPackServer.Services.Interfaces
 {
     public interface IClientsService : IBaseService
     {
-        Task<ActionResponse<ClientContacts>> ClearContacts(object clientId);
+        Task<ActionResponse<List<ClientContacts>>> ClearContacts(object clientId);
         Task<int?> CountContacts(object clientId, DataManagerRequest request);
         Task<IEnumerable<Contacts>> GetAvailableContacts(object clientId, DataManagerRequest request, string sortField = "Id", string order = "");
         Task<IEnumerable<Contacts>> GetContacts(object clientId, DataManagerRequest request, string sortField = "Id", string order = "");

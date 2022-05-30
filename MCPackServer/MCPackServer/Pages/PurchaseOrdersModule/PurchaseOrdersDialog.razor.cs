@@ -1,6 +1,7 @@
 ﻿using MCPackServer.Entities;
 using MCPackServer.Models;
 using Microsoft.AspNetCore.Components;
+using Newtonsoft.Json;
 using MudBlazor;
 
 namespace MCPackServer.Pages.PurchaseOrdersModule
@@ -69,15 +70,18 @@ namespace MCPackServer.Pages.PurchaseOrdersModule
         private async Task Submit()
         {
             _processing = true;
-            ActionResponse<PurchaseOrders> response = new();
+            string response = string.Empty;
             await Form.Validate();
             if (Form.IsValid)
             {
                 if (States.Add == State) Model.IssuedDate = DateTime.Now;
-                if (States.Add == State) response = await _ordersService.AddAsync(Model);
-                else if (States.Edit == State) response = await _ordersService.UpdateAsync(Model);
-                else if (States.Delete == State) response = await _ordersService.RemoveAsync(Model);
-                Dialog.Close(DialogResult.Ok(response));
+                if (States.Add == State) 
+                    response = JsonConvert.SerializeObject(await _ordersService.AddAsync(Model));
+                else if (States.Edit == State) 
+                    response = JsonConvert.SerializeObject(await _ordersService.UpdateAsync(Model));
+                else if (States.Delete == State) 
+                    response = JsonConvert.SerializeObject(await _ordersService.RemoveAsync(Model));
+                Dialog.Close(DialogResult.Ok(JsonConvert.DeserializeObject<ActionResponse<PurchaseOrders>>(response)));
             }
             else
             {

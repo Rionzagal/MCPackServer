@@ -120,8 +120,8 @@ namespace MCPackServer.Services
 
         public async Task<ActionResponse<ProviderContacts>> LinkContact(object providerId, object contactId)
         {
-            ActionResponse<ProviderContacts> response = new("Add");
             ProviderContacts Link = new() { ProviderId = (int)providerId, ContactId = (int)contactId };
+            ActionResponse<ProviderContacts> response = new(Link, Actions.Insert);
             try
             {
                 await _context.AddAsync(Link);
@@ -134,7 +134,7 @@ namespace MCPackServer.Services
             {
                 response.Failure(ex);
             }
-            await LogResponse(response, "");
+            await LogResponse(response);
             return response;
         }
 
@@ -143,7 +143,11 @@ namespace MCPackServer.Services
             using IDbConnection conn = Connection;
             conn.Open();
             using IDbTransaction transaction = conn.BeginTransaction();
-            ActionResponse<ProviderContacts> response = new("Delete");
+            ActionResponse<ProviderContacts> response = new(new ProviderContacts()
+            {
+                ProviderId = (int)providerId,
+                ContactId = (int)contactId
+            }, Actions.Delete);
             DynamicParameters parameters = new();
             try
             {
@@ -160,16 +164,19 @@ namespace MCPackServer.Services
                 transaction.Rollback();
                 response.Failure(ex);
             }
-            await LogResponse(response, "");
+            await LogResponse(response);
             return response;
         }
 
-        public async Task<ActionResponse<ProviderContacts>> ClearContacts(object providerId)
+        public async Task<ActionResponse<List<ProviderContacts>>> ClearContacts(object providerId)
         {
             using IDbConnection conn = Connection;
             conn.Open();
             using IDbTransaction transaction = conn.BeginTransaction();
-            ActionResponse<ProviderContacts> response = new("Delete");
+            List<ProviderContacts> contacts = (
+                from contact in _context.ProviderContacts where contact.ProviderId == (int)providerId select contact
+                ).ToList();
+            ActionResponse<List<ProviderContacts>> response = new(contacts, Actions.Delete);
             DynamicParameters parameters = new();
             parameters.Add(nameof(providerId), providerId);
             string query = "DELETE FROM ProviderContacts WHERE ProviderId = @providerId";
@@ -185,7 +192,7 @@ namespace MCPackServer.Services
                 transaction.Rollback();
                 response.Failure(ex);
             }
-            await LogResponse(response, "");
+            await LogResponse(response);
             return response;
         }
     }

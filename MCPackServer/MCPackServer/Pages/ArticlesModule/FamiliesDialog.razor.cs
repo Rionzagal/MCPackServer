@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace MCPackServer.Pages.ArticlesModule
 {
@@ -67,15 +68,18 @@ namespace MCPackServer.Pages.ArticlesModule
         private async Task Submit()
         {
             _processing = true;
-            ActionResponse<ArticleFamilies> response = new();
+            string response = string.Empty;
             await Form.Validate();
             if (Form.IsValid)
             {
-                if (States.Add == State) response = await _familiesService.AddAsync(Model);
-                else if (States.Edit == State) response = await _familiesService.UpdateAsync(Model);
-                else if (States.Delete == State) response = await _familiesService.RemoveAsync(Model);
+                if (States.Add == State)
+                    response = JsonConvert.SerializeObject(await _familiesService.AddAsync(Model));
+                else if (States.Edit == State)
+                    response = JsonConvert.SerializeObject(await _familiesService.UpdateAsync(Model));
+                else if (States.Delete == State)
+                    response = JsonConvert.SerializeObject(await _familiesService.RemoveAsync(Model));
                 _processing = false;
-                Dialog.Close(DialogResult.Ok(response));
+                Dialog.Close(DialogResult.Ok(JsonConvert.DeserializeObject<ActionResponse<ArticleFamilies>>(response)));
             }
             else
             {
