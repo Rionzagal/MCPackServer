@@ -32,15 +32,6 @@ CREATE TABLE `__efmigrationshistory` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `__efmigrationshistory`
---
-
-LOCK TABLES `__efmigrationshistory` WRITE;
-/*!40000 ALTER TABLE `__efmigrationshistory` DISABLE KEYS */;
-/*!40000 ALTER TABLE `__efmigrationshistory` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `articlefamilies`
 --
 
@@ -60,16 +51,6 @@ CREATE TABLE `articlefamilies` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `articlefamilies`
---
-
-LOCK TABLES `articlefamilies` WRITE;
-/*!40000 ALTER TABLE `articlefamilies` DISABLE KEYS */;
-INSERT INTO `articlefamilies` VALUES (2,'ACEROS','ACEROS VARIOS','AC',2);
-/*!40000 ALTER TABLE `articlefamilies` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `articlegroups`
 --
 
@@ -85,16 +66,6 @@ CREATE TABLE `articlegroups` (
   PRIMARY KEY (`Id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `articlegroups`
---
-
-LOCK TABLES `articlegroups` WRITE;
-/*!40000 ALTER TABLE `articlegroups` DISABLE KEYS */;
-INSERT INTO `articlegroups` VALUES (2,'METALES','Metales varios','ME',1);
-/*!40000 ALTER TABLE `articlegroups` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Table structure for table `articlestopurchase`
@@ -116,16 +87,6 @@ CREATE TABLE `articlestopurchase` (
   CONSTRAINT `FK_ArticlesToPurchase_Quotes` FOREIGN KEY (`QuoteId`) REFERENCES `quotes` (`Id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `articlestopurchase`
---
-
-LOCK TABLES `articlestopurchase` WRITE;
-/*!40000 ALTER TABLE `articlestopurchase` DISABLE KEYS */;
-INSERT INTO `articlestopurchase` VALUES (2,2,3,NULL,NULL,500);
-/*!40000 ALTER TABLE `articlestopurchase` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Temporary view structure for view `articlesview`
@@ -170,16 +131,6 @@ CREATE TABLE `aspnetroleclaims` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `aspnetroleclaims`
---
-
-LOCK TABLES `aspnetroleclaims` WRITE;
-/*!40000 ALTER TABLE `aspnetroleclaims` DISABLE KEYS */;
-INSERT INTO `aspnetroleclaims` VALUES (249,'6E4134C5-FE58-478F-A6EE-DE4A1A87CC16','Permission','Permissions.Menu.Users'),(250,'6E4134C5-FE58-478F-A6EE-DE4A1A87CC16','Permission','Permissions.Users.View'),(251,'6E4134C5-FE58-478F-A6EE-DE4A1A87CC16','Permission','Permissions.Users.Create'),(252,'6E4134C5-FE58-478F-A6EE-DE4A1A87CC16','Permission','Permissions.Users.Edit'),(253,'6E4134C5-FE58-478F-A6EE-DE4A1A87CC16','Permission','Permissions.Users.Delete'),(254,'6E4134C5-FE58-478F-A6EE-DE4A1A87CC16','Permission','Permissions.Menu.Roles'),(255,'6E4134C5-FE58-478F-A6EE-DE4A1A87CC16','Permission','Permissions.Roles.View'),(256,'6E4134C5-FE58-478F-A6EE-DE4A1A87CC16','Permission','Permissions.Roles.Create'),(257,'6E4134C5-FE58-478F-A6EE-DE4A1A87CC16','Permission','Permissions.Roles.Edit'),(258,'6E4134C5-FE58-478F-A6EE-DE4A1A87CC16','Permission','Permissions.Roles.Delete'),(259,'6E4134C5-FE58-478F-A6EE-DE4A1A87CC16','Permission','Permissions.Menu.Clients'),(260,'6E4134C5-FE58-478F-A6EE-DE4A1A87CC16','Permission','Permissions.Clients.View'),(261,'6E4134C5-FE58-478F-A6EE-DE4A1A87CC16','Permission','Permissions.Clients.Create'),(262,'6E4134C5-FE58-478F-A6EE-DE4A1A87CC16','Permission','Permissions.Clients.Edit'),(263,'6E4134C5-FE58-478F-A6EE-DE4A1A87CC16','Permission','Permissions.Clients.Delete'),(264,'6E4134C5-FE58-478F-A6EE-DE4A1A87CC16','Permission','Permissions.Menu.Contacts'),(265,'6E4134C5-FE58-478F-A6EE-DE4A1A87CC16','Permission','Permissions.Contacts.View'),(266,'6E4134C5-FE58-478F-A6EE-DE4A1A87CC16','Permission','Permissions.Contacts.Create'),(267,'6E4134C5-FE58-478F-A6EE-DE4A1A87CC16','Permission','Permissions.Contacts.Edit'),(268,'6E4134C5-FE58-478F-A6EE-DE4A1A87CC16','Permission','Permissions.Contacts.Delete'),(269,'6E4134C5-FE58-478F-A6EE-DE4A1A87CC16','Permission','Permissions.Menu.Providers'),(270,'6E4134C5-FE58-478F-A6EE-DE4A1A87CC16','Permission','Permissions.Providers.View'),(271,'6E4134C5-FE58-478F-A6EE-DE4A1A87CC16','Permission','Permissions.Providers.Create'),(272,'6E4134C5-FE58-478F-A6EE-DE4A1A87CC16','Permission','Permissions.Providers.Edit'),(273,'6E4134C5-FE58-478F-A6EE-DE4A1A87CC16','Permission','Permissions.Providers.Delete'),(274,'6E4134C5-FE58-478F-A6EE-DE4A1A87CC16','Permission','Permissions.Menu.Products'),(275,'6E4134C5-FE58-478F-A6EE-DE4A1A87CC16','Permission','Permissions.Products.View'),(276,'6E4134C5-FE58-478F-A6EE-DE4A1A87CC16','Permission','Permissions.Products.Create'),(277,'6E4134C5-FE58-478F-A6EE-DE4A1A87CC16','Permission','Permissions.Products.Edit'),(278,'6E4134C5-FE58-478F-A6EE-DE4A1A87CC16','Permission','Permissions.Products.Delete'),(279,'6E4134C5-FE58-478F-A6EE-DE4A1A87CC16','Permission','Permissions.Menu.Articles'),(280,'6E4134C5-FE58-478F-A6EE-DE4A1A87CC16','Permission','Permissions.Articles.View'),(281,'6E4134C5-FE58-478F-A6EE-DE4A1A87CC16','Permission','Permissions.Articles.Create'),(282,'6E4134C5-FE58-478F-A6EE-DE4A1A87CC16','Permission','Permissions.Articles.Edit'),(283,'6E4134C5-FE58-478F-A6EE-DE4A1A87CC16','Permission','Permissions.Articles.Delete'),(284,'6E4134C5-FE58-478F-A6EE-DE4A1A87CC16','Permission','Permissions.ArticleFamilies.View'),(285,'6E4134C5-FE58-478F-A6EE-DE4A1A87CC16','Permission','Permissions.ArticleFamilies.Create'),(286,'6E4134C5-FE58-478F-A6EE-DE4A1A87CC16','Permission','Permissions.ArticleFamilies.Edit'),(287,'6E4134C5-FE58-478F-A6EE-DE4A1A87CC16','Permission','Permissions.ArticleFamilies.Delete'),(288,'6E4134C5-FE58-478F-A6EE-DE4A1A87CC16','Permission','Permissions.ArticleGroups.View'),(289,'6E4134C5-FE58-478F-A6EE-DE4A1A87CC16','Permission','Permissions.ArticleGroups.Create'),(290,'6E4134C5-FE58-478F-A6EE-DE4A1A87CC16','Permission','Permissions.ArticleGroups.Edit'),(291,'6E4134C5-FE58-478F-A6EE-DE4A1A87CC16','Permission','Permissions.ArticleGroups.Delete'),(292,'6E4134C5-FE58-478F-A6EE-DE4A1A87CC16','Permission','Permissions.Quotes.View'),(293,'6E4134C5-FE58-478F-A6EE-DE4A1A87CC16','Permission','Permissions.Quotes.Create'),(294,'6E4134C5-FE58-478F-A6EE-DE4A1A87CC16','Permission','Permissions.Quotes.Edit'),(295,'6E4134C5-FE58-478F-A6EE-DE4A1A87CC16','Permission','Permissions.Quotes.Delete'),(296,'6E4134C5-FE58-478F-A6EE-DE4A1A87CC16','Permission','Permissions.Menu.Projects'),(297,'6E4134C5-FE58-478F-A6EE-DE4A1A87CC16','Permission','Permissions.Projects.View'),(298,'6E4134C5-FE58-478F-A6EE-DE4A1A87CC16','Permission','Permissions.Projects.Create'),(299,'6E4134C5-FE58-478F-A6EE-DE4A1A87CC16','Permission','Permissions.Projects.Edit'),(300,'6E4134C5-FE58-478F-A6EE-DE4A1A87CC16','Permission','Permissions.Projects.Delete'),(301,'6E4134C5-FE58-478F-A6EE-DE4A1A87CC16','Permission','Permissions.Menu.PurchaseOrders'),(302,'6E4134C5-FE58-478F-A6EE-DE4A1A87CC16','Permission','Permissions.PurchaseOrders.View'),(303,'6E4134C5-FE58-478F-A6EE-DE4A1A87CC16','Permission','Permissions.PurchaseOrders.Create'),(304,'6E4134C5-FE58-478F-A6EE-DE4A1A87CC16','Permission','Permissions.PurchaseOrders.Edit'),(305,'6E4134C5-FE58-478F-A6EE-DE4A1A87CC16','Permission','Permissions.PurchaseOrders.Delete'),(306,'6E4134C5-FE58-478F-A6EE-DE4A1A87CC16','Permission','Permissions.Menu.Requisitions'),(307,'6E4134C5-FE58-478F-A6EE-DE4A1A87CC16','Permission','Permissions.Requisitions.View'),(308,'6E4134C5-FE58-478F-A6EE-DE4A1A87CC16','Permission','Permissions.Requisitions.Create'),(309,'6E4134C5-FE58-478F-A6EE-DE4A1A87CC16','Permission','Permissions.Requisitions.Edit'),(310,'6E4134C5-FE58-478F-A6EE-DE4A1A87CC16','Permission','Permissions.Requisitions.Delete'),(311,'6E4134C5-FE58-478F-A6EE-DE4A1A87CC16','Permission','Permissions.Reports.View'),(312,'6E4134C5-FE58-478F-A6EE-DE4A1A87CC16','Permission','Permissions.Reports.Create'),(313,'6E4134C5-FE58-478F-A6EE-DE4A1A87CC16','Permission','Permissions.ProjectSpecial.ClientChange'),(314,'6E4134C5-FE58-478F-A6EE-DE4A1A87CC16','Permission','Permissions.RoleClaims.View'),(315,'6E4134C5-FE58-478F-A6EE-DE4A1A87CC16','Permission','Permissions.RoleClaims.Create'),(316,'6E4134C5-FE58-478F-A6EE-DE4A1A87CC16','Permission','Permissions.RoleClaims.Edit'),(317,'6E4134C5-FE58-478F-A6EE-DE4A1A87CC16','Permission','Permissions.RoleClaims.Delete'),(318,'AABE1774-BA38-4EE6-89E6-0405E1F1A6A6','Permission','Permissions.Menu.Users'),(319,'AABE1774-BA38-4EE6-89E6-0405E1F1A6A6','Permission','Permissions.Users.View'),(320,'AABE1774-BA38-4EE6-89E6-0405E1F1A6A6','Permission','Permissions.Users.Create'),(321,'AABE1774-BA38-4EE6-89E6-0405E1F1A6A6','Permission','Permissions.Users.Edit'),(322,'AABE1774-BA38-4EE6-89E6-0405E1F1A6A6','Permission','Permissions.Users.Delete'),(323,'AABE1774-BA38-4EE6-89E6-0405E1F1A6A6','Permission','Permissions.Menu.Roles'),(324,'AABE1774-BA38-4EE6-89E6-0405E1F1A6A6','Permission','Permissions.Roles.View'),(325,'AABE1774-BA38-4EE6-89E6-0405E1F1A6A6','Permission','Permissions.Roles.Create'),(326,'AABE1774-BA38-4EE6-89E6-0405E1F1A6A6','Permission','Permissions.Roles.Edit'),(327,'AABE1774-BA38-4EE6-89E6-0405E1F1A6A6','Permission','Permissions.Roles.Delete'),(328,'AABE1774-BA38-4EE6-89E6-0405E1F1A6A6','Permission','Permissions.Menu.Clients'),(329,'AABE1774-BA38-4EE6-89E6-0405E1F1A6A6','Permission','Permissions.Clients.View'),(330,'AABE1774-BA38-4EE6-89E6-0405E1F1A6A6','Permission','Permissions.Clients.Create'),(331,'AABE1774-BA38-4EE6-89E6-0405E1F1A6A6','Permission','Permissions.Clients.Edit'),(332,'AABE1774-BA38-4EE6-89E6-0405E1F1A6A6','Permission','Permissions.Clients.Delete'),(333,'AABE1774-BA38-4EE6-89E6-0405E1F1A6A6','Permission','Permissions.Menu.Contacts'),(334,'AABE1774-BA38-4EE6-89E6-0405E1F1A6A6','Permission','Permissions.Contacts.View'),(335,'AABE1774-BA38-4EE6-89E6-0405E1F1A6A6','Permission','Permissions.Contacts.Create'),(336,'AABE1774-BA38-4EE6-89E6-0405E1F1A6A6','Permission','Permissions.Contacts.Edit'),(337,'AABE1774-BA38-4EE6-89E6-0405E1F1A6A6','Permission','Permissions.Contacts.Delete'),(338,'AABE1774-BA38-4EE6-89E6-0405E1F1A6A6','Permission','Permissions.Menu.Providers'),(339,'AABE1774-BA38-4EE6-89E6-0405E1F1A6A6','Permission','Permissions.Providers.View'),(340,'AABE1774-BA38-4EE6-89E6-0405E1F1A6A6','Permission','Permissions.Providers.Create'),(341,'AABE1774-BA38-4EE6-89E6-0405E1F1A6A6','Permission','Permissions.Providers.Edit'),(342,'AABE1774-BA38-4EE6-89E6-0405E1F1A6A6','Permission','Permissions.Providers.Delete'),(343,'AABE1774-BA38-4EE6-89E6-0405E1F1A6A6','Permission','Permissions.Menu.Products'),(344,'AABE1774-BA38-4EE6-89E6-0405E1F1A6A6','Permission','Permissions.Products.View'),(345,'AABE1774-BA38-4EE6-89E6-0405E1F1A6A6','Permission','Permissions.Products.Create'),(346,'AABE1774-BA38-4EE6-89E6-0405E1F1A6A6','Permission','Permissions.Products.Edit'),(347,'AABE1774-BA38-4EE6-89E6-0405E1F1A6A6','Permission','Permissions.Products.Delete'),(348,'AABE1774-BA38-4EE6-89E6-0405E1F1A6A6','Permission','Permissions.Menu.Articles'),(349,'AABE1774-BA38-4EE6-89E6-0405E1F1A6A6','Permission','Permissions.Articles.View'),(350,'AABE1774-BA38-4EE6-89E6-0405E1F1A6A6','Permission','Permissions.Articles.Create'),(351,'AABE1774-BA38-4EE6-89E6-0405E1F1A6A6','Permission','Permissions.Articles.Edit'),(352,'AABE1774-BA38-4EE6-89E6-0405E1F1A6A6','Permission','Permissions.Articles.Delete'),(353,'AABE1774-BA38-4EE6-89E6-0405E1F1A6A6','Permission','Permissions.ArticleFamilies.View'),(354,'AABE1774-BA38-4EE6-89E6-0405E1F1A6A6','Permission','Permissions.ArticleFamilies.Create'),(355,'AABE1774-BA38-4EE6-89E6-0405E1F1A6A6','Permission','Permissions.ArticleFamilies.Edit'),(356,'AABE1774-BA38-4EE6-89E6-0405E1F1A6A6','Permission','Permissions.ArticleFamilies.Delete'),(357,'AABE1774-BA38-4EE6-89E6-0405E1F1A6A6','Permission','Permissions.ArticleGroups.View'),(358,'AABE1774-BA38-4EE6-89E6-0405E1F1A6A6','Permission','Permissions.ArticleGroups.Create'),(359,'AABE1774-BA38-4EE6-89E6-0405E1F1A6A6','Permission','Permissions.ArticleGroups.Edit'),(360,'AABE1774-BA38-4EE6-89E6-0405E1F1A6A6','Permission','Permissions.ArticleGroups.Delete'),(361,'AABE1774-BA38-4EE6-89E6-0405E1F1A6A6','Permission','Permissions.Quotes.View'),(362,'AABE1774-BA38-4EE6-89E6-0405E1F1A6A6','Permission','Permissions.Quotes.Create'),(363,'AABE1774-BA38-4EE6-89E6-0405E1F1A6A6','Permission','Permissions.Quotes.Edit'),(364,'AABE1774-BA38-4EE6-89E6-0405E1F1A6A6','Permission','Permissions.Quotes.Delete'),(365,'AABE1774-BA38-4EE6-89E6-0405E1F1A6A6','Permission','Permissions.Menu.Projects'),(366,'AABE1774-BA38-4EE6-89E6-0405E1F1A6A6','Permission','Permissions.Projects.View'),(367,'AABE1774-BA38-4EE6-89E6-0405E1F1A6A6','Permission','Permissions.Projects.Create'),(368,'AABE1774-BA38-4EE6-89E6-0405E1F1A6A6','Permission','Permissions.Projects.Edit'),(369,'AABE1774-BA38-4EE6-89E6-0405E1F1A6A6','Permission','Permissions.Projects.Delete'),(370,'AABE1774-BA38-4EE6-89E6-0405E1F1A6A6','Permission','Permissions.Menu.PurchaseOrders'),(371,'AABE1774-BA38-4EE6-89E6-0405E1F1A6A6','Permission','Permissions.PurchaseOrders.View'),(372,'AABE1774-BA38-4EE6-89E6-0405E1F1A6A6','Permission','Permissions.PurchaseOrders.Create'),(373,'AABE1774-BA38-4EE6-89E6-0405E1F1A6A6','Permission','Permissions.PurchaseOrders.Edit'),(374,'AABE1774-BA38-4EE6-89E6-0405E1F1A6A6','Permission','Permissions.PurchaseOrders.Delete'),(375,'AABE1774-BA38-4EE6-89E6-0405E1F1A6A6','Permission','Permissions.Menu.Requisitions'),(376,'AABE1774-BA38-4EE6-89E6-0405E1F1A6A6','Permission','Permissions.Requisitions.View'),(377,'AABE1774-BA38-4EE6-89E6-0405E1F1A6A6','Permission','Permissions.Requisitions.Create'),(378,'AABE1774-BA38-4EE6-89E6-0405E1F1A6A6','Permission','Permissions.Requisitions.Edit'),(379,'AABE1774-BA38-4EE6-89E6-0405E1F1A6A6','Permission','Permissions.Requisitions.Delete'),(380,'AABE1774-BA38-4EE6-89E6-0405E1F1A6A6','Permission','Permissions.Reports.View'),(381,'AABE1774-BA38-4EE6-89E6-0405E1F1A6A6','Permission','Permissions.Reports.Create'),(382,'AABE1774-BA38-4EE6-89E6-0405E1F1A6A6','Permission','Permissions.ProjectSpecial.ClientChange'),(383,'AABE1774-BA38-4EE6-89E6-0405E1F1A6A6','Permission','Permissions.RoleClaims.View'),(384,'AABE1774-BA38-4EE6-89E6-0405E1F1A6A6','Permission','Permissions.RoleClaims.Create'),(385,'AABE1774-BA38-4EE6-89E6-0405E1F1A6A6','Permission','Permissions.RoleClaims.Edit'),(386,'AABE1774-BA38-4EE6-89E6-0405E1F1A6A6','Permission','Permissions.RoleClaims.Delete');
-/*!40000 ALTER TABLE `aspnetroleclaims` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `aspnetroles`
 --
 
@@ -195,16 +146,6 @@ CREATE TABLE `aspnetroles` (
   UNIQUE KEY `RoleNameIndex` (`NormalizedName`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `aspnetroles`
---
-
-LOCK TABLES `aspnetroles` WRITE;
-/*!40000 ALTER TABLE `aspnetroles` DISABLE KEYS */;
-INSERT INTO `aspnetroles` VALUES ('6E4134C5-FE58-478F-A6EE-DE4A1A87CC16','Developer','DEVELOPER','38ad5711-bac2-11ec-a4ce-e454e83077e8'),('AABE1774-BA38-4EE6-89E6-0405E1F1A6A6','Admin','ADMIN','38aef8e2-bac2-11ec-a4ce-e454e83077e8');
-/*!40000 ALTER TABLE `aspnetroles` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Table structure for table `aspnetuserclaims`
@@ -225,15 +166,6 @@ CREATE TABLE `aspnetuserclaims` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `aspnetuserclaims`
---
-
-LOCK TABLES `aspnetuserclaims` WRITE;
-/*!40000 ALTER TABLE `aspnetuserclaims` DISABLE KEYS */;
-/*!40000 ALTER TABLE `aspnetuserclaims` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `aspnetuserlogins`
 --
 
@@ -252,15 +184,6 @@ CREATE TABLE `aspnetuserlogins` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `aspnetuserlogins`
---
-
-LOCK TABLES `aspnetuserlogins` WRITE;
-/*!40000 ALTER TABLE `aspnetuserlogins` DISABLE KEYS */;
-/*!40000 ALTER TABLE `aspnetuserlogins` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `aspnetuserroles`
 --
 
@@ -276,16 +199,6 @@ CREATE TABLE `aspnetuserroles` (
   CONSTRAINT `FK_AspNetUserRoles_AspNetUsers_UserId` FOREIGN KEY (`UserId`) REFERENCES `aspnetusers` (`Id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `aspnetuserroles`
---
-
-LOCK TABLES `aspnetuserroles` WRITE;
-/*!40000 ALTER TABLE `aspnetuserroles` DISABLE KEYS */;
-INSERT INTO `aspnetuserroles` VALUES ('1f3d5167-050a-4dae-8176-0abee704b866','6E4134C5-FE58-478F-A6EE-DE4A1A87CC16');
-/*!40000 ALTER TABLE `aspnetuserroles` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Table structure for table `aspnetusers`
@@ -317,16 +230,6 @@ CREATE TABLE `aspnetusers` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `aspnetusers`
---
-
-LOCK TABLES `aspnetusers` WRITE;
-/*!40000 ALTER TABLE `aspnetusers` DISABLE KEYS */;
-INSERT INTO `aspnetusers` VALUES ('1f3d5167-050a-4dae-8176-0abee704b866','mario.gzz.gal@gmail.com','MARIO.GZZ.GAL@GMAIL.COM','mario.gzz.gal@gmail.com','MARIO.GZZ.GAL@GMAIL.COM',1,'AQAAAAEAACcQAAAAEM1OARYpEe/IQaHK1nq4kZOdWUl5JgLFi0mxQbKOidnwaHlPS8hvJmaky/V41QD5EA==','7SSN7I5WTAYEDFBPZY2FPCCF7G2PZJ2W','e5dae825-ed74-4f3b-89ea-afd7f70a39d9',NULL,0,0,NULL,1,0);
-/*!40000 ALTER TABLE `aspnetusers` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `aspnetusertokens`
 --
 
@@ -342,15 +245,6 @@ CREATE TABLE `aspnetusertokens` (
   CONSTRAINT `FK_AspNetUserTokens_AspNetUsers_UserId` FOREIGN KEY (`UserId`) REFERENCES `aspnetusers` (`Id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `aspnetusertokens`
---
-
-LOCK TABLES `aspnetusertokens` WRITE;
-/*!40000 ALTER TABLE `aspnetusertokens` DISABLE KEYS */;
-/*!40000 ALTER TABLE `aspnetusertokens` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Temporary view structure for view `associatedcontactsview`
@@ -389,15 +283,6 @@ CREATE TABLE `clientcontacts` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `clientcontacts`
---
-
-LOCK TABLES `clientcontacts` WRITE;
-/*!40000 ALTER TABLE `clientcontacts` DISABLE KEYS */;
-/*!40000 ALTER TABLE `clientcontacts` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `clients`
 --
 
@@ -422,16 +307,6 @@ CREATE TABLE `clients` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `clients`
---
-
-LOCK TABLES `clients` WRITE;
-/*!40000 ALTER TABLE `clients` DISABLE KEYS */;
-INSERT INTO `clients` VALUES (10,'ALPEZZI CHOCOLATE','ALPEZZI CHOCOLATE S.A. DE C.V.','DOMICILIO FISCAL','CIUDAD','PROVINCIA','PAIS','012345','0111555333','CONDICION DE PAGO',NULL),(11,'NOMBRE COMERCIAL','RAZÓN SOCIAL','OTRO DOMICILIO FISCAL','CIUDAD','PROVINCIA','PAIS','00000','10234582','CONDICION DE PAGO','OTRO SITIO WEB'),(12,'OTRO NOMBRE','A','C','E','F','G','D','012345','H','B');
-/*!40000 ALTER TABLE `clients` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `contacts`
 --
 
@@ -447,16 +322,6 @@ CREATE TABLE `contacts` (
   PRIMARY KEY (`Id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `contacts`
---
-
-LOCK TABLES `contacts` WRITE;
-/*!40000 ALTER TABLE `contacts` DISABLE KEYS */;
-INSERT INTO `contacts` VALUES (7,'ELVA CECILIA GALINDO CASAS','ECGCMC@LIVE.COM','3315372482',NULL);
-/*!40000 ALTER TABLE `contacts` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Table structure for table `devicecodes`
@@ -482,15 +347,6 @@ CREATE TABLE `devicecodes` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `devicecodes`
---
-
-LOCK TABLES `devicecodes` WRITE;
-/*!40000 ALTER TABLE `devicecodes` DISABLE KEYS */;
-/*!40000 ALTER TABLE `devicecodes` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `keys`
 --
 
@@ -510,15 +366,6 @@ CREATE TABLE `keys` (
   KEY `IX_Keys_Use` (`Use`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `keys`
---
-
-LOCK TABLES `keys` WRITE;
-/*!40000 ALTER TABLE `keys` DISABLE KEYS */;
-/*!40000 ALTER TABLE `keys` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Table structure for table `logs`
@@ -543,16 +390,6 @@ CREATE TABLE `logs` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `logs`
---
-
-LOCK TABLES `logs` WRITE;
-/*!40000 ALTER TABLE `logs` DISABLE KEYS */;
-INSERT INTO `logs` VALUES (3,'1f3d5167-050a-4dae-8176-0abee704b866','Insert','Providers',1,'2022-05-29 21:31:45','Action: Insert completed successfuly in object {\"Id\":4,\"MarketName\":\"A\",\"LegalName\":\"B\",\"FiscalAddress\":\"C\",\"City\":\"D\",\"Province\":\"E\",\"Country\":\"F\",\"PostalCode\":\"000\",\"PhoneNumber\":\"0000\",\"Website\":\"G\",\"TypeOfPayment\":\"H\",\"PaymentCondition\":\"I\",\"CreditLimit\":\"1000\",\"Discount\":0.0,\"HomeDelivery\":true,\"Observations\":\"J\",\"HasTaxes\":true,\"ProviderContacts\":null,\"PurchaseOrders\":null,\"Quotes\":null}','N/A'),(4,'1f3d5167-050a-4dae-8176-0abee704b866','Delete','Not available',1,'2022-05-29 21:38:12','Action: Delete completed successfuly in object null','N/A'),(5,'1f3d5167-050a-4dae-8176-0abee704b866','Delete','Clients',1,'2022-05-29 21:38:12','Action: Delete completed successfuly in object {\"Id\":13,\"MarketName\":\"A\",\"LegalName\":\"B\",\"FiscalAddress\":\"C\",\"City\":\"D\",\"Province\":\"E\",\"Country\":\"F\",\"PostalCode\":\"0000\",\"PhoneNumber\":\"155256\",\"PaymentCondition\":\"G\",\"Website\":\"C\",\"ClientContacts\":[],\"Projects\":[]}','N/A'),(6,'1f3d5167-050a-4dae-8176-0abee704b866','Delete','Not available',1,'2022-05-29 21:38:12','Action: Delete completed successfuly in object null','N/A');
-/*!40000 ALTER TABLE `logs` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `mcproducts`
 --
 
@@ -571,16 +408,6 @@ CREATE TABLE `mcproducts` (
   PRIMARY KEY (`Id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `mcproducts`
---
-
-LOCK TABLES `mcproducts` WRITE;
-/*!40000 ALTER TABLE `mcproducts` DISABLE KEYS */;
-INSERT INTO `mcproducts` VALUES (4,'GUILLOTINA DE CORTE CON TECNOLOGIA UTRASONICA PARA MC PACK DE FABRICACION NACIONAL',163600,'USD','GUILLOTINA','GUUS-001','MCES-GUUS','OPERADA POR SERVOMOTORES');
-/*!40000 ALTER TABLE `mcproducts` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Table structure for table `persistedgrants`
@@ -609,15 +436,6 @@ CREATE TABLE `persistedgrants` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `persistedgrants`
---
-
-LOCK TABLES `persistedgrants` WRITE;
-/*!40000 ALTER TABLE `persistedgrants` DISABLE KEYS */;
-/*!40000 ALTER TABLE `persistedgrants` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `projectproducts`
 --
 
@@ -636,16 +454,6 @@ CREATE TABLE `projectproducts` (
   CONSTRAINT `FK_ProjectProducts_Projects` FOREIGN KEY (`ProjectId`) REFERENCES `projects` (`Id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `projectproducts`
---
-
-LOCK TABLES `projectproducts` WRITE;
-/*!40000 ALTER TABLE `projectproducts` DISABLE KEYS */;
-INSERT INTO `projectproducts` VALUES (4,1536,15000,1,'Observaciones'),(4,1537,500000,1,NULL);
-/*!40000 ALTER TABLE `projectproducts` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Table structure for table `projects`
@@ -681,16 +489,6 @@ CREATE TABLE `projects` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `projects`
---
-
-LOCK TABLES `projects` WRITE;
-/*!40000 ALTER TABLE `projects` DISABLE KEYS */;
-INSERT INTO `projects` VALUES (1536,10,'Proyecto','Una pequeña descripción de proyecto',0,'2022-05-06 00:00:00.000','2022-05-06 00:00:00.000','2022-05-06 00:00:00.000',NULL,'Algunos tiempos de entrega de prueba','MXN','MXN','Algunas condiciones de pago','mgg',0,1,'Observaciones ','0C4dTP','591'),(1537,10,'Proyecto','proyecto de prueba',0,'2022-05-10 00:00:00.000','2022-05-10 00:00:00.000','2022-05-10 00:00:00.000',NULL,'Tiempos de entrega','MXN','USD','condiciones de pago','mario gonzalez',5,1,NULL,'0C4dTP','0592');
-/*!40000 ALTER TABLE `projects` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `providercontacts`
 --
 
@@ -706,16 +504,6 @@ CREATE TABLE `providercontacts` (
   CONSTRAINT `FK_ProviderContacts_Providers` FOREIGN KEY (`ProviderId`) REFERENCES `providers` (`Id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `providercontacts`
---
-
-LOCK TABLES `providercontacts` WRITE;
-/*!40000 ALTER TABLE `providercontacts` DISABLE KEYS */;
-INSERT INTO `providercontacts` VALUES (3,7);
-/*!40000 ALTER TABLE `providercontacts` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Table structure for table `providers`
@@ -747,16 +535,6 @@ CREATE TABLE `providers` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `providers`
---
-
-LOCK TABLES `providers` WRITE;
-/*!40000 ALTER TABLE `providers` DISABLE KEYS */;
-INSERT INTO `providers` VALUES (3,'Nombre comercial','Razón social','Domicilio fiscal','ciudad','provinci','pais','00000','0000000','sitio web.mx','tipo de pago','condición de pago',NULL,0,1,NULL,1),(4,'A','B','C','D','E','F','000','0000','G','H','I','1000',0,1,'J',1);
-/*!40000 ALTER TABLE `providers` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `purchasearticles`
 --
 
@@ -778,16 +556,6 @@ CREATE TABLE `purchasearticles` (
   CONSTRAINT `FK_ShoppingArticles_ArticleFamilies` FOREIGN KEY (`FamilyId`) REFERENCES `articlefamilies` (`Id`) ON DELETE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `purchasearticles`
---
-
-LOCK TABLES `purchasearticles` WRITE;
-/*!40000 ALTER TABLE `purchasearticles` DISABLE KEYS */;
-INSERT INTO `purchasearticles` VALUES (2,'PLACA ACERO INOX. 20-30','PLACA DE ACERO INOXIDABLE CALIBRE 20-30','AREA',NULL,NULL,2,'INOX2030',NULL);
-/*!40000 ALTER TABLE `purchasearticles` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Table structure for table `purchaseorders`
@@ -817,16 +585,6 @@ CREATE TABLE `purchaseorders` (
   CONSTRAINT `FK_PurchaseOrders_Providers` FOREIGN KEY (`ProviderId`) REFERENCES `providers` (`Id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `purchaseorders`
---
-
-LOCK TABLES `purchaseorders` WRITE;
-/*!40000 ALTER TABLE `purchaseorders` DISABLE KEYS */;
-INSERT INTO `purchaseorders` VALUES (2,1536,'2022-05-10 17:17:32.028',3,NULL,'2022-05-10 00:00:00.000','MXN',0,'Pendiente',NULL,NULL,NULL,NULL),(3,1536,'2022-05-31 12:52:41.841',3,2,'2022-05-10 14:08:11.569','MXN',0,'Pendiente',NULL,NULL,NULL,NULL);
-/*!40000 ALTER TABLE `purchaseorders` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Temporary view structure for view `purchaseordersview`
@@ -882,16 +640,6 @@ CREATE TABLE `quotes` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `quotes`
---
-
-LOCK TABLES `quotes` WRITE;
-/*!40000 ALTER TABLE `quotes` DISABLE KEYS */;
-INSERT INTO `quotes` VALUES (2,2,3,500,NULL,'2022-05-19 16:01:25.944','MXN');
-/*!40000 ALTER TABLE `quotes` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Temporary view structure for view `quotesview`
 --
 
@@ -939,16 +687,6 @@ CREATE TABLE `requisitionarticles` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `requisitionarticles`
---
-
-LOCK TABLES `requisitionarticles` WRITE;
-/*!40000 ALTER TABLE `requisitionarticles` DISABLE KEYS */;
-INSERT INTO `requisitionarticles` VALUES (2,2,1536,2);
-/*!40000 ALTER TABLE `requisitionarticles` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Temporary view structure for view `requisitionarticlesview`
 --
 
@@ -993,16 +731,6 @@ CREATE TABLE `requisitions` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `requisitions`
---
-
-LOCK TABLES `requisitions` WRITE;
-/*!40000 ALTER TABLE `requisitions` DISABLE KEYS */;
-INSERT INTO `requisitions` VALUES (2,'00001','2022-05-10 14:08:11.569','1f3d5167-050a-4dae-8176-0abee704b866','2022-05-10 14:08:11.569');
-/*!40000 ALTER TABLE `requisitions` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `systemrolepermissions`
 --
 
@@ -1018,15 +746,6 @@ CREATE TABLE `systemrolepermissions` (
   CONSTRAINT `FK_SystemRolePermissions_AspNetRoles` FOREIGN KEY (`RoleId`) REFERENCES `aspnetroles` (`Id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `systemrolepermissions`
---
-
-LOCK TABLES `systemrolepermissions` WRITE;
-/*!40000 ALTER TABLE `systemrolepermissions` DISABLE KEYS */;
-/*!40000 ALTER TABLE `systemrolepermissions` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Table structure for table `userinformation`
@@ -1047,15 +766,6 @@ CREATE TABLE `userinformation` (
   CONSTRAINT `FK_UserInformation_AspNetUsers` FOREIGN KEY (`AspNetUserId`) REFERENCES `aspnetusers` (`Id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 /*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `userinformation`
---
-
-LOCK TABLES `userinformation` WRITE;
-/*!40000 ALTER TABLE `userinformation` DISABLE KEYS */;
-/*!40000 ALTER TABLE `userinformation` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Temporary view structure for view `userinformationview`
@@ -1193,4 +903,4 @@ SET character_set_client = @saved_cs_client;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2022-05-31 13:31:05
+-- Dump completed on 2022-05-31 13:36:59

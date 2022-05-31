@@ -86,7 +86,7 @@
             <TabPanelHeader>
                 @if (context.Text.StartsWith("Artículo de compra:"))
                 {
-                    <MudTooltip Text="Cerrar producto">
+                    <MudTooltip Text="Cerrar artículo">
                         <MudIconButton Class="ml-2 pa-1" Icon="@Icons.Material.Filled.Close"
                                        Color="Color.Error" OnClick="() => RemoveTab(tabPanel: context)" />
                     </MudTooltip>
@@ -129,7 +129,7 @@
                         </MudItem>
                         <MudItem xs="6">
                             <MudText Typo="Typo.subtitle1">Número de requisición</MudText>
-                            <MudTextField Value="@(null != SelectedOrder.Requisition ? SelectedOrder.Requisition.RequisitionNumber : "N/A")" ReadOnly />
+                            <MudTextField Value="@(SelectedOrder.Requisition?.RequisitionNumber ?? "N/A")" ReadOnly />
                         </MudItem>
                         <MudItem xs="6">
                             <MudText Typo="Typo.subtitle1">Fecha de requisición</MudText>

@@ -55,7 +55,7 @@ namespace MCPackServer.Services
                     user.UserInformation = userInfo;
                     return user;
                 }, splitOn: "Id, AspNetUserId");
-                return result.FirstOrDefault() as T;
+                return result.First() as T;
             }
             catch (Exception ex)
             {
