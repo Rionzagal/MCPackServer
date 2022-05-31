@@ -9,7 +9,7 @@ namespace MCPackServer.Services
 {
     public class PurchaseOrdersService : BaseService, IPurchaseOrdersService
     {
-        public PurchaseOrdersService(MCPACKDBContext context, IConfiguration config) : base(context, config)
+        public PurchaseOrdersService(MCPACKDBContext context, IConfiguration config, IHttpContextAccessor httpContextAccessor) : base(context, config, httpContextAccessor)
         {
         }
 

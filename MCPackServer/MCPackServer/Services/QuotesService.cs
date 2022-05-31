@@ -9,7 +9,7 @@ namespace MCPackServer.Services
 {
     public class QuotesService : BaseService, IQuotesService
     {
-        public QuotesService(MCPACKDBContext context, IConfiguration config) : base(context, config)
+        public QuotesService(MCPACKDBContext context, IConfiguration config, IHttpContextAccessor httpContextAccessor) : base(context, config, httpContextAccessor)
         {
         }
 

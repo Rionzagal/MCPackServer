@@ -9,7 +9,7 @@ namespace MCPackServer.Services
 {
     public class ProjectProductsService : BaseService, IProjectProductsService
     {
-        public ProjectProductsService(MCPACKDBContext context, IConfiguration config) : base(context, config)
+        public ProjectProductsService(MCPACKDBContext context, IConfiguration config, IHttpContextAccessor httpContextAccessor) : base(context, config, httpContextAccessor)
         {
         }
 

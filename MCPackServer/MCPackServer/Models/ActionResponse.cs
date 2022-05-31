@@ -4,9 +4,9 @@
 
     public class ActionResponse<T>
     {
-        public ActionResponse(T entity, Actions action)
+        public ActionResponse(T? entity, Actions action)
         {
-            Value = entity ?? throw new ArgumentNullException(nameof(entity));
+            Value = entity;
             Action = action;
             IsSuccessful = false;
             Errors = new List<string>();
@@ -15,7 +15,7 @@
         public Actions Action { get; private set; }
         public List<string> Errors { get; private set; }
         public string? ExceptionText { get; private set; }
-        public T Value { get; private set; }
+        public T? Value { get; private set; }
 
         public void Success() => IsSuccessful = true;
         public void Failure(Exception ex)

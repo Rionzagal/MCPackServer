@@ -9,7 +9,7 @@ namespace MCPackServer.Services
 {
     public class RequisitionsService : BaseService, IRequisitionsService
     {
-        public RequisitionsService(MCPACKDBContext context, IConfiguration config) : base(context, config)
+        public RequisitionsService(MCPACKDBContext context, IConfiguration config, IHttpContextAccessor httpContextAccessor) : base(context, config, httpContextAccessor)
         {
         }
 
