@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 namespace MCPackServer.Entities
 {
     [Index(nameof(NormalizedEmail), Name = "EmailIndex")]
+    [Index(nameof(NormalizedUserName), Name = "UserNameIndex", IsUnique = true)]
     public partial class AspNetUsers
     {
         public AspNetUsers()
@@ -22,6 +23,7 @@ namespace MCPackServer.Entities
         }
 
         [Key]
+        [StringLength(450)]
         public string Id { get; set; }
         [StringLength(256)]
         public string UserName { get; set; }
@@ -31,15 +33,15 @@ namespace MCPackServer.Entities
         public string Email { get; set; }
         [StringLength(256)]
         public string NormalizedEmail { get; set; }
-        public bool EmailConfirmed { get; set; }
+        public short EmailConfirmed { get; set; }
         public string PasswordHash { get; set; }
         public string SecurityStamp { get; set; }
         public string ConcurrencyStamp { get; set; }
         public string PhoneNumber { get; set; }
-        public bool PhoneNumberConfirmed { get; set; }
-        public bool TwoFactorEnabled { get; set; }
-        public DateTimeOffset? LockoutEnd { get; set; }
-        public bool LockoutEnabled { get; set; }
+        public short PhoneNumberConfirmed { get; set; }
+        public short TwoFactorEnabled { get; set; }
+        public DateTime? LockoutEnd { get; set; }
+        public short LockoutEnabled { get; set; }
         public int AccessFailedCount { get; set; }
 
         [InverseProperty("AspNetUser")]

@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace MCPackServer.Entities
 {
+    [Index(nameof(ContactId), Name = "FK_ProviderContacts_Contacts")]
     public partial class ProviderContacts
     {
         [Key]

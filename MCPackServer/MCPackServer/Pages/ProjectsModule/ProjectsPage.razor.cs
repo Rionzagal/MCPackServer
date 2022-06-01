@@ -40,7 +40,7 @@ namespace MCPackServer.Pages.ProjectsModule
 
         #region Entities and models
         Projects SelectedProject = new();
-        float subtotal = 0f, tax = 0f, total = 0f, commission = 0f, discount = 0f;
+        double subtotal = 0f, tax = 0f, total = 0f, commission = 0f, discount = 0f;
         List<ProjectProducts> SelectedProducts = new();
         List<Clients> ClientsList = new();
         #endregion
@@ -201,7 +201,7 @@ namespace MCPackServer.Pages.ProjectsModule
                     subtotal += product.SalePrice * product.Quantity;
                 }
                 discount = SelectedProject.Discount * subtotal;
-                tax = SelectedProject.HasTaxes ? (subtotal - discount) * 0.16f : 0f;
+                tax = (1 == SelectedProject.HasTaxes) ? (subtotal - discount) * 0.16f : 0f;
                 total = subtotal - discount + tax;
                 return items.ToList();
             }

@@ -11,6 +11,7 @@ namespace MCPackServer.Entities
     public partial class AspNetUserTokens
     {
         [Key]
+        [StringLength(450)]
         public string UserId { get; set; }
         [Key]
         [StringLength(128)]

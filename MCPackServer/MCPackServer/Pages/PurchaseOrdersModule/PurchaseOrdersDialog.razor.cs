@@ -122,9 +122,9 @@ namespace MCPackServer.Pages.PurchaseOrdersModule
             return providerName;
         }
 
-        private float GetProviderDiscount(int Id)
+        private double GetProviderDiscount(int Id)
         {
-            float discount = 0f;
+            double discount = 0f;
             if (0 != Id)
             {
                 var match = providers.SingleOrDefault(providers => providers.Id == Id);

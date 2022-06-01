@@ -8,22 +8,26 @@ using Microsoft.EntityFrameworkCore;
 
 namespace MCPackServer.Entities
 {
-    [Index(nameof(ProjectId), Name = "FK_ProjectProducts_Projects_idx")]
-    public partial class ProjectProducts
+    [Keyless]
+    public partial class ProjectProductsView
     {
-        [Key]
         public int ProductId { get; set; }
-        [Key]
         public int ProjectId { get; set; }
         public double SalePrice { get; set; }
         public int Quantity { get; set; }
         public string Observations { get; set; }
-
-        [ForeignKey(nameof(ProductId))]
-        [InverseProperty(nameof(MCProducts.ProjectProducts))]
-        public virtual MCProducts Product { get; set; }
-        [ForeignKey(nameof(ProjectId))]
-        [InverseProperty(nameof(Projects.ProjectProducts))]
-        public virtual Projects Project { get; set; }
+        [StringLength(20)]
+        public string ProjectNumber { get; set; }
+        [Required]
+        [StringLength(50)]
+        public string ProductType { get; set; }
+        [StringLength(100)]
+        public string ProductDescription { get; set; }
+        [Required]
+        [StringLength(50)]
+        public string ProductCode { get; set; }
+        [Required]
+        [StringLength(50)]
+        public string ProductModel { get; set; }
     }
 }

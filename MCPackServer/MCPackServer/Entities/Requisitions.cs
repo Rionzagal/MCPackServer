@@ -8,12 +8,12 @@ using Microsoft.EntityFrameworkCore;
 
 namespace MCPackServer.Entities
 {
+    [Index(nameof(UserId), Name = "FK_Requisitions_AspNetUsers")]
     [Index(nameof(Id), Name = "IX_Requisitions", IsUnique = true)]
     public partial class Requisitions
     {
         public Requisitions()
         {
-            PurchaseOrders = new HashSet<PurchaseOrders>();
             RequisitionArticles = new HashSet<RequisitionArticles>();
         }
 
@@ -22,19 +22,15 @@ namespace MCPackServer.Entities
         [Required]
         [StringLength(50)]
         public string RequisitionNumber { get; set; }
-        [Column(TypeName = "datetime")]
         public DateTime? IssuedDate { get; set; }
         [Required]
         [StringLength(450)]
         public string UserId { get; set; }
-        [Column(TypeName = "datetime")]
         public DateTime? RequiredDate { get; set; }
 
         [ForeignKey(nameof(UserId))]
         [InverseProperty(nameof(AspNetUsers.Requisitions))]
         public virtual AspNetUsers User { get; set; }
-        [InverseProperty("Requisition")]
-        public virtual ICollection<PurchaseOrders> PurchaseOrders { get; set; }
         [InverseProperty("Requisition")]
         public virtual ICollection<RequisitionArticles> RequisitionArticles { get; set; }
     }

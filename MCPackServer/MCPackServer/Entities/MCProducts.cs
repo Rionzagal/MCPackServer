@@ -19,7 +19,7 @@ namespace MCPackServer.Entities
         public int Id { get; set; }
         [StringLength(100)]
         public string Description { get; set; }
-        public float SugestedPrice { get; set; }
+        public double SugestedPrice { get; set; }
         [Required]
         [StringLength(5)]
         public string Currency { get; set; }

@@ -54,10 +54,10 @@ namespace MCPackServer.Entities
         public string PaymentCondition { get; set; }
         [StringLength(50)]
         public string CreditLimit { get; set; }
-        public float Discount { get; set; }
-        public bool HomeDelivery { get; set; }
+        public double Discount { get; set; }
+        public short HomeDelivery { get; set; }
         public string Observations { get; set; }
-        public bool HasTaxes { get; set; }
+        public short HasTaxes { get; set; }
 
         [InverseProperty("Provider")]
         public virtual ICollection<ProviderContacts> ProviderContacts { get; set; }

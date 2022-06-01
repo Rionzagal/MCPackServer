@@ -8,16 +8,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace MCPackServer.Entities
 {
-    [Index(nameof(FamilyId), Name = "FK_ShoppingArticles_ArticleFamilies")]
-    public partial class PurchaseArticles
+    [Keyless]
+    public partial class ArticlesView
     {
-        public PurchaseArticles()
-        {
-            Quotes = new HashSet<Quotes>();
-            RequisitionArticles = new HashSet<RequisitionArticles>();
-        }
-
-        [Key]
         public int Id { get; set; }
         [Required]
         [StringLength(50)]
@@ -34,17 +27,17 @@ namespace MCPackServer.Entities
         public string Model { get; set; }
         public int FamilyId { get; set; }
         [Required]
-        [StringLength(20)]
+        [StringLength(30)]
+        public string FamilyName { get; set; }
+        public int GroupId { get; set; }
+        [Required]
+        [StringLength(30)]
+        public string GroupName { get; set; }
+        [Required]
+        [StringLength(62)]
         public string Code { get; set; }
+        public short MustQuoteDaily { get; set; }
         [StringLength(100)]
         public string Observations { get; set; }
-
-        [ForeignKey(nameof(FamilyId))]
-        [InverseProperty(nameof(ArticleFamilies.PurchaseArticles))]
-        public virtual ArticleFamilies Family { get; set; }
-        [InverseProperty("Article")]
-        public virtual ICollection<Quotes> Quotes { get; set; }
-        [InverseProperty("Article")]
-        public virtual ICollection<RequisitionArticles> RequisitionArticles { get; set; }
     }
 }

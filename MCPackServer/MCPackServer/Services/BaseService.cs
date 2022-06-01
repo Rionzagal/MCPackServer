@@ -69,7 +69,7 @@ namespace MCPackServer.Services
                             response.Errors
                         }),
                     Action = response.Action.ToString(),
-                    Succeeded = response.IsSuccessful,
+                    Succeeded = response.IsSuccessful ? (short)1 : (short)0,
                     TableName = response.Value?.GetType().Name ?? "Not available",
                     Exception = response.IsSuccessful ? "N/A" : response.ExceptionText,
                     TimeOfAction = DateTime.Now

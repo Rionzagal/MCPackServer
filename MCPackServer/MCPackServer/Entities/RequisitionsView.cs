@@ -8,19 +8,22 @@ using Microsoft.EntityFrameworkCore;
 
 namespace MCPackServer.Entities
 {
-    [Index(nameof(UserId), Name = "IX_AspNetUserClaims_UserId")]
-    public partial class AspNetUserClaims
+    [Keyless]
+    public partial class RequisitionsView
     {
-        [Key]
         public int Id { get; set; }
+        [Required]
+        [StringLength(50)]
+        public string RequisitionNumber { get; set; }
+        public DateTime? RequiredDate { get; set; }
+        public DateTime? IssuedDate { get; set; }
         [Required]
         [StringLength(450)]
         public string UserId { get; set; }
-        public string ClaimType { get; set; }
-        public string ClaimValue { get; set; }
-
-        [ForeignKey(nameof(UserId))]
-        [InverseProperty(nameof(AspNetUsers.AspNetUserClaims))]
-        public virtual AspNetUsers User { get; set; }
+        [StringLength(256)]
+        public string UserName { get; set; }
+        [Required]
+        [StringLength(101)]
+        public string UserShortName { get; set; }
     }
 }

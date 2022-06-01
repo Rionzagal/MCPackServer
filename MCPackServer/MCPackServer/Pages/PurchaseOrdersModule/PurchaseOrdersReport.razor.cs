@@ -26,7 +26,7 @@ namespace MCPackServer.Pages.PurchaseOrdersModule
         private Projects OrderProject = new();
         private Clients ProjectClient = new();
         private List<ArticlesToPurchase> OrderArticles = new();
-        private float Subtotal, Tax, Discount, Total = 0f;
+        private double Subtotal, Tax, Discount, Total = 0f;
         private List<string> MaterialNumbers = new();
         protected override async Task OnInitializedAsync()
         {
@@ -53,7 +53,7 @@ namespace MCPackServer.Pages.PurchaseOrdersModule
                     Subtotal += OrderArticles[i].SalePrice * OrderArticles[i].Quantity;
                 }
                 Discount = Subtotal * (Order.Discount / 100);
-                Tax = OrderProvider.HasTaxes ? (Subtotal - Discount) * 0.16f : 0;
+                Tax = 1 == OrderProvider.HasTaxes ? (Subtotal - Discount) * 0.16f : 0;
                 Total = Subtotal - Discount + Tax;
             }
             #endregion

@@ -55,7 +55,7 @@ namespace MCPackServer.Pages.PurchaseOrdersModule
         List<ArticlesToPurchase> SelectedArticles = new();
         List<ArticleGroups> Groups = new();
         List<ArticleFamilies> Families = new();
-        private float subtotal, tax, discount, total = 0f;
+        private double subtotal, tax, discount, total = 0f;
         #endregion
 
         protected override async Task OnInitializedAsync()
@@ -259,7 +259,7 @@ namespace MCPackServer.Pages.PurchaseOrdersModule
                 item.Quote.Article.Code = $"{item.Quote.Article.Family.Group.Code}-{item.Quote.Article.Family.Code}-{item.Quote.Article.Code}";
             }
             discount = subtotal * (SelectedOrder.Discount / 100);
-            tax = SelectedOrder.Provider.HasTaxes ? (subtotal - discount) * 0.16f : 0f;
+            tax = 1 == SelectedOrder.Provider.HasTaxes ? (subtotal - discount) * 0.16f : 0f;
             total = subtotal + tax - discount;
             return articles;
         }

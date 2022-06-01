@@ -20,7 +20,7 @@
         <MudTd DataLabel="Table Name">@context.TableName</MudTd>
         <MudTd DataLabel="Action">@context.Action</MudTd>
         <MudTd DataLabel="Action Time">@context.TimeOfAction</MudTd>
-        <MudTd DataLabel="Status">@(context.Succeeded ? "Exitoso" : "Fallido")</MudTd>
+        <MudTd DataLabel="Status">@(1 == context.Succeeded ? "Exitoso" : "Fallido")</MudTd>
     </RowTemplate>
     <PagerContent>
         <MudTablePager />
@@ -51,7 +51,7 @@
                         </MudItem>
                         <MudItem xs="4">
                             <MudText Typo="Typo.subtitle1" Align="Align.Left">Estado</MudText>
-                            <MudTextField Value="@(SelectedLog.Succeeded ? "Éxito" : "Fracaso")" ReadOnly />
+                            <MudTextField Value="@(1 == SelectedLog.Succeeded ? "Éxito" : "Fracaso")" ReadOnly />
                         </MudItem>
                         <MudItem xs="6">
                             <MudText Typo="Typo.subtitle1" Align="Align.Left">Usuario</MudText>

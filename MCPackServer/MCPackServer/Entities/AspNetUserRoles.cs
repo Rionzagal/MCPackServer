@@ -12,8 +12,10 @@ namespace MCPackServer.Entities
     public partial class AspNetUserRoles
     {
         [Key]
+        [StringLength(450)]
         public string UserId { get; set; }
         [Key]
+        [StringLength(450)]
         public string RoleId { get; set; }
 
         [ForeignKey(nameof(RoleId))]

@@ -8,17 +8,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace MCPackServer.Entities
 {
-    [Index(nameof(ClientId), Name = "FK_Proyects_Clients")]
-    public partial class Projects
+    [Keyless]
+    public partial class ProjectsView
     {
-        public Projects()
-        {
-            ProjectProducts = new HashSet<ProjectProducts>();
-            PurchaseOrders = new HashSet<PurchaseOrders>();
-            RequisitionArticles = new HashSet<RequisitionArticles>();
-        }
-
-        [Key]
         public int Id { get; set; }
         public int ClientId { get; set; }
         [StringLength(50)]
@@ -53,15 +45,11 @@ namespace MCPackServer.Entities
         public string Code { get; set; }
         [StringLength(20)]
         public string ProjectNumber { get; set; }
-
-        [ForeignKey(nameof(ClientId))]
-        [InverseProperty(nameof(Clients.Projects))]
-        public virtual Clients Client { get; set; }
-        [InverseProperty("Project")]
-        public virtual ICollection<ProjectProducts> ProjectProducts { get; set; }
-        [InverseProperty("Project")]
-        public virtual ICollection<PurchaseOrders> PurchaseOrders { get; set; }
-        [InverseProperty("Project")]
-        public virtual ICollection<RequisitionArticles> RequisitionArticles { get; set; }
+        [Required]
+        [StringLength(50)]
+        public string ClientMarketName { get; set; }
+        [Required]
+        [StringLength(50)]
+        public string ClientLegalName { get; set; }
     }
 }

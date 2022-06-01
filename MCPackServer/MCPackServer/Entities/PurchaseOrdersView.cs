@@ -8,21 +8,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace MCPackServer.Entities
 {
-    [Index(nameof(ProjectId), Name = "FK_PurchaseOrders_Projects_idx")]
-    [Index(nameof(ProviderId), Name = "FK_PurchaseOrders_Providers")]
-    public partial class PurchaseOrders
+    [Keyless]
+    public partial class PurchaseOrdersView
     {
-        public PurchaseOrders()
-        {
-            ArticlesToPurchase = new HashSet<ArticlesToPurchase>();
-        }
-
-        [Key]
         public int Id { get; set; }
-        public int ProjectId { get; set; }
         public DateTime? IssuedDate { get; set; }
-        public int ProviderId { get; set; }
-        public int? RequisitionId { get; set; }
         public DateTime? DeliveryDate { get; set; }
         [Required]
         [StringLength(10)]
@@ -37,15 +27,20 @@ namespace MCPackServer.Entities
         public string Observations { get; set; }
         [StringLength(50)]
         public string OrderNumber { get; set; }
-        public Requisitions? Requisition { get; set; }
-
-        [ForeignKey(nameof(ProjectId))]
-        [InverseProperty(nameof(Projects.PurchaseOrders))]
-        public virtual Projects Project { get; set; }
-        [ForeignKey(nameof(ProviderId))]
-        [InverseProperty(nameof(Providers.PurchaseOrders))]
-        public virtual Providers Provider { get; set; }
-        [InverseProperty("PurchaseOrder")]
-        public virtual ICollection<ArticlesToPurchase> ArticlesToPurchase { get; set; }
+        public int ProviderId { get; set; }
+        [Required]
+        [StringLength(50)]
+        public string ProviderLegalName { get; set; }
+        public short HasTaxes { get; set; }
+        public int ProjectId { get; set; }
+        [StringLength(20)]
+        public string ProjectNumber { get; set; }
+        public int ClientId { get; set; }
+        [Required]
+        [StringLength(50)]
+        public string ClientMarketName { get; set; }
+        public int? RequisitionId { get; set; }
+        [StringLength(50)]
+        public string RequisitionNumber { get; set; }
     }
 }

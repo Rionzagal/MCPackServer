@@ -26,7 +26,7 @@ namespace MCPackServer.Entities
         [Required]
         [StringLength(20)]
         public string Code { get; set; }
-        public bool HasVariablePrice { get; set; }
+        public short HasVariablePrice { get; set; }
 
         [InverseProperty("Group")]
         public virtual ICollection<ArticleFamilies> ArticleFamilies { get; set; }

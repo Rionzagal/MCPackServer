@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace MCPackServer.Entities
 {
+    [Index(nameof(PurchaseOrderId), Name = "FK_ArticlesToPurchase_PurchaseOrders")]
     public partial class ArticlesToPurchase
     {
         [Key]
@@ -15,11 +16,9 @@ namespace MCPackServer.Entities
         [Key]
         public int PurchaseOrderId { get; set; }
         public int Quantity { get; set; }
-        [Column(TypeName = "datetime")]
         public DateTime? EntryDate { get; set; }
-        [Column(TypeName = "datetime")]
         public DateTime? DepartureDate { get; set; }
-        public float SalePrice { get; set; }
+        public double SalePrice { get; set; }
 
         [ForeignKey(nameof(PurchaseOrderId))]
         [InverseProperty(nameof(PurchaseOrders.ArticlesToPurchase))]

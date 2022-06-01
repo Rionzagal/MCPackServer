@@ -34,7 +34,7 @@ namespace MCPackServer.Pages.PurchaseOrdersModule
                 QuoteId = quote.Id;
                 SalePrice = quote.Price;
                 Quote.Article.Code = $"{family.Group.Code}-{family.Code}-{quote.Article.Code}";
-                MustUpdateQuote = (family.Group.HasVariablePrice) & DateTime.Today != quote.DateUpdated.Date;
+                MustUpdateQuote = (1 == family.Group.HasVariablePrice) & DateTime.Today != quote.DateUpdated.Date;
             }
             public ArticleFamilies Family { get; set; }
             public bool MustUpdateQuote { get; private set; }

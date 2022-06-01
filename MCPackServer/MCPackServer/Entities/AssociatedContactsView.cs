@@ -28,6 +28,6 @@ namespace MCPackServer.Entities
         public string CompanyId { get; set; }
         [Required]
         [StringLength(8)]
-        public string status { get; set; }
+        public string Status { get; set; }
     }
 }

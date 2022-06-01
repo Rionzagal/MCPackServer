@@ -63,7 +63,7 @@
         <MudTd DataLabel="Nombre">@context.ShortName</MudTd>
         <MudTd DataLabel="Nombre de usuario">@context.UserName</MudTd>
         <MudTd DataLabel="Correo electrónico">@context.Email</MudTd>
-        <MudTd DataLabel="Usuario Activo">@(context.Active ? "Activo" : "Inactivo")</MudTd>
+        <MudTd DataLabel="Usuario Activo">@(1 == context.Active ? "Activo" : "Inactivo")</MudTd>
     </RowTemplate>
     <NoRecordsContent>
         <MudText>Sin usuarios encontrados</MudText>

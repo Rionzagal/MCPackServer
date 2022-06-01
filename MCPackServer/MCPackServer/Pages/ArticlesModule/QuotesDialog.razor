@@ -49,9 +49,9 @@
                                   ReadOnly="@Disabled" />
                 </div>
                 <div class="form-group">
-                    <MudNumericField T="float" Label="Precio unitario" Required="true"
+                    <MudNumericField T="double" Label="Precio unitario" Required="true"
                                      RequiredError="Insertar precio sugerido"
-                                     @bind-Value="Model.Price" Min="0f" Format="N2"
+                                     @bind-Value="Model.Price" Min="0" Format="N2"
                                      Adornment="Adornment.Start" HideSpinButtons="true"
                                      AdornmentIcon="@Icons.Material.Filled.AttachMoney"
                                      ReadOnly="@Disabled" />

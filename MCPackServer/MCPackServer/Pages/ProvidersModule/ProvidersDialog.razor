@@ -105,9 +105,9 @@
                                  ReadOnly="@Disabled" />
                 </MudItem>
                 <MudItem xs="3">
-                    <MudNumericField T="float" Label="Descuento" Required="true"
+                    <MudNumericField T="double" Label="Descuento" Required="true"
                                      RequiredError="Insertar descuento" @bind-Value="Model.Discount"
-                                     Min="0.00f" Max="100.00f" Step="1" Format="N2"
+                                     Min="0.00" Max="100.00" Step="1" Format="N2"
                                      AdornmentText="%" Adornment="Adornment.End"
                                      ReadOnly="@Disabled" />
                 </MudItem>

@@ -52,7 +52,7 @@
             <MudItem xs="6">
                 <MudText Typo="Typo.subtitle1">Precio unitario</MudText>
                 <MudNumericField @bind-Value="Model.SalePrice" Required RequiredError="Inserte precio unitario"
-                                 T="float" Min="0f" Adornment="Adornment.Start" AdornmentText="$" Step="1f"
+                                 T="double" Min="0" Adornment="Adornment.Start" AdornmentText="$" Step="1"
                                  Format="N2" ReadOnly="@Disabled" />
             </MudItem>
             <MudItem xs="6">
