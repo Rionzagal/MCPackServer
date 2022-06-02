@@ -18,9 +18,11 @@ namespace MCPackServer.Services
     {
         public MCPACKDBContext _context;
         public readonly IConfiguration _config;
+        protected readonly IHttpContextAccessor _httpContextAccessor;
 
-        public BaseService(MCPACKDBContext context, IConfiguration config)
+        public BaseService(MCPACKDBContext context, IConfiguration config, IHttpContextAccessor httpContextAccessor)
         {
+            _httpContextAccessor = httpContextAccessor; 
             _context = context;
             _config = config;
         }
@@ -48,10 +50,9 @@ namespace MCPackServer.Services
         {
             try
             {
-                string CurrentUserId = (await GetByKeyAsync<Entities.AspNetUsers>(
-                System.Security.Claims.ClaimsPrincipal.Current?.Identity?.Name ?? "",
-                nameof(Entities.AspNetUsers.UserName)
-                ))?.Id ?? string.Empty;
+                string userName = System.Security.Claims.ClaimsPrincipal.Current?.Identity?.Name ?? string.Empty;
+                string CurrentUserId = _context.AspNetUsers.Where(u => userName == u.UserName).FirstOrDefault()?.Id ?? 
+                    _context.AspNetUsers.First().Id;
                 string jsonMessage = response.IsSuccessful
                     ? Newtonsoft.Json.JsonConvert.SerializeObject(response.Value)
                     : Newtonsoft.Json.JsonConvert.SerializeObject(response.Errors);
@@ -80,7 +81,7 @@ namespace MCPackServer.Services
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex.Message);
+                Console.WriteLine(ex);
             }
         }
 

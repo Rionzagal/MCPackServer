@@ -8,7 +8,7 @@ namespace MCPackServer.Services
 {
     public class RolesService : BaseService, IRolesService
     {
-        public RolesService(MCPACKDBContext context, IConfiguration config) : base(context, config)
+        public RolesService(MCPACKDBContext context, IConfiguration config, IHttpContextAccessor httpContextAccessor) : base(context, config, httpContextAccessor)
         {
         }
 

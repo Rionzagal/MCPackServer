@@ -10,7 +10,7 @@ namespace MCPackServer.Services
 {
     public class ProvidersService : BaseService, IProvidersService
     {
-        public ProvidersService(MCPACKDBContext context, IConfiguration config) : base(context, config)
+        public ProvidersService(MCPACKDBContext context, IConfiguration config, IHttpContextAccessor httpContextAccessor) : base(context, config, httpContextAccessor)
         {
         }
 

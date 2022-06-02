@@ -14,7 +14,7 @@ namespace MCPackServer.Services
 {
     public class FamiliesService : BaseService, IFamiliesService
     {
-        public FamiliesService(MCPACKDBContext context, IConfiguration config) : base(context, config)
+        public FamiliesService(MCPACKDBContext context, IConfiguration config, IHttpContextAccessor httpContextAccessor) : base(context, config, httpContextAccessor)
         {
         }
 

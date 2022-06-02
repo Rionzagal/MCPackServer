@@ -9,7 +9,7 @@ namespace MCPackServer.Services
 {
     public class ContactsService : BaseService, IContactsService
     {
-        public ContactsService(MCPACKDBContext context, IConfiguration config) : base(context, config)
+        public ContactsService(MCPACKDBContext context, IConfiguration config, IHttpContextAccessor httpContextAccessor) : base(context, config, httpContextAccessor)
         {
         }
 

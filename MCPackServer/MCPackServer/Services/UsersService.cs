@@ -9,7 +9,7 @@ namespace MCPackServer.Services
 {
     public class UsersService : BaseService, IUsersService
     {
-        public UsersService(MCPACKDBContext context, IConfiguration config) : base(context, config)
+        public UsersService(MCPACKDBContext context, IConfiguration config, IHttpContextAccessor httpContextAccessor) : base(context, config, httpContextAccessor)
         {
         }
 

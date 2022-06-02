@@ -10,7 +10,7 @@ namespace MCPackServer.Services
 {
     public class ClientsService : BaseService, IClientsService
     {
-        public ClientsService(MCPACKDBContext context, IConfiguration config) : base(context, config)
+        public ClientsService(MCPACKDBContext context, IConfiguration config, IHttpContextAccessor httpContextAccessor) : base(context, config, httpContextAccessor)
         {
         }
 
