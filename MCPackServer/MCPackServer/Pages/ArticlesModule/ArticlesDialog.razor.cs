@@ -17,27 +17,31 @@ namespace MCPackServer.Pages.ArticlesModule
 
         #region Parameters
         [CascadingParameter]
+        #pragma warning disable CS8618 // Un campo que no acepta valores NULL debe contener un valor distinto de NULL al salir del constructor. Considere la posibilidad de declararlo como que admite un valor NULL.
         public MudDialogInstance Dialog { get; set; }
+        #pragma warning restore CS8618 // Un campo que no acepta valores NULL debe contener un valor distinto de NULL al salir del constructor. Considere la posibilidad de declararlo como que admite un valor NULL.
         [Parameter]
         public States State { get; set; }
         [Parameter]
-        public PurchaseArticles Model { get; set; }
+        public ArticlesView? ModelView { get; set; }
         [Parameter]
-        public string GroupCode { get; set; }
-        [Parameter]
-        public string FamilyCode { get; set; }
+        public int? FamilyId { get; set; }
         #endregion
 
         #region Dialog variables
-        private string Title;
-        private string TitleIcon;
+        private string Title = string.Empty;
+        private string TitleIcon = string.Empty;
         private bool Disabled;
         private Color ButtonColor;
         private bool _processing = false;
         #endregion
 
-        #region API elements
-        private MudForm Form;
+        #region Models and elements
+        private MudForm Form = new();
+
+        private PurchaseArticles Model = new();
+        private string GroupCode = string.Empty;
+        private string FamilyCode = string.Empty;
         #endregion
 
         protected override async Task OnInitializedAsync()
@@ -66,6 +70,19 @@ namespace MCPackServer.Pages.ArticlesModule
             else //should not get to this option
             {
                 Dialog.Cancel();
+            }
+            if (null != ModelView)
+            {
+                Model = await _service.GetByKeyAsync<PurchaseArticles>(ModelView.Id);
+                FamilyCode = (await _service.GetByKeyAsync<ArticleFamilies>(ModelView.FamilyId)).Code;
+                GroupCode = (await _service.GetByKeyAsync<ArticleGroups>(ModelView.GroupId)).Code;
+            }
+            else if (FamilyId.HasValue)
+            {
+                Model.FamilyId = FamilyId.Value;
+                var currentFamily = await _service.GetByKeyAsync<ArticleFamilies>(FamilyId);
+                FamilyCode = currentFamily.Code;
+                GroupCode = (await _service.GetByKeyAsync<ArticleGroups>(currentFamily.GroupId)).Code;
             }
         }
 

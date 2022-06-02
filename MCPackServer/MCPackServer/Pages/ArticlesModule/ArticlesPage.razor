@@ -96,9 +96,8 @@
     <MudExpansionPanel @ref="ArticlesPanel" Disabled="@(0 == SelectedFamily.Id)" IsExpandedChanged="RenderArticles" 
                        Text="@($"Artículo seleccionado: {SelectedArticle.Name ?? "N/A"}")">
         <MudPaper Class="my-3" Elevation="0">
-            <MudTable @ref="ArticleTable" T="PurchaseArticles" Dense Hover FixedHeader Height="400px"
-                      CustomHeader Striped OnRowClick="OnSelectedArticleRow"
-                      ServerData="@(new Func<TableState, Task<TableData<PurchaseArticles>>>(ArticleServerReload))">
+            <MudTable @ref="ArticleTable" T="ArticlesView" Dense Hover FixedHeader Height="400px"
+                      CustomHeader Striped OnRowClick="OnSelectedArticleRow" ServerData="ArticleServerReload">
                 <ToolBarContent>
                     <MudText Typo="Typo.h6">Artículos registrados</MudText>
                     <MudSpacer />
@@ -119,9 +118,9 @@
                 </ToolBarContent>
                 <HeaderContent>
                     <MudTHeadRow>
-                        <MudTh><MudTableSortLabel SortLabel="Name" T="PurchaseArticles">Nomrbe</MudTableSortLabel></MudTh>
-                        <MudTh><MudTableSortLabel SortLabel="TradeMark" T="PurchaseArticles">Marca</MudTableSortLabel></MudTh>
-                        <MudTh><MudTableSortLabel SortLabel="Code" T="PurchaseArticles">Código</MudTableSortLabel></MudTh>
+                        <MudTh><MudTableSortLabel SortLabel="Name" T="ArticlesView">Nomrbe</MudTableSortLabel></MudTh>
+                        <MudTh><MudTableSortLabel SortLabel="TradeMark" T="ArticlesView">Marca</MudTableSortLabel></MudTh>
+                        <MudTh><MudTableSortLabel SortLabel="Code" T="ArticlesView">Código</MudTableSortLabel></MudTh>
                     </MudTHeadRow>
                     <MudTHeadRow>
                         <MudTh>
@@ -138,7 +137,7 @@
                 <RowTemplate>
                     <MudTd DataLabel="Nombre">@context.Name</MudTd>
                     <MudTd DataLabel="Marca comercial">@(context.TradeMark ?? "N/A")</MudTd>
-                    <MudTd DataLabel="Código">@($"{SelectedGroup.Code}-{SelectedFamily.Code}-{context.Code}")</MudTd>
+                    <MudTd DataLabel="Código">@context.Code</MudTd>
                 </RowTemplate>
                 <NoRecordsContent>
                     <MudText>Sin artículos encontrados</MudText>

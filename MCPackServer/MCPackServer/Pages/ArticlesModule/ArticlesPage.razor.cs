@@ -27,8 +27,8 @@ namespace MCPackServer.Pages.ArticlesModule
         DialogParameters Parameters;
         #endregion
         #region MudBlazor Tables
-        private MudTable<PurchaseArticles> ArticleTable;
-        private MudTable<Quotes> QuoteTable;
+        private MudTable<ArticlesView> ArticleTable = new();
+        private MudTable<Quotes> QuoteTable = new();
         #endregion
         #region Tabs and properties
         private MudTabs ArticleInformationTabs;
@@ -60,8 +60,8 @@ namespace MCPackServer.Pages.ArticlesModule
 
         #region Entities and Models
         #region Purchase Articles
-        PurchaseArticles SelectedArticle = new();
-        private string ArticleCode;
+        ArticlesView SelectedArticle = new();
+        private string ArticleCode = string.Empty;
         #endregion
         #region Article Groups
         ArticleGroups SelectedGroup = new();
@@ -120,7 +120,7 @@ namespace MCPackServer.Pages.ArticlesModule
 
         #region Purchase Articles related methods
         #region ArticleTable methods
-        private async Task<TableData<PurchaseArticles>> ArticleServerReload(TableState state)
+        private async Task<TableData<ArticlesView>> ArticleServerReload(TableState state)
         {
             if (0 == SelectedFamily.Id) VisibleArticleInformation = false;
             List<WhereFilter> filters = new()
@@ -138,15 +138,15 @@ namespace MCPackServer.Pages.ArticlesModule
             };
             string field = state.SortLabel ?? "Id";
             string order = state.SortDirection == SortDirection.Ascending ? "ASC" : "DESC";
-            var items = await _service.GetForGridAsync<PurchaseArticles>(request, field, order);
-            int? count = await _service.GetTotalCountAsync<PurchaseArticles>(request);
-            return new TableData<PurchaseArticles>
+            var items = await _service.GetForGridAsync<ArticlesView>(request, field, order);
+            int? count = await _service.GetTotalCountAsync<ArticlesView>(request);
+            return new TableData<ArticlesView>
             {
                 Items = items,
                 TotalItems = count ?? 0
             };
         }
-        private void OnSelectedArticleRow(TableRowClickEventArgs<PurchaseArticles> args)
+        private void OnSelectedArticleRow(TableRowClickEventArgs<ArticlesView> args)
         {
             SelectedArticle = args.Item;
             GroupsPanel.Collapse();
@@ -163,9 +163,7 @@ namespace MCPackServer.Pages.ArticlesModule
             Parameters = new()
             {
                 ["State"] = ArticlesDialog.States.Add,
-                ["Model"] = new PurchaseArticles() { FamilyId = SelectedFamily.Id },
-                ["GroupCode"] = SelectedGroup.Code,
-                ["FamilyCode"] = SelectedFamily.Code
+                ["FamilyId"] = SelectedFamily.Id
             };
             var dialog = Dialogs.Show<ArticlesDialog>("Añadir nuevo artículo", Parameters);
             var result = await dialog.Result;
@@ -191,9 +189,7 @@ namespace MCPackServer.Pages.ArticlesModule
             Parameters = new()
             {
                 ["State"] = ArticlesDialog.States.Edit,
-                ["Model"] = SelectedArticle,
-                ["GroupCode"] = SelectedGroup.Code,
-                ["FamilyCode"] = SelectedFamily.Code
+                ["ModelView"] = SelectedArticle
             };
             var dialog = Dialogs.Show<ArticlesDialog>("Editar artículo seleccionado", Parameters);
             var result = await dialog.Result;
@@ -219,9 +215,7 @@ namespace MCPackServer.Pages.ArticlesModule
             Parameters = new()
             {
                 ["State"] = ArticlesDialog.States.Delete,
-                ["Model"] = SelectedArticle,
-                ["GroupCode"] = SelectedGroup.Code,
-                ["FamilyCode"] = SelectedFamily.Code
+                ["ModelView"] = SelectedArticle
             };
             var dialog = Dialogs.Show<ArticlesDialog>("Eliminar artículo seleccionado", Parameters);
             var result = await dialog.Result;
