@@ -1,10 +1,4 @@
-﻿@inject IPurchaseOrdersService _ordersService
-@inject IArticlesToPurchaseService _articlesService
-@inject IProjectsService _projectsService
-@inject IProvidersService _providersService
-@inject IRequisitionsService _requisitionsService
-
-<MudDialog>
+﻿<MudDialog>
     <TitleContent>
         <MudText Typo="Typo.h6">
             <MudIcon Icon="@TitleIcon" /> @Title
@@ -33,30 +27,27 @@
                         <MudAutocomplete T="int?" Label="Número de requisición" Value="Model.RequisitionId" Clearable
                                          SearchFunc="(f) => RequisitionsServerReload(f)" ReadOnly="@Disabled"
                                          ToStringFunc="new Func<int?, string>(GetRequisitionNumber)"
-                                         Variant="Variant.Outlined" 
-                                         ValueChanged="(id) => 
-                                                       {
-                                                           Model.RequisitionId = id;
-                                                           Model.DeliveryDate = GetRequiredDate(id);
-                                                       }"
-                                         OnClearButtonClick="() => { Model.RequisitionId = 0; Model.DeliveryDate = null; }"/>
+                                         Variant="Variant.Outlined" ValueChanged="(id) => {
+                                                                                            Model.RequisitionId = id;
+                                                                                            Model.DeliveryDate = GetRequiredDate(id);
+                                                                                           }"
+                                         OnClearButtonClick="() => { Model.RequisitionId = null; Model.DeliveryDate = null; }" />
                     </MudItem>
                     <MudItem xs="6">
                         <MudAutocomplete T="int" Label="Proveedor" Value="Model.ProviderId"
-                                         SearchFunc="f => ProvidersServerReload(f)" Clearable
-                                         OnClearButtonClick="() =>
-                                                                 {
-                                                                     Model.Currency = null;
-                                                                     Model.ProviderId = 0;
-                                                                     Model.Discount = 0f;
-                                                                 }"
+                                        SearchFunc="f => ProvidersServerReload(f)" Clearable
+                                        OnClearButtonClick="() => {
+                                                                    Model.Currency = null;
+                                                                    Model.ProviderId = 0;
+                                                                    Model.Discount = 0f;
+                                                                  }"
                                          ToStringFunc="new Func<int, string>(GetProviderName)"
                                          Required RequiredError="Seleccione un proveedor"
-                                         ValueChanged="(id) =>
-                                                           {
-                                                               Model.ProviderId = id;
-                                                               Model.Discount = GetProviderDiscount(id);
-                                                           }"
+                                         ValueChanged="(id) => {
+                                                                Model.ProviderId = id;
+                                                                Model.Discount = GetProviderDiscount(id);
+                                                               }"
+                                                           
                                          ReadOnly="@Disabled" />
                     </MudItem>
                     <MudItem xs="6">
@@ -86,15 +77,13 @@
                     </MudItem>
                     <MudItem xs="6">
                         <MudDatePicker Label="Fecha de entrega" @bind-Date="Model.DeliveryDate" Required
-                                       RequiredError="Inserte fecha de entrega"
-                                       ReadOnly="@Disabled" />
+                                       RequiredError="Inserte fecha de entrega" ReadOnly="@Disabled" />
                     </MudItem>
                     <MudItem xs="12">
                         <MudNumericField T="double" Label="Descuento" @bind-Value="Model.Discount"
-                                         Min="0" Max="100" HideSpinButtons Format="N2"
-                                         AdornmentText="%" Adornment="Adornment.End" Variant="Variant.Outlined"
-                                         Required RequiredError="Inserte descuento"
-                                         ReadOnly="@Disabled" />
+                                         Min="0" Max="100" HideSpinButtons Format="N2" AdornmentText="%"
+                                         Adornment="Adornment.End" Variant="Variant.Outlined"
+                                         Required RequiredError="Inserte descuento" ReadOnly="@Disabled" />
                     </MudItem>
                     <MudItem xs="12">
                         <MudTextField Label="Número de factura" @bind-Value="Model.InvoiceNumber"
@@ -102,8 +91,7 @@
                     </MudItem>
                     <MudItem xs="12">
                         <MudTextField Label="Observaciones" @bind-Value="Model.Observations"
-                                      Variant="Variant.Outlined" Lines="5" Required="false"
-                                      ReadOnly="@Disabled" />
+                                      Variant="Variant.Outlined" Lines="5" ReadOnly="@Disabled" />
                     </MudItem>
                 </MudGrid>
             </MudForm>

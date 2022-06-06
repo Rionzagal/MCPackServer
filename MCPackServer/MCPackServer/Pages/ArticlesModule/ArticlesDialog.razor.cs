@@ -1,13 +1,7 @@
 ﻿using MCPackServer.Entities;
-using MCPackServer.Models;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http.Json;
 using System.Text.RegularExpressions;
-using Newtonsoft.Json;
 
 namespace MCPackServer.Pages.ArticlesModule
 {
@@ -74,6 +68,7 @@ namespace MCPackServer.Pages.ArticlesModule
             if (null != ModelView)
             {
                 Model = await _service.GetByKeyAsync<PurchaseArticles>(ModelView.Id);
+                Model.Code = ModelView.Code;
                 FamilyCode = (await _service.GetByKeyAsync<ArticleFamilies>(ModelView.FamilyId)).Code;
                 GroupCode = (await _service.GetByKeyAsync<ArticleGroups>(ModelView.GroupId)).Code;
             }
@@ -89,18 +84,50 @@ namespace MCPackServer.Pages.ArticlesModule
         private async Task Submit()
         {
             _processing = true;
-            string response = string.Empty;
             await Form.Validate();
             if (Form.IsValid)
             {
-                if (States.Add == State) 
-                    response = JsonConvert.SerializeObject(await _service.AddAsync(Model));
-                else if (States.Edit == State) 
-                    response = JsonConvert.SerializeObject(await _service.UpdateAsync(Model));
-                else if (States.Delete == State) 
-                    response = JsonConvert.SerializeObject(await _service.RemoveAsync(Model));
+                if (States.Add == State)
+                {
+                    var response = await _service.AddAsync(Model);
+                    if (response?.IsSuccessful ?? false)
+                        Snackbar.Add("Artículo añadido con éxito.", Severity.Success);
+                    else
+                    {
+                        foreach (var error in response?.Errors ?? new List<string>())
+                        {
+                            Snackbar.Add(error, Severity.Error);
+                        }
+                    }
+                }
+                else if (States.Edit == State)
+                {
+                    var response = await _service.UpdateAsync(Model);
+                    if (response?.IsSuccessful ?? false)
+                        Snackbar.Add("Artículo editado con éxito.", Severity.Success);
+                    else
+                    {
+                        foreach (var error in (response?.Errors ?? new List<string>()))
+                        {
+                            Snackbar.Add(error, Severity.Error);
+                        }
+                    }
+                }
+                else if (States.Delete == State)
+                {
+                    var response = await _service.RemoveAsync(Model);
+                    if (response?.IsSuccessful ?? false)
+                        Snackbar.Add("Artículo eliminado con éxito.", Severity.Success);
+                    else
+                    {
+                        foreach (var error in (response?.Errors ?? new List<string>()))
+                        {
+                            Snackbar.Add(error, Severity.Error);
+                        }
+                    }
+                }
                 _processing = false;
-                Dialog.Close(DialogResult.Ok(JsonConvert.DeserializeObject<ActionResponse<PurchaseArticles>>(response)));
+                Dialog.Close();
             }
             else
             {

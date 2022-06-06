@@ -1,7 +1,4 @@
-﻿@inject IProjectsService _projectsService
-@inject IProjectProductsService _productsService
-
-<MudDialog>
+﻿<MudDialog>
     <TitleContent>
         <MudText Typo="Typo.h6">
             <MudIcon Icon="@TitleIcon" /> @Title
@@ -10,13 +7,13 @@
     <DialogContent>
         @if (_processing)
         {
-            <MudProgressCircular Class="m-sm-n1" Size="Size.Large" Indeterminate="true" />
+            <MudProgressCircular Class="m-sm-n1" Size="Size.Large" Indeterminate />
             <MudText Class="m-sm-2">Esperando respuesta de servidor...</MudText>
         }
         else
         {
             <MudContainer Style="max-height: 500px; overflow-y: scroll;">
-                @if (States.Delete == (States)State)
+                @if (States.Delete == State)
                 {
                     <div class="form-group">
                         <MudText Typo="Typo.subtitle1" Align="Align.Center">
@@ -25,7 +22,7 @@
                     </div>
                 }
                 <MudForm Model="Model" @ref="Form">
-                    @if ((int)States.Add == State)
+                    @if (States.Add == State)
                     {
                         <div class="form-group">
                             @if (SearchForCode)
@@ -55,29 +52,29 @@
                     {
                         <div class="form-group">
                             <MudText Typo="Typo.subtitle1">
-                                Código de producto: @Model.Product.Code
+                                Código de producto: @(ModelView?.ProductCode)
                             </MudText>
                         </div>
                         <div class="form-group">
-                            <MudTextField T="string" Text="@Model.Product.Description" Label="Descripción"
-                                          Lines="5" ReadOnly Required="false" Variant="Variant.Outlined"/>
+                            <MudTextField T="string" Text="@(ModelView?.ProductDescription)" Label="Descripción"
+                                          Lines="5" ReadOnly Variant="Variant.Outlined"/>
                         </div>
                     }
                     <div class="form-group">
                         <MudNumericField T="int" @bind-Value="Model.Quantity" Label="Cantidad"
-                                         Min="1" Step="1" Required="true" ReadOnly="@Disabled"
+                                         Min="1" Step="1" Required ReadOnly="@Disabled"
                                          RequiredError="Inserte cantidad" Variant="Variant.Outlined"/>
                     </div>
                     <div class="form-group">
                         <MudNumericField T="double" @bind-Value="Model.SalePrice" Label="Precio de venta"
-                                         Min="0.0" HideSpinButtons="true" Adornment="Adornment.Start"
+                                         Min="0.0" HideSpinButtons Adornment="Adornment.Start"
                                          AdornmentIcon="@Icons.Material.Filled.AttachMoney"
-                                         Required="true" ReadOnly="@Disabled" Variant="Variant.Outlined"
+                                         Required ReadOnly="@Disabled" Variant="Variant.Outlined"
                                          RequiredError="Inserte precio de venta"/>
                     </div>
                     <div class="form-group">
                         <MudTextField T="string" @bind-Value="Model.Observations" Label="Observaciones"
-                                      Required="false" ReadOnly="@Disabled" Lines="5" Variant="Variant.Outlined"/>
+                                      ReadOnly="@Disabled" Lines="5" Variant="Variant.Outlined"/>
                     </div>
                 </MudForm>
             </MudContainer>
@@ -85,7 +82,7 @@
     </DialogContent>
     <DialogActions>
         <MudButton Variant="Variant.Text" Class="mx-1"
-                   OnClick="() => Dialog.Cancel()" Disabled="_processing">
+                   OnClick="() => Dialog?.Cancel()" Disabled="_processing">
             Cerrar
         </MudButton>
         <MudButton Variant="Variant.Filled" Color="@ButtonColor" Class="mx-1"

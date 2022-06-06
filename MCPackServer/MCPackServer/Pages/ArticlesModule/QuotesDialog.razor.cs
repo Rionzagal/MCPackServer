@@ -12,21 +12,24 @@ namespace MCPackServer.Pages.ArticlesModule
 
         #region Parameters
         [CascadingParameter]
+        #pragma warning disable CS8618 // Un campo que no acepta valores NULL debe contener un valor distinto de NULL al salir del constructor. Considere la posibilidad de declararlo como que admite un valor NULL.
         public MudDialogInstance Dialog { get; set; }
+        #pragma warning restore CS8618 // Un campo que no acepta valores NULL debe contener un valor distinto de NULL al salir del constructor. Considere la posibilidad de declararlo como que admite un valor NULL.
         [Parameter]
         public States State { get; set; }
         [Parameter]
-        public Quotes Model { get; set; }
+        public QuotesView? ModelView { get; set; }
         [Parameter]
-        public object ArticleId { get; set; }
+        public int? ArticleId { get; set; }
         #endregion
 
         #region Dialog variables
-        private string Title;
-        private string TitleIcon;
+        private string Title = string.Empty;
+        private string TitleIcon = string.Empty;
         private bool Disabled;
         private Color ButtonColor;
         private bool _processing = false;
+        private Quotes Model = new();
         #endregion
 
         #region API elements
@@ -36,7 +39,6 @@ namespace MCPackServer.Pages.ArticlesModule
 
         protected override async Task OnInitializedAsync()
         {
-
             if (States.Add == State) //representing an Add dialog
             {
                 Title = "Añadir nueva cotización";
@@ -62,24 +64,61 @@ namespace MCPackServer.Pages.ArticlesModule
             {
                 Dialog.Cancel();
             }
+            _ = await ProvidersServerReload(string.Empty);
+            if (null != ModelView)
+                Model = await _service.GetByKeyAsync<Quotes>(ModelView.Id);
+            else
+                Model.ArticleId = ArticleId ?? 0;
         }
 
         private async Task Submit()
         {
             _processing = true;
-            string response = string.Empty;
             await Form.Validate();
             if (Form.IsValid)
             {
                 if (States.Delete != State) Model.DateUpdated = DateTime.Now;
                 if (States.Add == State)
-                    response = JsonConvert.SerializeObject(await _quotesService.AddAsync(Model));
+                {
+                    var response = await _service.AddAsync(Model);
+                    if (response.IsSuccessful)
+                        Snackbar.Add("Cotización añadida con éxito.", Severity.Success);
+                    else
+                    {
+                        foreach (var error in response.Errors)
+                        {
+                            Snackbar.Add(error, Severity.Error);
+                        }
+                    }
+                }
                 else if (States.Edit == State)
-                    response = JsonConvert.SerializeObject(await _quotesService.UpdateAsync(Model));
+                {
+                    var response = await _service.UpdateAsync(Model);
+                    if (response.IsSuccessful)
+                        Snackbar.Add("Cotización editada con éxito.", Severity.Success);
+                    else
+                    {
+                        foreach (var error in response.Errors)
+                        {
+                            Snackbar.Add(error, Severity.Error);
+                        }
+                    }
+                }
                 else if (States.Delete == State)
-                    response = JsonConvert.SerializeObject(await _quotesService.RemoveAsync(Model));
+                {
+                    var response = await _service.RemoveAsync(Model);
+                    if (response.IsSuccessful)
+                        Snackbar.Add("Cotización eliminada con éxito.", Severity.Success);
+                    else
+                    {
+                        foreach (var error in response.Errors)
+                        {
+                            Snackbar.Add(error, Severity.Error);
+                        }
+                    }
+                }
                 _processing = false;
-                Dialog.Close(DialogResult.Ok(JsonConvert.DeserializeObject<ActionResponse<Quotes>>(response)));
+                Dialog.Close();
             }
             else
             {
@@ -99,7 +138,7 @@ namespace MCPackServer.Pages.ArticlesModule
             {
                 Where = filters
             };
-            var items = await _providersService.GetForGridAsync<Providers>(request);
+            var items = await _service.GetForGridAsync<Providers>(request);
             if (null != items)
             {
                 Providers = items.ToList();
@@ -110,7 +149,7 @@ namespace MCPackServer.Pages.ArticlesModule
 
         private string GetProviderName(int Id)
         {
-            string name = "";
+            string name = string.Empty;
             if (0 != Id)
             {
                 var match = Providers.FirstOrDefault(p => Id == p.Id);

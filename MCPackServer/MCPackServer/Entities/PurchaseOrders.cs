@@ -37,7 +37,6 @@ namespace MCPackServer.Entities
         public string Observations { get; set; }
         [StringLength(50)]
         public string OrderNumber { get; set; }
-        public Requisitions? Requisition { get; set; }
 
         [ForeignKey(nameof(ProjectId))]
         [InverseProperty(nameof(Projects.PurchaseOrders))]
@@ -45,6 +44,7 @@ namespace MCPackServer.Entities
         [ForeignKey(nameof(ProviderId))]
         [InverseProperty(nameof(Providers.PurchaseOrders))]
         public virtual Providers Provider { get; set; }
+        public virtual Requisitions Requisition { get; set; }
         [InverseProperty("PurchaseOrder")]
         public virtual ICollection<ArticlesToPurchase> ArticlesToPurchase { get; set; }
     }

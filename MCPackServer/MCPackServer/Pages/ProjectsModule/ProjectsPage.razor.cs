@@ -22,8 +22,8 @@ namespace MCPackServer.Pages.ProjectsModule
         DialogParameters Parameters = new();
         #endregion
         #region MudTables
-        MudTable<Projects> ProjectsTable = new();
-        MudTable<ProjectProducts> ProductsTable = new();
+        MudTable<ProjectsView> ProjectsTable = new();
+        MudTable<ProjectProductsView> ProductsTable = new();
         #endregion
         #region Tabs and properties
         MudTabs ProjectsInformationTabs = new();
@@ -39,9 +39,9 @@ namespace MCPackServer.Pages.ProjectsModule
         #endregion
 
         #region Entities and models
-        Projects SelectedProject = new();
+        ProjectsView SelectedProject = new();
         double subtotal = 0f, tax = 0f, total = 0f, commission = 0f, discount = 0f;
-        List<ProjectProducts> SelectedProducts = new();
+        List<ProjectProductsView> SelectedProducts = new();
         List<Clients> ClientsList = new();
         #endregion
 
@@ -63,13 +63,13 @@ namespace MCPackServer.Pages.ProjectsModule
 
         #region Projects related methods
         #region Projects table related methods
-        private async Task<TableData<Projects>> ProjectsServerReload(TableState state)
+        private async Task<TableData<ProjectsView>> ProjectsServerReload(TableState state)
         {
             List<WhereFilter> filters = new()
             {
-                new WhereFilter { Field = nameof(Projects.ClientId), Value = ClientIdFilter.HasValue ? ClientIdFilter.Value.ToString() : string.Empty },
-                new WhereFilter { Field = nameof(Projects.ProjectNumber), Value = NumberFilter ?? string.Empty },
-                new WhereFilter { Field = nameof(Projects.Type), Value = TypeFilter ?? string.Empty }
+                new WhereFilter { Field = nameof(ProjectsView.ClientId), Value = ClientIdFilter?.ToString() ?? string.Empty },
+                new WhereFilter { Field = nameof(ProjectsView.ProjectNumber), Value = NumberFilter ?? string.Empty },
+                new WhereFilter { Field = nameof(ProjectsView.Type), Value = TypeFilter ?? string.Empty }
             };
             DataManagerRequest request = new()
             {
@@ -79,19 +79,18 @@ namespace MCPackServer.Pages.ProjectsModule
             };
             string field = state.SortLabel ?? "Id";
             string order = state.SortDirection == SortDirection.Ascending ? "ASC" : "DESC";
-            var items = await _projectsService.GetForGridAsync<Projects>(request, field, order);
-            int? count = await _projectsService.GetTotalCountAsync<Projects>(request);
-            return new TableData<Projects>
+            var items = await _service.GetForGridAsync<ProjectsView>(request, field, order);
+            int? count = await _service.GetTotalCountAsync<ProjectsView>(request);
+            return new TableData<ProjectsView>
             {
-                Items = items ?? new List<Projects>(),
+                Items = items ?? new List<ProjectsView>(),
                 TotalItems = count ?? 0
             };
         }
-        private async void OnSelectedProject(TableRowClickEventArgs<Projects> args)
+        private void OnSelectedProject(TableRowClickEventArgs<ProjectsView> args)
         {
             SelectedProject = args.Item;
             VisibleProjectInformation = true;
-            SelectedProject.ProjectProducts = await ProductsServerReload(args.Item.Id);
         }
         #endregion
         #region Projects CRUD methods
@@ -99,30 +98,17 @@ namespace MCPackServer.Pages.ProjectsModule
         {
             Parameters = new()
             {
-                ["State"] = ProjectsDialog.States.Add,
-                ["Model"] = new Projects()
-                {
-                    Type = "Proyecto",
-                    AdmissionDate = DateTime.Today,
-                    CommitmentDate = DateTime.Today,
-                    DeliveryDate = DateTime.Today
-                }
+                ["State"] = ProjectsDialog.States.Add
             };
             var dialog = Dialogs.Show<ProjectsDialog>("Añadir nuevo proyecto", Parameters);
             var result = await dialog.Result;
             if (!result.Cancelled)
             {
-                ActionResponse<Projects> response = (ActionResponse<Projects>)result.Data;
-                if (response.IsSuccessful)
-                {
-                    Snackbar.Add("Proyecto añadido con éxito.", Severity.Success);
-                }
-                else
-                {
-                    Snackbar.Add("Error al añadir proyecto.", Severity.Error);
-                    response.Errors.ForEach(e => Console.WriteLine(e));
-                }
                 await ProjectsTable.ReloadServerData();
+                DataManagerRequest dm = new() { Take = 1 };
+                var projects = await _service.GetForGridAsync<ProjectsView>(dm, "Id", order: "DESC");
+                SelectedProject = projects?.First() ?? new();
+                VisibleProjectInformation = SelectedProject.Id != 0;
             }
         }
         private async Task EditProject()
@@ -130,25 +116,14 @@ namespace MCPackServer.Pages.ProjectsModule
             Parameters = new()
             {
                 ["State"] = ProjectsDialog.States.Edit,
-                ["Model"] = SelectedProject
+                ["ModelView"] = SelectedProject
             };
             var dialog = Dialogs.Show<ProjectsDialog>("Editar proyecto", Parameters);
             var result = await dialog.Result;
             if (!result.Cancelled)
             {
-                ActionResponse<Projects> response = (ActionResponse<Projects>)result.Data;
-                if (response.IsSuccessful)
-                {
-                    VisibleProjectInformation = false;
-                    SelectedProject = new();
-                    Snackbar.Add("Proyecto editado con éxito.", Severity.Success);
-                }
-                else
-                {
-                    Snackbar.Add("Error al editar proyecto.", Severity.Error);
-                    response.Errors.ForEach(e => Console.WriteLine(e));
-                }
                 await ProjectsTable.ReloadServerData();
+                SelectedProject = ProjectsTable.Items.Single(p => p.Id == SelectedProject.Id);
             }
         }
         private async Task DeleteProject()
@@ -156,24 +131,14 @@ namespace MCPackServer.Pages.ProjectsModule
             Parameters = new()
             {
                 ["State"] = ProjectsDialog.States.Delete,
-                ["Model"] = SelectedProject
+                ["ModelView"] = SelectedProject
             };
             var dialog = Dialogs.Show<ProjectsDialog>("Eliminar proyecto", Parameters);
             var result = await dialog.Result;
             if (!result.Cancelled)
             {
-                ActionResponse<Projects> response = (ActionResponse<Projects>)result.Data;
-                if (response.IsSuccessful)
-                {
-                    VisibleProjectInformation = false;
-                    SelectedProject = new();
-                    Snackbar.Add("Proyecto eliminado con éxito.", Severity.Info);
-                }
-                else
-                    {
-                    Snackbar.Add("Error al eliminar proyecto.", Severity.Error);
-                    response.Errors.ForEach(e => Console.WriteLine(e));
-                }
+                VisibleProjectInformation = false;
+                SelectedProject = new();
                 await ProjectsTable.ReloadServerData();
             }
         }
@@ -182,17 +147,22 @@ namespace MCPackServer.Pages.ProjectsModule
 
         #region Products related methods
         #region Products table related methdos
-        private async Task<ICollection<ProjectProducts>> ProductsServerReload(int? ProjectId)
+        private async Task<TableData<ProjectProductsView>> ProductsServerReload(TableState state)
         {
             List<WhereFilter> filters = new()
             {
-                new WhereFilter { Field = "ProjectId", Value = ProjectId.HasValue ? ProjectId.Value.ToString() : string.Empty }
+                new WhereFilter { Field = nameof(ProjectProducts.ProjectId), Value = SelectedProject.Id.ToString() }
             };
             DataManagerRequest request = new()
             {
+                Take = state.PageSize,
+                Skip = state.PageSize * state.Page,
                 Where = filters
             };
-            var items = await _productsService.GetForGridAsync<ProjectProducts>(request, "ProductId");
+            string field = state.SortLabel ?? nameof(ProjectProductsView.ProductId);
+            string order = state.SortDirection == SortDirection.Ascending ? "ASC" : "DESC";
+            var items = await _service.GetForGridAsync<ProjectProductsView>(request, field, order);
+            int? count = await _service.GetTotalCountAsync<ProjectProductsView>(request, nameof(ProjectProductsView.ProductId));
             if (null != items)
             {
                 subtotal = 0f;
@@ -203,12 +173,15 @@ namespace MCPackServer.Pages.ProjectsModule
                 discount = SelectedProject.Discount * subtotal;
                 tax = (1 == SelectedProject.HasTaxes) ? (subtotal - discount) * 0.16f : 0f;
                 total = subtotal - discount + tax;
-                return items.ToList();
             }
-            return new List<ProjectProducts>();
+            return new TableData<ProjectProductsView>()
+            {
+                Items = items,
+                TotalItems = count ?? 0
+            };
         }
 
-        private void OnSelectedProduct(TableRowClickEventArgs<ProjectProducts> args)
+        private void OnSelectedProduct(TableRowClickEventArgs<ProjectProductsView> args)
         {
             var selectedId = args.Item.ProductId;
             if (!SelectedProducts.Any(p => selectedId == p.ProductId))
@@ -224,73 +197,43 @@ namespace MCPackServer.Pages.ProjectsModule
             Parameters = new()
             {
                 ["State"] = ProjectProductsDialog.States.Add,
-                ["Model"] = new ProjectProducts { ProjectId = SelectedProject.Id }
+                ["ProjectId"] = SelectedProject.Id
             };
             var dialog = Dialogs.Show<ProjectProductsDialog>("Añadir producto", Parameters);
             var result = await dialog.Result;
             if (!result.Cancelled)
             {
-                ActionResponse<ProjectProducts> response = (ActionResponse<ProjectProducts>)result.Data;
-                if (response.IsSuccessful)
-                {
-                    Snackbar.Add("Producto añadido con éxito.", Severity.Success);
-                }
-                else
-                {
-                    Snackbar.Add("Error al añadir producto.", Severity.Error);
-                    response.Errors.ForEach(e => Console.WriteLine(e));
-                }
-                SelectedProject.ProjectProducts = await ProductsServerReload(SelectedProject.Id);
+                await ProductsTable.ReloadServerData();
             }
         }
-        private async Task EditProduct(ProjectProducts product)
+        private async Task EditProduct(ProjectProductsView product)
         {
             Parameters = new()
             {
                 ["State"] = ProjectProductsDialog.States.Edit,
-                ["Model"] = product
+                ["ModelView"] = product
             };
             var dialog = Dialogs.Show<ProjectProductsDialog>("Editar producto", Parameters);
             var result = await dialog.Result;
             if (!result.Cancelled)
             {
-                ActionResponse<ProjectProducts> response = (ActionResponse<ProjectProducts>)result.Data;
-                if (response.IsSuccessful)
-                {
-                    RemoveTab(selectedProduct: product);
-                    SelectedProject.ProjectProducts = await ProductsServerReload(SelectedProject.Id);
-                    Snackbar.Add("Producto editado con éxito.", Severity.Success);
-                }
-                else
-                {
-                    Snackbar.Add("Error al editar producto.", Severity.Error);
-                    response.Errors.ForEach(e => Console.WriteLine(e));
-                }
+                RemoveTab(selectedProduct: product);
+                await ProductsTable.ReloadServerData();
             }
         }
-        private async Task DeleteProduct(ProjectProducts product)
+        private async Task DeleteProduct(ProjectProductsView product)
         {
             Parameters = new()
             {
                 ["State"] = ProjectProductsDialog.States.Delete,
-                ["Model"] = product
+                ["ModelView"] = product
             };
             var dialog = Dialogs.Show<ProjectProductsDialog>("Eliminar producto", Parameters);
             var result = await dialog.Result;
             if (!result.Cancelled)
             {
-                ActionResponse<ProjectProducts> response = (ActionResponse<ProjectProducts>)result.Data;
-                if (response.IsSuccessful)
-                {
-                    RemoveTab(selectedProduct: product);
-                    SelectedProject.ProjectProducts = await ProductsServerReload(SelectedProject.Id);
-                    Snackbar.Add("Producto eliminado con éxito", Severity.Info);
-                }
-                else
-                {
-                    Snackbar.Add("Error al eliminar el producto", Severity.Error);
-                    response.Errors.ForEach(e => Console.WriteLine(e));
-                }
+                RemoveTab(selectedProduct: product);
+                await ProductsTable.ReloadServerData();
             }
         }
         #endregion
@@ -318,7 +261,7 @@ namespace MCPackServer.Pages.ProjectsModule
             }
             return result;
         }
-        private void RemoveTab(MudTabPanel? tabPanel = null, ProjectProducts? selectedProduct = null)
+        private void RemoveTab(MudTabPanel? tabPanel = null, ProjectProductsView? selectedProduct = null)
         {
             int? Id = (null != tabPanel) ? (int)tabPanel.Tag : null;
             var product = selectedProduct ?? SelectedProducts.First(p => Id == p.ProductId);

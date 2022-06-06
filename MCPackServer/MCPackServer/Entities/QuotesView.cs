@@ -41,5 +41,6 @@ namespace MCPackServer.Entities
         [StringLength(10)]
         public string Currency { get; set; }
         public DateTime DateUpdated { get; set; }
+        public double ProviderDiscount { get; set; }
     }
 }

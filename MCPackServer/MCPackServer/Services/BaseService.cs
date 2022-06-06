@@ -110,14 +110,14 @@ namespace MCPackServer.Services
             return await conn.QueryAsync<T>(query, parameters);
         }
 
-        public virtual async Task<int?> GetTotalCountAsync<T>(DataManagerRequest request) where T : class
+        public virtual async Task<int?> GetTotalCountAsync<T>(DataManagerRequest request, string countField = "Id") where T : class
         {
             using IDbConnection conn = Connection;
             var instance = Activator.CreateInstance(typeof(T));
             string tableName = instance.GetType().Name;
             DynamicParameters parameters = new();
             List<KeyValuePair<string, string>> whereValues = CheckFilters(request.Where);
-            string query = $"SELECT COUNT(Id) FROM {tableName} ";
+            string query = $"SELECT COUNT({countField}) FROM {tableName} ";
             if (whereValues.Any())
             {
                 string where = "WHERE ";

@@ -18,11 +18,13 @@ namespace MCPackServer.Pages.ProjectsModule
 
         #region Parameters
         [CascadingParameter]
-        public MudDialogInstance Dialog { get; set; }
+        public MudDialogInstance? Dialog { get; set; }
         [Parameter]
         public States State { get; set; }
         [Parameter]
-        public ProjectProducts Model { get; set; }
+        public ProjectProductsView? ModelView { get; set; }
+        [Parameter]
+        public int? ProjectId { get; set; }
         #endregion
 
         #region Dialog variables
@@ -35,10 +37,12 @@ namespace MCPackServer.Pages.ProjectsModule
         #endregion
 
         #region API elements
-        private MudForm Form;
+        private MudForm Form = new();
         private List<MCProducts> ProductsList = new();
-        private List<ProjectProducts> projectProducts = new();
+        private List<ProjectProductsView> projectProducts = new();
         #endregion
+
+        private ProjectProducts Model = new();
 
         protected override async Task OnInitializedAsync()
         {
@@ -64,23 +68,81 @@ namespace MCPackServer.Pages.ProjectsModule
                 Disabled = true;
                 ButtonColor = Color.Error;
             }
-            else Dialog.Cancel();
+            else 
+                Dialog?.Cancel();
+            if (null != ModelView)
+            {
+                //var propertes = typeof(ProjectProducts).GetProperties()
+                //    .Where(p => p.GetAccessors()[0].IsFinal || !p.GetAccessors()[0].IsVirtual)
+                //    .ToList();
+                //foreach (var item in propertes)
+                //{
+                //    var value = item.GetValue(ModelView);
+                //    if (null != value)
+                //        item.SetValue(Model, value);
+                //}
+                DataManagerRequest dm = new()
+                {
+                    Take = 1,
+                    Skip = 0,
+                    Where = new List<WhereFilter>
+                    {
+                        new WhereFilter { Field = nameof(Entities.ProjectProducts.ProjectId), Value = ModelView.ProjectId.ToString() },
+                        new WhereFilter { Field = nameof(Entities.ProjectProducts.ProductId), Value = ModelView.ProductId.ToString() }
+                    }
+                };
+                Model = (await _service.GetForGridAsync<ProjectProducts>(dm, "ProductId")).First();
+            }
+            else if (ProjectId.HasValue)
+                Model.ProjectId = ProjectId.Value;
         }
 
         private async Task Submit()
         {
             _processing = true;
-            string response = string.Empty;
             await Form.Validate();
             if (Form.IsValid)
             {
-                if (States.Add == State) 
-                    response = JsonConvert.SerializeObject(await _productsService.AddAsync(Model));
-                else if (States.Edit == State) 
-                    response = JsonConvert.SerializeObject(await _productsService.UpdateAsync(Model));
-                else if (States.Delete == State) 
-                    response = JsonConvert.SerializeObject(await _productsService.RemoveAsync(Model));
-                Dialog.Close(DialogResult.Ok(JsonConvert.DeserializeObject<ActionResponse<ProjectProducts>>(response)));
+                if (States.Add == State)
+                {
+                    var response = await _service.AddAsync(Model);
+                    if (response.IsSuccessful)
+                        Snackbar.Add("Producto añadido exitosamente al proyecto.", Severity.Success);
+                    else
+                    {
+                        foreach (var error in response.Errors)
+                        {
+                            Snackbar.Add(error, Severity.Error);
+                        }
+                    }
+                }
+                else if (States.Edit == State)
+                {
+                    var response = await _service.UpdateAsync(Model);
+                    if (response.IsSuccessful)
+                        Snackbar.Add("Producto editado exitosamente en el proyecto.", Severity.Success);
+                    else
+                    {
+                        foreach (var error in response.Errors)
+                        {
+                            Snackbar.Add(error, Severity.Error);
+                        }
+                    }
+                }
+                else if (States.Delete == State)
+                {
+                    var response = await _service.RemoveAsync(Model);
+                    if (response.IsSuccessful)
+                        Snackbar.Add("Producto eliminado exitosamente del proyecto.", Severity.Success);
+                    else
+                    {
+                        foreach (var error in response.Errors)
+                        {
+                            Snackbar.Add(error, Severity.Error);
+                        }
+                    }
+                }
+                Dialog?.Close();
             }
             else
             {
@@ -122,8 +184,9 @@ namespace MCPackServer.Pages.ProjectsModule
                     new WhereFilter { Field = "ProjectId", Value = Model.ProjectId.ToString() }
                 }
             };
-            var response = await _productsService.GetForGridAsync<ProjectProducts>(dm, "ProductId");
-            if (null != response) projectProducts = response.ToList();
+            var response = await _service.GetForGridAsync<ProjectProductsView>(dm, "ProductId");
+            if (null != response) 
+                projectProducts = response.ToList();
         }
 
         private string GetProductCode(int Id)

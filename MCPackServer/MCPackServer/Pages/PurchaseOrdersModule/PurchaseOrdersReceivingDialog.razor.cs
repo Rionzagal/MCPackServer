@@ -10,30 +10,38 @@ namespace MCPackServer.Pages.PurchaseOrdersModule
     {
         #region Parameters
         [CascadingParameter]
-        public MudDialogInstance Dialog { get; set; }
+        public MudDialogInstance? Dialog { get; set; }
         [Parameter]
         public int State { get; set; }
         [Parameter]
-        public PurchaseOrders Model { get; set; }
+        public int? Id { get; set; }
         #endregion
 
         #region Dialog variables
-        private string Title;
-        private string TitleIcon;
+        private string Title = string.Empty;
+        private string TitleIcon = string.Empty;
         private bool Disabled;
         private Color ButtonColor;
         private bool _processing = false;
         #endregion
 
         #region API elements
-        private MudForm Form;
-        private List<Providers> providers = new();
-        private List<Projects> projects = new();
-        private List<Requisitions> requisitions = new();
+        private MudForm Form = new();
+        private PurchaseOrders Model = new();
+        private PurchaseOrdersView ModelView = new();
+        private HashSet<ArticlesToPurchaseView> SelectedArticles = new();
         #endregion
 
         protected override async Task OnInitializedAsync()
         {
+            if (Id.HasValue)
+            {
+                Model = await _service.GetByKeyAsync<PurchaseOrders>(Id.Value);
+                ModelView = await _service.GetByKeyAsync<PurchaseOrdersView>(Id.Value);
+            }
+            else
+                Dialog?.Cancel();
+
             if (0 != Model.Id) //representing a Delete dialog
             {
                 Title = $"Marcar orden: {Model.Id} como entregada";
@@ -45,7 +53,7 @@ namespace MCPackServer.Pages.PurchaseOrdersModule
             }
             else //should not get to this option
             {
-                Dialog.Cancel();
+                Dialog?.Cancel();
             }
         }
 
@@ -57,13 +65,13 @@ namespace MCPackServer.Pages.PurchaseOrdersModule
             if (Form.IsValid)
             {
                 int SuccessfulArticleResponse = 0;
-                var response = await _ordersService.UpdateAsync(Model);
+                var response = await _service.UpdateAsync(Model);
                 if (response.IsSuccessful)
                 {
                     foreach (var item in Model.ArticlesToPurchase)
                     {
                         item.EntryDate = DateTime.Now;
-                        var ArticleResponse = await _articlesService.UpdateAsync(item);
+                        var ArticleResponse = await _service.UpdateAsync(item);
                         POArticlesResponses.Add(ArticleResponse);
                         if (ArticleResponse.IsSuccessful) SuccessfulArticleResponse++;
                     }
@@ -75,13 +83,39 @@ namespace MCPackServer.Pages.PurchaseOrdersModule
                     OrderUpdateResponse = response,
                     ArticlesResponses = POArticlesResponses
                 };
-                Dialog.Close(DialogResult.Ok(JsonConvert.SerializeObject(result)));
+                Dialog?.Close();
             }
             else
             {
                 Snackbar.Add("Operación no válida. Revise si hay algún error en la forma.", Severity.Warning);
                 _processing = false;
             }
+        }
+
+        private async Task<TableData<ArticlesToPurchaseView>> ArticlesServerReload(TableState state)
+        {
+            List<WhereFilter> filters = new()
+            {
+                new WhereFilter{ Field = nameof(ArticlesToPurchase.PurchaseOrderId), Value = Id?.ToString() ?? string.Empty }
+            };
+            DataManagerRequest request = new()
+            {
+                Take = state.PageSize,
+                Skip = state.Page * state.PageSize,
+                Where = filters
+            };
+            string field = state.SortLabel ?? nameof(ArticlesToPurchase.QuoteId);
+            string order = state.SortDirection == SortDirection.Ascending ? "ASC" : "DESC";
+            var items = (await _service.GetForGridAsync<ArticlesToPurchaseView>(request, field, order)).ToList()
+                ?? new List<ArticlesToPurchaseView>();
+            int? count = await _service.GetTotalCountAsync<ArticlesToPurchaseView>(request, nameof(ArticlesToPurchaseView.QuoteId));
+            if (items.Any())
+                items.RemoveAll(i => i.EntryDate.HasValue);
+            return new TableData<ArticlesToPurchaseView>()
+            {
+                Items = items,
+                TotalItems = count ?? 0
+            };
         }
     }
 }
