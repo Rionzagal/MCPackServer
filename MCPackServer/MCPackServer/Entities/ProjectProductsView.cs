@@ -13,18 +13,20 @@ namespace MCPackServer.Entities
     {
         public int ProductId { get; set; }
         public int ProjectId { get; set; }
-        public double SalePrice { get; set; }
+        public float SalePrice { get; set; }
         public int Quantity { get; set; }
+        [StringLength(250)]
         public string Observations { get; set; }
+        [Required]
         [StringLength(20)]
         public string ProjectNumber { get; set; }
         [Required]
         [StringLength(50)]
         public string ProductType { get; set; }
-        [StringLength(100)]
+        [StringLength(250)]
         public string ProductDescription { get; set; }
         [Required]
-        [StringLength(50)]
+        [StringLength(20)]
         public string ProductCode { get; set; }
         [Required]
         [StringLength(50)]

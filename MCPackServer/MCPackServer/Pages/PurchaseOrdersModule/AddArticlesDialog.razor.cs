@@ -2,6 +2,7 @@
 using MCPackServer.Models;
 using MCPackServer.Services.Interfaces;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Web;
 using MudBlazor;
 using System.Text.Json;
 
@@ -13,139 +14,186 @@ namespace MCPackServer.Pages.PurchaseOrdersModule
 
         #region Parameters
         [CascadingParameter]
-        public MudDialogInstance Dialog { get; set; }
+        public MudDialogInstance? Dialog { get; set; }
         [Parameter]
         public States State { get; set; }
         [Parameter]
-        public PurchaseOrders Reference { get; set; }
+        public int? OrderId { get; set; }
         #endregion
 
-        private class ArticleModels : ArticlesToPurchase
-        {
-            private readonly ISnackbar _snackbar;
-            private readonly IQuotesService _quotesService;
-
-            public ArticleModels(Quotes quote, ArticleFamilies family, ISnackbar snackbar, IQuotesService quotesService)
-            {
-                _snackbar = snackbar;
-                _quotesService = quotesService;
-                Family = family;
-                Quote = quote;
-                QuoteId = quote.Id;
-                SalePrice = quote.Price;
-                Quote.Article.Code = $"{family.Group.Code}-{family.Code}-{quote.Article.Code}";
-                MustUpdateQuote = (1 == family.Group.HasVariablePrice) & DateTime.Today != quote.DateUpdated.Date;
-            }
-            public ArticleFamilies Family { get; set; }
-            public bool MustUpdateQuote { get; private set; }
-            public bool UpdateQuote { get; set; }
-            public bool QuoteUpdated { get; private set; }
-            public async Task ServerUpdateQuote()
-            {
-                if (!QuoteUpdated)
-                {
-                    Quote.Price = SalePrice;
-                    Quote.DateUpdated = DateTime.Now;
-                    var response = await _quotesService.UpdateAsync(Quote);
-                    if (response.IsSuccessful)
-                    {
-                        _snackbar.Add("Cotización actualizada con éxito", Severity.Success);
-                        QuoteUpdated = true;
-                        UpdateQuote = false;
-                        MustUpdateQuote = false;
-                    }
-                    else
-                        _snackbar.Add("Error al actualizar cotización", Severity.Error);
-                }
-            }
-        }
-
         #region Dialog variables
-        private string Title;
-        private string TitleIcon;
+        private string Title = string.Empty;
+        private string TitleIcon = string.Empty;
         private bool Disabled;
         private Color ButtonColor;
         private bool _processing = false;
         #endregion
 
-        #region API elements
-        private List<ArticleModels> articles = new();
-        private HashSet<ArticlesToPurchase> OrderArticles = new();
-        private HashSet<ArticleModels> SelectedArticles = new();
-        private List<ArticleFamilies> Families = new();
+        private class OrderArticles : QuotesView
+        {
+            private readonly ISnackbar _snackbar;
+            private readonly IBaseService _service;
+
+            public OrderArticles(QuotesView quote, ISnackbar snackbar, IBaseService service)
+            {
+                _snackbar = snackbar;
+                _service = service;
+
+                var properties = quote.GetType().GetProperties()
+                    .Where(p => p.GetAccessors()[0].IsFinal || !p.GetAccessors()[0].IsVirtual);
+                foreach (var item in properties)
+                {
+                    var value = item.GetValue(quote);
+                    item.SetValue(this, value);
+                }
+                MustUpdateQuote = quote.MustQuoteDaily && (DateTime.Today != quote.DateUpdated.Date);
+            }
+            public int Quantity { get; set; }
+            public bool MustUpdateQuote { get; private set; }
+            public bool UpdateFlag { get; set; }
+            public bool QuoteUpdated { get; private set; }
+            public async Task Update()
+            {
+                if (!QuoteUpdated)
+                {
+                    Quotes payload = new()
+                    {
+                        Id = Id,
+                        ArticleId = ArticleId,
+                        Price = Price,
+                        ProviderId = ProviderId,
+                        Currency = Currency,
+                        SKU = SKU,
+                        DateUpdated = DateTime.Now
+                    };
+                    var response = await _service.UpdateAsync(payload);
+                    if (response.IsSuccessful)
+                    {
+                        DateUpdated = payload.DateUpdated;
+                        UpdateFlag = false;
+                        QuoteUpdated = true;
+                        MustUpdateQuote = false;
+                        _snackbar.Add("Cotización actualizada con éxito.", Severity.Success);
+                    }
+                    else
+                        foreach (var item in response.Errors)
+                        {
+                            _snackbar.Add(item, Severity.Error);
+                        }
+                }
+            }
+        }
+
+        #region Models
+        private List<OrderArticles> TableArticles = new();
+        private HashSet<OrderArticles> SelectedArticles = new();
+        private PurchaseOrdersView Reference = new();
+        private Providers OrderProvider = new();
+        private List<ArticlesToPurchase> OrderedArticles = new();
+        private List<RequisitionArticles> RequestedArticles = new();
         #endregion
 
-        private MudTable<ArticleModels> ArticlesTable;
+        private MudTable<OrderArticles> ArticlesTable = new();
+        
 
         protected override async Task OnInitializedAsync()
         {
-            Title = "Añadir nuevo artículo a orden de compra";
+            if (!OrderId.HasValue)
+                Dialog?.Cancel();
+            else
+            {
+                Reference = await _service.GetByKeyAsync<PurchaseOrdersView>(OrderId, nameof(PurchaseOrdersView.Id));
+                OrderProvider = await _service.GetByKeyAsync<Providers>(Reference.ProviderId, nameof(Providers.Id));
+                DataManagerRequest request = new()
+                {
+                    Where = new()
+                    {
+                        new WhereFilter { Field = nameof(ArticlesToPurchase.PurchaseOrderId), Value = OrderId?.ToString() ?? "" }
+                    }
+                };
+                OrderedArticles = (await _service.GetForGridAsync<ArticlesToPurchase>(request,
+                    sortField: nameof(ArticlesToPurchase.QuoteId), getAll: true)).ToList();
+            }
+            Title = "Añadir artículos a orden de compra";
             TitleIcon = Icons.Material.Filled.Create;
             Disabled = false;
             ButtonColor = Color.Success;
-            OrderArticles = Reference.ArticlesToPurchase.ToHashSet();
-
-            #region Get groups and families
-            DataManagerRequest familiesRequest = new();
-            var familiesResponse = await _familiesService.GetForGridAsync<ArticleFamilies>(familiesRequest);
-            if (null != familiesResponse) Families = familiesResponse.ToList();
-            #endregion
         }
 
         private async Task Submit()
         {
             _processing = true;
-            List<ActionResponse<ArticlesToPurchase>> element = new();
+            List<ActionResponse<ArticlesToPurchase>> SuccessfulResponses = new();
+            List<ActionResponse<ArticlesToPurchase>> FailedResponses = new();
             foreach (var Model in SelectedArticles)
             {
                 ArticlesToPurchase payload = new()
                 {
                     PurchaseOrderId = Reference.Id,
-                    QuoteId = Model.QuoteId,
+                    QuoteId = Model.Id,
                     Quantity = Model.Quantity,
-                    SalePrice = Model.Quote.Price
+                    SalePrice = Model.Price
                 };
-                var response = await _articlesService.AddAsync(payload);
-                if (response.IsSuccessful) element.Add(response);
+                var response = await _service.AddAsync(payload);
+                if (response.IsSuccessful)
+                    SuccessfulResponses.Add(response);
+                else
+                    FailedResponses.Add(response);
             }
-            Dialog.Close(DialogResult.Ok(JsonSerializer.Serialize(element)));
+            if (SuccessfulResponses.Any())
+                Snackbar.Add($"{SuccessfulResponses.Count} de {SelectedArticles.Count} artículos seleccionados " +
+                    $"añadidos correctamente a la orden de compra: {Reference.OrderNumber}.", Severity.Success);
+            if (FailedResponses.Any())
+            {
+                for (int i = 0; i < FailedResponses.Count; i++)
+                {
+                    Snackbar.Add($"ERROR {i + 1} / {FailedResponses.Count}: {FailedResponses[i].Errors}", Severity.Error);
+                }
+            }
+            Dialog?.Close();
         }
 
-        private async Task<TableData<ArticleModels>> ArticlesServerReload(TableState state)
+        private async Task<TableData<OrderArticles>> ArticlesServerReload(TableState state)
         {
-            List<Quotes> quotes = new();
-            DataManagerRequest dm = new()
+            List<OrderArticles> items = new();
+            DataManagerRequest request = new()
             {
                 Take = state.PageSize,
                 Skip = state.Page * state.PageSize,
                 Where = new List<WhereFilter>()
                 {
-                    new WhereFilter { Field = "ProviderId", Value = Reference.ProviderId.ToString() },
-                    new WhereFilter { Field = "Currency", Value = Reference.Currency }
+                    new WhereFilter { Field = "ProviderId", Value = Reference?.ProviderId.ToString() ?? "" },
+                    new WhereFilter { Field = "Currency", Value = Reference?.Currency ?? "" }
                 }
             };
-            var items = await _quotesService.GetForGridAsync<Quotes>(dm, "DateUpdated", "DESC");
-            int? count = await _quotesService.GetTotalCountAsync<Quotes>(dm);
-            if (null != items) quotes = items.ToList();
-            foreach (var article in OrderArticles)
+            string sortField = state.SortLabel ?? nameof(QuotesView.DateUpdated);
+            string order = state.SortDirection == SortDirection.Ascending ? "ASC" : "DESC";
+            var response = (await _service.GetForGridAsync<QuotesView>(request, sortField, order))?
+                .ToList() ?? new List<QuotesView>();
+            response.ForEach(q => items.Add(new OrderArticles(q, Snackbar, _service)));
+            int count = await _service.GetTotalCountAsync<QuotesView>(request) ?? 0;
+            if (count > 0)
+                count -= items.RemoveAll(q => OrderedArticles.Any(a => q.Id == a.QuoteId));
+            TableArticles = items;
+            return new TableData<OrderArticles>()
             {
-                quotes.Remove(quotes.Single(q => article.QuoteId == q.Id));
-            }
-            foreach (var item in quotes)
-            {
-                if (!articles.Any(a => item.Id == a.QuoteId))
-                {
-                    articles.Add(new ArticleModels
-                        (quote: item, snackbar: Snackbar,
-                        family: Families.Single(f => item.Article.FamilyId == f.Id),
-                        quotesService: _quotesService));
-                }
-            }
-            return new TableData<ArticleModels>
-            {
-                Items = articles,
-                TotalItems = count ?? 0
+                Items = items,
+                TotalItems = count
             };
+        }
+
+        private void OnSelectedArticlesChange(HashSet<OrderArticles> articles)
+        {
+            TableArticles.ForEach(item => item.Quantity = !articles.Any(a => a.Id == item.Id) ? 0 : item.Quantity);
+        }
+
+        private void OnCommitRow(object args)
+        {
+            if (args.GetType().Name == nameof(OrderArticles))
+            {
+                var article = (OrderArticles)args;
+                SelectedArticles.Add(article);
+            }
         }
     }
 }

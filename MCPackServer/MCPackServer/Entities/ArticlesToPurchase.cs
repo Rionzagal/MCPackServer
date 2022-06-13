@@ -16,9 +16,9 @@ namespace MCPackServer.Entities
         [Key]
         public int PurchaseOrderId { get; set; }
         public int Quantity { get; set; }
-        public DateTime? EntryDate { get; set; }
+        public DateTime? ReceptionDate { get; set; }
         public DateTime? DepartureDate { get; set; }
-        public double SalePrice { get; set; }
+        public float SalePrice { get; set; }
 
         [ForeignKey(nameof(PurchaseOrderId))]
         [InverseProperty(nameof(PurchaseOrders.ArticlesToPurchase))]

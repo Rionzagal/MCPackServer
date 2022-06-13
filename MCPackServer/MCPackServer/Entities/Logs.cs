@@ -15,11 +15,11 @@ namespace MCPackServer.Entities
         public int Id { get; set; }
         [StringLength(450)]
         public string UserId { get; set; }
-        [StringLength(50)]
+        [StringLength(20)]
         public string Action { get; set; }
         [StringLength(50)]
         public string TableName { get; set; }
-        public short Succeeded { get; set; }
+        public bool Succeeded { get; set; }
         public DateTime? TimeOfAction { get; set; }
         [Required]
         public string Message { get; set; }

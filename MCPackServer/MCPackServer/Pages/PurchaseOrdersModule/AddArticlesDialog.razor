@@ -1,8 +1,4 @@
-﻿@inject IQuotesService _quotesService
-@inject IArticlesToPurchaseService _articlesService
-@inject IFamiliesService _familiesService
-
-<MudDialog>
+﻿<MudDialog>
     <TitleContent>
         <MudText Typo="Typo.h6">
             <MudIcon Icon="@TitleIcon" /> @Title
@@ -11,98 +7,116 @@
     <DialogContent>
         @if (_processing)
         {
-            <MudProgressCircular Class="m-sm-n1" Size="Size.Large" Indeterminate="true" />
+            <MudProgressCircular Class="m-sm-n1" Size="Size.Large" Indeterminate />
             <MudText Class="m-sm-2">Esperando respuesta de servidor...</MudText>
         }
         else
         {
     <MudContainer Style="max-height: 500px; overflow-y: scroll;">
-        <MudTable @ref="ArticlesTable" T="ArticleModels" MultiSelection Hover FixedHeader Height="350px"
-                  CanCancelEdit 
-                  ServerData="new Func<TableState, Task<TableData<ArticleModels>>>(ArticlesServerReload)"
-                  @bind-SelectedItems="@SelectedArticles" Class="my-3">
+        <MudTable @ref="ArticlesTable" T="OrderArticles" Items="TableArticles" ServerData="ArticlesServerReload" MultiSelection
+            SelectedItems="@SelectedArticles" SelectedItemsChanged="OnSelectedArticlesChange" IsEditRowSwitchingBlocked
+            CanCancelEdit RowEditCommit="OnCommitRow" Hover Dense FixedHeader Height="350px" Class="my-3" Striped>
             <ToolBarContent>
-                <MudText Typo="Typo.h6">Artículos cotizados</MudText>
-                <MudSpacer />
+                <MudText Typo="Typo.h6">Proveedor: @Reference.ProviderLegalName</MudText>
             </ToolBarContent>
+            <ColGroup>
+                <col />
+                <col id="code" />
+                <col id="name" />
+                <col id="sku" />
+                <col id="price" />
+                <col id="quantity" />
+                <col id="quotedate" />
+                <col id="update" />
+            </ColGroup>
             <HeaderContent>
-                <MudTh><MudTableSortLabel SortBy="new Func<ArticleModels, object>(x => x.Quote.Article.Code)" />Código</MudTh>
-                <MudTh><MudTableSortLabel SortBy="new Func<ArticleModels, object>(x => x.Quote.Article.Name)" />Nombre</MudTh>
-                <MudTh><MudTableSortLabel SortBy="new Func<ArticleModels, object>(x => x.Quote.SKU)" />SKU</MudTh>
-                <MudTh><MudTableSortLabel SortBy="new Func<ArticleModels, object>(x => x.Quote.DateUpdated)" />Fecha de cotización</MudTh>
-                <MudTh><MudTableSortLabel SortBy="new Func<ArticleModels, object>(x => x.SalePrice)" />Precio</MudTh>
-                <MudTh><MudTableSortLabel SortBy="new Func<ArticleModels, object>(x => x.Quote.Article.Unit)" />Cantidad</MudTh>
+                <MudTh>
+                    <MudTableSortLabel T="OrderArticles" SortLabel="@nameof(OrderArticles.ArticleCode)">
+                        Código
+                    </MudTableSortLabel>
+                </MudTh>
+                <MudTh>
+                    <MudTableSortLabel T="OrderArticles" SortLabel="@nameof(OrderArticles.ArticleName)">
+                        Nombre
+                    </MudTableSortLabel>
+                </MudTh>
+                <MudTh>
+                    <MudTableSortLabel T="OrderArticles" SortLabel="@nameof(OrderArticles.SKU)">
+                        SKU
+                    </MudTableSortLabel>
+                </MudTh>
+                <MudTh>
+                    <MudTableSortLabel T="OrderArticles" SortLabel="@nameof(OrderArticles.Price)">
+                        Precio
+                    </MudTableSortLabel>
+                </MudTh>
+                <MudTh>Cantidad</MudTh>
+                <MudTh>
+                    <MudTableSortLabel T="OrderArticles" SortLabel="@nameof(OrderArticles.DateUpdated)">
+                        Fecha de cotización
+                    </MudTableSortLabel>
+                </MudTh>
                 <MudTh>Actualizar cotización</MudTh>
             </HeaderContent>
             <RowTemplate>
-                <MudTd DataLabel="Código">@context.Quote.Article.Code</MudTd>
-                <MudTd DataLabel="Nombre">@context.Quote.Article.Name</MudTd>
-                <MudTd DataLabel="SKU">@(context.Quote.SKU ?? "N/A")</MudTd>
-                <MudTd DataLabel="Fecha de cotización">@context.Quote.DateUpdated.ToShortDateString()</MudTd>
-                <MudTd DataLabel="Precio">@($"${context.Quote.Price} {Reference.Currency}")</MudTd>
-                <MudTd DataLabel="Cantidad">@($"{context.Quantity} {context.Quote.Article.Unit}")</MudTd>
-                <MudTd DataLabel="Se debe actualizar cotización">
-                    <MudButton Variant="Variant.Outlined" Size="Size.Small" Disabled="(!context.MustUpdateQuote|context.QuoteUpdated)"
-                               OnClick="() => context.UpdateQuote = !context.UpdateQuote">
-                        @(!context.UpdateQuote ? "Actualizar" : "Cerrar") 
+                <MudTd DataLabel="Código">@context.ArticleCode</MudTd>
+                <MudTd DataLabel="Nombre">@context.ArticleName</MudTd>
+                <MudTd DataLabel="SKU">@(context.SKU ?? "N/A")</MudTd>
+                <MudTd DataLabel="Precio">@($"${context.Price.ToString("n2")} {Reference?.Currency}")</MudTd>
+                <MudTd DataLabel="Cantidad">@($"{context.Quantity} {context.Unit}")</MudTd>
+                <MudTd DataLabel="Fecha de cotización">@context.DateUpdated.ToShortDateString()</MudTd>
+                <MudTd DataLabel="Actualizar cotización">
+                    <MudButton Variant="Variant.Filled" Size="Size.Small" OnClick="() => context.UpdateFlag = !context.UpdateFlag"
+                        Color="Color.Primary" Disabled="@(context.DateUpdated.Date == DateTime.Today)">
+                        @((context.UpdateFlag ? "Cerrar" : "Cotizar"))
                     </MudButton>
-                </MudTd>
-                <MudTd>
                 </MudTd>
             </RowTemplate>
             <RowEditingTemplate>
-                <MudTd DataLabel="Código">@context.Quote.Article.Code</MudTd>
-                <MudTd DataLabel="Nombre">@context.Quote.Article.Name</MudTd>
-                <MudTd DataLabel="SKU">@(context.Quote.SKU ?? "N/A")</MudTd>
-                <MudTd DataLabel="Fecha de cotización">@context.Quote.DateUpdated.ToShortDateString()</MudTd>
-                <MudTd DataLabel="Precio">@($"${context.Quote.Price} {Reference.Currency}")</MudTd>
+                <MudTd DataLabel="Código">@context.ArticleCode</MudTd>
+                <MudTd DataLabel="Nombre">@context.ArticleName</MudTd>
+                <MudTd DataLabel="SKU">@(context.SKU ?? "N/A")</MudTd>
+                <MudTd DataLabel="Precio">@($"${context.Price.ToString("n2")} {Reference?.Currency}")</MudTd>
                 <MudTd DataLabel="Cantidad">
-                    <MudNumericField T="int" @bind-Value="@context.Quantity" Required Min="1"
-                                     Step="1" Adornment="Adornment.End" AdornmentText="@context.Quote.Article.Unit" />
+                    <MudNumericField T="int" @bind-Value="@context.Quantity" Required Min="1" 
+                        Adornment="Adornment.End" AdornmentText="@context.Unit" />
                 </MudTd>
-                <MudTd DataLabel="Se debe actualizar cotización">
-                </MudTd>
+                <MudTd DataLabel="Fecha de cotización">@context.DateUpdated.ToShortDateString()</MudTd>
+                <MudTd></MudTd>
             </RowEditingTemplate>
             <ChildRowContent>
-                @if (context.UpdateQuote)
-                        {
-                            <MudTr>
-                                <td colspan="7">
-                                    <MudCard Elevation="2">
-                                        <MudCardHeader>
-                                            <CardHeaderContent>
-                                                <MudText Typo="Typo.subtitle1">Actualizar la cotización de este artículo</MudText>
-                                            </CardHeaderContent>
-                                        </MudCardHeader>
-                                        <MudCardContent>
-                                            <MudGrid Style="height:100px; overflow-y:scroll; width:inherit">
-                                                <MudItem xs="6">
-                                                    <MudText Typo="Typo.subtitle2">Última fecha de cotización</MudText>
-                                                    <MudTextField Value="@context.Quote.DateUpdated.ToShortDateString()" ReadOnly />
-                                                </MudItem>
-                                                <MudItem xs="6">
-                                                    <MudText Typo="Typo.subtitle2">Moneda de cotización</MudText>
-                                                    <MudTextField Value="@context.Quote.Currency" ReadOnly />
-                                                </MudItem>
-                                                <MudItem xs="6">
-                                                    <MudText Typo="Typo.subtitle2">Precio actual de cotización</MudText>
-                                                    <MudTextField Value="@context.Quote.Price.ToString("n2")" AdornmentText="$"
-                                                                  Adornment="Adornment.Start" ReadOnly />
-                                                </MudItem>
-                                                <MudItem xs="6">
-                                                    <MudText Typo="Typo.subtitle2">Nuevo precio de cotización</MudText>
-                                                    <MudNumericField @bind-Value="@context.SalePrice" Format="N2" Required AdornmentText="$"
-                                                                     Adornment="Adornment.Start" Step="1f" />
-                                                </MudItem>
-                                            </MudGrid>
-                                        </MudCardContent>
-                                        <MudCardActions>
-                                            <MudButton Color="Color.Primary" OnClick="async () => await context.ServerUpdateQuote()">Confirmar</MudButton>
-                                        </MudCardActions>
-                                    </MudCard>
-                                </td>
-                            </MudTr>
-                        } 
+                @if (context.UpdateFlag)
+                {
+                    <td colspan="8">
+                        <MudCard Elevation="2">
+                            <MudCardHeader>
+                                <CardHeaderContent>
+                                    <MudText Typo="Typo.subtitle1">Actualizar la cotización para artículo <b>@context.ArticleCode</b></MudText>
+                                </CardHeaderContent>
+                            </MudCardHeader>
+                            <MudCardContent>
+                                <MudGrid Style="height:100px; overflow-y:scroll; width:inherit">
+                                    <MudItem xs="6">
+                                        <MudText Typo="Typo.subtitle2">Precio actual de cotización</MudText>
+                                        <MudTextField Value="@context.Price.ToString("n2")" AdornmentText="$"
+                                                        Adornment="Adornment.Start" ReadOnly />
+                                    </MudItem>
+                                    <MudItem xs="6">
+                                        <MudText Typo="Typo.subtitle2">Nuevo precio de cotización</MudText>
+                                        <MudNumericField @bind-Value="@context.Price" Format="N2" Required AdornmentText="$"
+                                                            Adornment="Adornment.Start" Step="1" />
+                                    </MudItem>
+                                </MudGrid>
+                            </MudCardContent>
+                            <MudCardActions>
+                                <MudButton Variant="Variant.Filled" Color="Color.Primary" 
+                                    OnClick="async () => { await context.Update(); SelectedArticles.Add(context); }">
+                                    Confirmar
+                                </MudButton>
+                            </MudCardActions>
+                        </MudCard>
+                    </td>
+                } 
             </ChildRowContent>
             <PagerContent>
                 <MudTablePager />
@@ -114,18 +128,52 @@
                 No se encontraron artículos cotizados.
             </NoRecordsContent>
         </MudTable>
+        <MudExpansionPanels Style="flex: 1;" Class="my-2">
+            <MudExpansionPanel Text="@($"Total de elementos seleccionados: {SelectedArticles.Count}")">
+                @foreach (var item in SelectedArticles)
+                {
+                    <MudText>@item.Quantity X @(item.ArticleCode): @(item.ArticleName)</MudText>
+                    <MudText>   ---    Precio: $@((item.Quantity * item.Price).ToString("n2")) @item.Currency</MudText>
+                }
+            </MudExpansionPanel>
+        </MudExpansionPanels>
     </MudContainer>
         }
     </DialogContent>
     <DialogActions>
         <MudButton Variant="Variant.Text" Class="mx-1"
-                   OnClick="() => Dialog.Cancel()" Disabled="_processing">
+                   OnClick="() => Dialog?.Cancel()" Disabled="_processing">
             Cerrar
         </MudButton>
         <MudButton Variant="Variant.Filled" Color="@ButtonColor" Class="mx-1"
                    OnClick="async () => await Submit()" 
-                   Disabled="_processing | SelectedArticles.Any(x => x.MustUpdateQuote & !x.QuoteUpdated)">
+                   Disabled="_processing | SelectedArticles.Any(x => x.MustUpdateQuote & !x.QuoteUpdated) | !SelectedArticles.Any()">
             Confirmar
         </MudButton>
     </DialogActions>
-</MudDialog> 
+</MudDialog>
+
+<style type="text/css">
+    col { justify-content: center; }
+    #code {
+        width: 150px
+    }
+    #name {
+        width: 300px
+    }
+    #sku {
+        width: 100px
+    }
+    #price {
+        width: 130px
+    }
+    #quantity {
+        width: 150px
+    }
+    #quotedate {
+        width: 100px
+    }
+    #update {
+        width: 100px
+    }
+</style>

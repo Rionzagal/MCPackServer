@@ -38,12 +38,12 @@ namespace MCPackServer.Entities
         [StringLength(50)]
         public string Country { get; set; }
         [Required]
-        [StringLength(50)]
+        [StringLength(20)]
         public string PostalCode { get; set; }
         [Required]
         [StringLength(20)]
         public string PhoneNumber { get; set; }
-        [StringLength(50)]
+        [StringLength(250)]
         public string PaymentCondition { get; set; }
         [StringLength(50)]
         public string Website { get; set; }

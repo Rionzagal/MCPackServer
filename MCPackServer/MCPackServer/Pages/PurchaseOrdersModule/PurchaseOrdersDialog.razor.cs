@@ -45,8 +45,9 @@ namespace MCPackServer.Pages.PurchaseOrdersModule
             string MostRecentOrderNumber = (await _service.GetForGridAsync<PurchaseOrders>(
                 new() { Take = 1 },
                 sortField: nameof(PurchaseOrders.IssuedDate),
-                order: "DESC"))
-                .First().OrderNumber ?? "0";
+                order: "DESC"))?
+                .FirstOrDefault()?
+                .OrderNumber ?? "0";
             int ODdigits = (int)Math.Floor(Math.Log10(int.Parse(MostRecentOrderNumber) + 1) + 1);
             Model.OrderNumber = (int.Parse(MostRecentOrderNumber) + 1).ToString($"d{(ODdigits < 4 ? 4 : ODdigits)}");
             if (null != ModelView)
@@ -162,9 +163,9 @@ namespace MCPackServer.Pages.PurchaseOrdersModule
             return providerName;
         }
 
-        private double GetProviderDiscount(int Id)
+        private float GetProviderDiscount(int Id)
         {
-            double discount = 0f;
+            float discount = 0f;
             if (0 != Id)
             {
                 var match = providers.SingleOrDefault(providers => providers.Id == Id);

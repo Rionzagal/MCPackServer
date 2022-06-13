@@ -67,7 +67,7 @@ namespace MCPackServer.Pages.ArticlesModule
             await Form.Validate();
             if (Form.IsValid)
             {
-                Model.HasVariablePrice = ModelHasVariablePrice ? (short)1 : (short)0;
+                Model.HasVariablePrice = ModelHasVariablePrice;
                 if (States.Add == State)
                 {
                     var response = await _service.AddAsync(Model);

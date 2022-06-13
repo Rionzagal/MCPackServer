@@ -12,9 +12,14 @@ namespace MCPackServer.Entities
     public partial class ArticlesToPurchaseView
     {
         public int QuoteId { get; set; }
+        public int PurchaseOrderId { get; set; }
+        public int Quantity { get; set; }
+        public DateTime? ReceptionDate { get; set; }
+        public DateTime? DepartureDate { get; set; }
+        public float SalePrice { get; set; }
         public int GroupId { get; set; }
         [Required]
-        [StringLength(30)]
+        [StringLength(50)]
         public string GroupName { get; set; }
         public int FamilyId { get; set; }
         [Required]
@@ -36,14 +41,9 @@ namespace MCPackServer.Entities
         [Required]
         [StringLength(20)]
         public string Unit { get; set; }
-        public DateTime DateUpdated { get; set; }
-        public int PurchaseOrderId { get; set; }
-        public int Quantity { get; set; }
-        public DateTime? EntryDate { get; set; }
-        public DateTime? DepartureDate { get; set; }
-        public double SalePrice { get; set; }
+        public DateTime QuoteDate { get; set; }
         [Required]
-        [StringLength(10)]
+        [StringLength(5)]
         public string Currency { get; set; }
     }
 }

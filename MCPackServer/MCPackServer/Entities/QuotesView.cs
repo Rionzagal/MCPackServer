@@ -12,6 +12,14 @@ namespace MCPackServer.Entities
     public partial class QuotesView
     {
         public int Id { get; set; }
+        public int ArticleId { get; set; }
+        [StringLength(50)]
+        public string SKU { get; set; }
+        public float Price { get; set; }
+        [Required]
+        [StringLength(5)]
+        public string Currency { get; set; }
+        public DateTime DateUpdated { get; set; }
         public int ProviderId { get; set; }
         [Required]
         [StringLength(50)]
@@ -19,13 +27,23 @@ namespace MCPackServer.Entities
         [Required]
         [StringLength(50)]
         public string ProviderLegalName { get; set; }
-        public int ArticleId { get; set; }
+        public float ProviderDiscount { get; set; }
         [Required]
         [StringLength(50)]
         public string ArticleName { get; set; }
+        [Required]
+        [StringLength(250)]
+        public string ArticleDescription { get; set; }
+        [StringLength(50)]
+        public string TradeMark { get; set; }
+        [StringLength(50)]
+        public string Model { get; set; }
+        [Required]
+        [StringLength(20)]
+        public string Unit { get; set; }
         public int GroupId { get; set; }
         [Required]
-        [StringLength(30)]
+        [StringLength(50)]
         public string GroupName { get; set; }
         public int FamilyId { get; set; }
         [Required]
@@ -34,13 +52,6 @@ namespace MCPackServer.Entities
         [Required]
         [StringLength(62)]
         public string ArticleCode { get; set; }
-        [StringLength(50)]
-        public string SKU { get; set; }
-        public double Price { get; set; }
-        [Required]
-        [StringLength(10)]
-        public string Currency { get; set; }
-        public DateTime DateUpdated { get; set; }
-        public double ProviderDiscount { get; set; }
+        public bool MustQuoteDaily { get; set; }
     }
 }

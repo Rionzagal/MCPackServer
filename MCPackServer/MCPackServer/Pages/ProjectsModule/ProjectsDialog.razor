@@ -110,10 +110,10 @@
                         </MudItem>
                         <MudItem xs="4">
                             <MudText Typo="Typo.subtitle1" Align="Align.Start">Comisión</MudText>
-                            <MudNumericField T="double" @bind-Value="Model.Comision"
+                            <MudNumericField T="float" @bind-Value="Model.Comision"
                                              Placeholder="Comisión"  Variant="Variant.Outlined"
                                              AdornmentText="%" Adornment="Adornment.Start"
-                                             ReadOnly="@Disabled" Min="0.0" Max="100.0"
+                                             ReadOnly="@Disabled" Min="0f" Max="100f"
                                              HideSpinButtons />
                         </MudItem>
                         <MudItem xs="4">

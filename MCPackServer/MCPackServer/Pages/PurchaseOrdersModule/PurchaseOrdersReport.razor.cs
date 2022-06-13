@@ -53,7 +53,7 @@ namespace MCPackServer.Pages.PurchaseOrdersModule
                     Subtotal += OrderArticles[i].SalePrice * OrderArticles[i].Quantity;
                 }
                 Discount = Subtotal * (Order.Discount / 100);
-                Tax = 1 == OrderProvider.HasTaxes ? (Subtotal - Discount) * 0.16f : 0;
+                Tax = OrderProvider.HasTaxes ? (Subtotal - Discount) * 0.16f : 0;
                 Total = Subtotal - Discount + Tax;
             }
             #endregion

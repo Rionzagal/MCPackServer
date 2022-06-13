@@ -15,8 +15,9 @@ namespace MCPackServer.Entities
         public int ProductId { get; set; }
         [Key]
         public int ProjectId { get; set; }
-        public double SalePrice { get; set; }
+        public float SalePrice { get; set; }
         public int Quantity { get; set; }
+        [StringLength(250)]
         public string Observations { get; set; }
 
         [ForeignKey(nameof(ProductId))]

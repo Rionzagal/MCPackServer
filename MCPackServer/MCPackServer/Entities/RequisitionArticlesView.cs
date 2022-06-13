@@ -13,7 +13,7 @@ namespace MCPackServer.Entities
     {
         public int RequisitionId { get; set; }
         [Required]
-        [StringLength(50)]
+        [StringLength(20)]
         public string RequisitionNumber { get; set; }
         public int ArticleId { get; set; }
         [Required]
@@ -21,7 +21,7 @@ namespace MCPackServer.Entities
         public string ArticleName { get; set; }
         public int GroupId { get; set; }
         [Required]
-        [StringLength(30)]
+        [StringLength(50)]
         public string GroupName { get; set; }
         public int FamilyId { get; set; }
         [Required]
@@ -31,9 +31,13 @@ namespace MCPackServer.Entities
         [StringLength(62)]
         public string ArticleCode { get; set; }
         public int ProjectId { get; set; }
+        [Required]
         [StringLength(20)]
         public string ProjectNumber { get; set; }
         public int Quantity { get; set; }
+        [Required]
+        [StringLength(20)]
+        public string Unit { get; set; }
         public DateTime? RequiredDate { get; set; }
     }
 }

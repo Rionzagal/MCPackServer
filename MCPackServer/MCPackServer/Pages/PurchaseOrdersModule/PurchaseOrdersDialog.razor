@@ -80,8 +80,8 @@
                                        RequiredError="Inserte fecha de entrega" ReadOnly="@Disabled" />
                     </MudItem>
                     <MudItem xs="12">
-                        <MudNumericField T="double" Label="Descuento" @bind-Value="Model.Discount"
-                                         Min="0" Max="100" HideSpinButtons Format="N2" AdornmentText="%"
+                        <MudNumericField T="float" Label="Descuento" @bind-Value="Model.Discount"
+                                         Min="0f" Max="100f" HideSpinButtons Format="N2" AdornmentText="%"
                                          Adornment="Adornment.End" Variant="Variant.Outlined"
                                          Required RequiredError="Inserte descuento" ReadOnly="@Disabled" />
                     </MudItem>

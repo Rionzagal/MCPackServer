@@ -23,7 +23,7 @@ namespace MCPackServer.Entities
         [StringLength(50)]
         public string Name { get; set; }
         [Required]
-        [StringLength(100)]
+        [StringLength(250)]
         public string Description { get; set; }
         [Required]
         [StringLength(20)]
@@ -36,7 +36,7 @@ namespace MCPackServer.Entities
         [Required]
         [StringLength(20)]
         public string Code { get; set; }
-        [StringLength(100)]
+        [StringLength(250)]
         public string Observations { get; set; }
 
         [ForeignKey(nameof(FamilyId))]

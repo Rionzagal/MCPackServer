@@ -16,7 +16,7 @@ namespace MCPackServer.Pages.ProvidersModule
 
         #region Parameters
         [CascadingParameter]
-        public MudDialogInstance Dialog { get; set; }
+        public MudDialogInstance? Dialog { get; set; }
         [Parameter]
         public States State { get; set; }
         [Parameter]
@@ -24,15 +24,15 @@ namespace MCPackServer.Pages.ProvidersModule
         #endregion
 
         #region Dialog variables
-        private string Title;
-        private string TitleIcon;
+        private string Title = string.Empty;
+        private string TitleIcon = string.Empty;
         private bool Disabled;
         private Color ButtonColor;
         private bool _processing = false;
         #endregion
 
         #region API elements
-        private MudForm Form;
+        private MudForm Form = new();
         private List<Contacts> ProviderContacts = new();
         #endregion
 
@@ -61,39 +61,62 @@ namespace MCPackServer.Pages.ProvidersModule
             }
             else //should not get to this option
             {
-                Title = null;
-                TitleIcon = null;
-                Disabled = true;
-                ButtonColor = Color.Default;
-                Dialog.Cancel();
+                Dialog?.Cancel();
             }
         }
 
         private async Task Submit()
         {
             _processing = true;
-            string response = string.Empty;
             await Form.Validate();
             if (Form.IsValid)
             {
                 if (States.Add == State)
                 {
-                    if (string.IsNullOrEmpty(Model.Website)) 
+                    if (string.IsNullOrEmpty(Model.Website))
                         Model.Website = "N/A";
-                    response = JsonConvert.SerializeObject(await _service.AddAsync(Model));
+                    var response = await _service.AddAsync(Model);
+                    if (response.IsSuccessful)
+                        Snackbar.Add("Proveedor añadido con éxito.", Severity.Success);
+                    else
+                        foreach (var item in response.Errors)
+                        {
+                            Snackbar.Add(item, Severity.Error);
+                        }
                 }
                 else if (States.Edit == State)
-                    response = JsonConvert.SerializeObject(await _service.UpdateAsync(Model));
+                {
+                    var response = await _service.UpdateAsync(Model);
+                    if (response.IsSuccessful)
+                        Snackbar.Add("Proveedor editado con éxito.", Severity.Success);
+                    else
+                        foreach (var item in response.Errors)
+                        {
+                            Snackbar.Add(item, Severity.Error);
+                        }
+                }
                 else if (States.Delete == State)
                 {
-                    response = JsonConvert.SerializeObject(await _service.RemoveAsync(Model));
-                    var _clearResponse = await _contactsService.ClearUnaligned();
-                    if (_clearResponse.IsSuccessful)
-                        Snackbar.Add("Contactos correctamente eliminados.", Severity.Info);
+                    var response = await _service.RemoveAsync(Model);
+                    if (response.IsSuccessful)
+                    {
+                        Snackbar.Add("Proveedor añadido con éxito.", Severity.Success);
+                        var _clearResponse = await _contactsService.ClearUnaligned();
+                        if (_clearResponse.IsSuccessful)
+                            Snackbar.Add("Contactos correctamente eliminados.", Severity.Info);
+                        else
+                            foreach (var item in _clearResponse.Errors)
+                            {
+                                Snackbar.Add(item, Severity.Error);
+                            }
+                    }
                     else
-                        Snackbar.Add("Error al eliminar contactos.", Severity.Error);
+                        foreach (var item in response.Errors)
+                        {
+                            Snackbar.Add(item, Severity.Error);
+                        }
                 }
-                Dialog.Close(DialogResult.Ok(JsonConvert.DeserializeObject<ActionResponse<Providers>>(response)));
+                Dialog?.Close();
             }
             else
             {

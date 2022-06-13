@@ -93,7 +93,7 @@ namespace MCPackServer.Data.Entity
 
                 entity.Property(e => e.DepartureDate).HasPrecision(3);
 
-                entity.Property(e => e.EntryDate).HasPrecision(3);
+                entity.Property(e => e.ReceptionDate).HasPrecision(3);
 
                 entity.HasOne(d => d.PurchaseOrder)
                     .WithMany(p => p.ArticlesToPurchase)
@@ -117,17 +117,17 @@ namespace MCPackServer.Data.Entity
 
                 entity.Property(e => e.Currency).IsUnicode(false);
 
-                entity.Property(e => e.DateUpdated).HasPrecision(3);
-
                 entity.Property(e => e.DepartureDate).HasPrecision(3);
-
-                entity.Property(e => e.EntryDate).HasPrecision(3);
 
                 entity.Property(e => e.FamilyName).IsUnicode(false);
 
                 entity.Property(e => e.GroupName).IsUnicode(false);
 
                 entity.Property(e => e.Model).IsUnicode(false);
+
+                entity.Property(e => e.QuoteDate).HasPrecision(3);
+
+                entity.Property(e => e.ReceptionDate).HasPrecision(3);
 
                 entity.Property(e => e.SKU).IsUnicode(false);
 
@@ -672,6 +672,8 @@ namespace MCPackServer.Data.Entity
 
                 entity.Property(e => e.ArticleCode).IsUnicode(false);
 
+                entity.Property(e => e.ArticleDescription).IsUnicode(false);
+
                 entity.Property(e => e.ArticleName).IsUnicode(false);
 
                 entity.Property(e => e.Currency).IsUnicode(false);
@@ -682,11 +684,17 @@ namespace MCPackServer.Data.Entity
 
                 entity.Property(e => e.GroupName).IsUnicode(false);
 
+                entity.Property(e => e.Model).IsUnicode(false);
+
                 entity.Property(e => e.ProviderLegalName).IsUnicode(false);
 
                 entity.Property(e => e.ProviderMarketName).IsUnicode(false);
 
                 entity.Property(e => e.SKU).IsUnicode(false);
+
+                entity.Property(e => e.TradeMark).IsUnicode(false);
+
+                entity.Property(e => e.Unit).IsUnicode(false);
             });
 
             modelBuilder.Entity<RequisitionArticles>(entity =>
@@ -729,6 +737,8 @@ namespace MCPackServer.Data.Entity
                 entity.Property(e => e.RequiredDate).HasPrecision(3);
 
                 entity.Property(e => e.RequisitionNumber).IsUnicode(false);
+
+                entity.Property(e => e.Unit).IsUnicode(false);
             });
 
             modelBuilder.Entity<Requisitions>(entity =>
@@ -767,8 +777,7 @@ namespace MCPackServer.Data.Entity
 
             modelBuilder.Entity<UserInformation>(entity =>
             {
-                entity.HasKey(e => e.AspNetUserId)
-                    .HasName("PK__UserInfo__F42021A73BA416F8");
+                entity.Property(e => e.Id).ValueGeneratedNever();
 
                 entity.Property(e => e.AspNetUserId).IsUnicode(false);
 
@@ -785,8 +794,8 @@ namespace MCPackServer.Data.Entity
                 entity.Property(e => e.MotherSurname).IsUnicode(false);
 
                 entity.HasOne(d => d.AspNetUser)
-                    .WithOne(p => p.UserInformation)
-                    .HasForeignKey<UserInformation>(d => d.AspNetUserId)
+                    .WithMany(p => p.UserInformation)
+                    .HasForeignKey(d => d.AspNetUserId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_UserInformation_AspNetUsers");
             });

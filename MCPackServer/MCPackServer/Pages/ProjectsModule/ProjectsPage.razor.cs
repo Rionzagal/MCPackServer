@@ -171,7 +171,7 @@ namespace MCPackServer.Pages.ProjectsModule
                     subtotal += product.SalePrice * product.Quantity;
                 }
                 discount = SelectedProject.Discount * subtotal;
-                tax = (1 == SelectedProject.HasTaxes) ? (subtotal - discount) * 0.16f : 0f;
+                tax = SelectedProject.HasTaxes ? (subtotal - discount) * 0.16f : 0f;
                 total = subtotal - discount + tax;
             }
             return new TableData<ProjectProductsView>()

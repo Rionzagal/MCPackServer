@@ -15,10 +15,12 @@ VIEW `mcpackdb`.`quotesview` AS
         `mcpackdb`.`article`.`FamilyId` AS `FamilyId`,
         `mcpackdb`.`article`.`FamilyName` AS `FamilyName`,
         `mcpackdb`.`article`.`Code` AS `ArticleCode`,
+        `mcpackdb`.`article`.`MustQuoteDaily` AS `MustQuoteDaily`,
         `quote`.`SKU` AS `SKU`,
         `quote`.`Price` AS `Price`,
         `quote`.`Currency` AS `Currency`,
-        `quote`.`DateUpdated` AS `DateUpdated`
+        `quote`.`DateUpdated` AS `DateUpdated`,
+        `provider`.`Discount` AS `ProviderDiscount`
     FROM
         ((`mcpackdb`.`quotes` `quote`
         JOIN `mcpackdb`.`articlesview` `article` ON ((`quote`.`ArticleId` = `mcpackdb`.`article`.`Id`)))

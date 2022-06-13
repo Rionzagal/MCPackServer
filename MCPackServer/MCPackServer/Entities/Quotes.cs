@@ -21,12 +21,12 @@ namespace MCPackServer.Entities
         public int Id { get; set; }
         public int ArticleId { get; set; }
         public int ProviderId { get; set; }
-        public double Price { get; set; }
+        public float Price { get; set; }
         [StringLength(50)]
         public string SKU { get; set; }
         public DateTime DateUpdated { get; set; }
         [Required]
-        [StringLength(10)]
+        [StringLength(5)]
         public string Currency { get; set; }
 
         [ForeignKey(nameof(ArticleId))]

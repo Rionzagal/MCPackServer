@@ -15,24 +15,27 @@ namespace MCPackServer.Entities
         public DateTime? IssuedDate { get; set; }
         public DateTime? DeliveryDate { get; set; }
         [Required]
-        [StringLength(10)]
+        [StringLength(5)]
         public string Currency { get; set; }
-        public double Discount { get; set; }
+        public float Discount { get; set; }
         [Required]
-        [StringLength(50)]
+        [StringLength(20)]
         public string Status { get; set; }
         public DateTime? ReceptionDate { get; set; }
         [StringLength(50)]
         public string InvoiceNumber { get; set; }
+        [StringLength(250)]
         public string Observations { get; set; }
-        [StringLength(50)]
+        [Required]
+        [StringLength(20)]
         public string OrderNumber { get; set; }
         public int ProviderId { get; set; }
         [Required]
         [StringLength(50)]
         public string ProviderLegalName { get; set; }
-        public short HasTaxes { get; set; }
+        public bool HasTaxes { get; set; }
         public int ProjectId { get; set; }
+        [Required]
         [StringLength(20)]
         public string ProjectNumber { get; set; }
         public int ClientId { get; set; }
@@ -40,7 +43,7 @@ namespace MCPackServer.Entities
         [StringLength(50)]
         public string ClientMarketName { get; set; }
         public int? RequisitionId { get; set; }
-        [StringLength(50)]
+        [StringLength(20)]
         public string RequisitionNumber { get; set; }
     }
 }

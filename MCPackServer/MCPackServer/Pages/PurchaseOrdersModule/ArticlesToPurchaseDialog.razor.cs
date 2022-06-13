@@ -18,11 +18,11 @@ namespace MCPackServer.Pages.PurchaseOrdersModule
 
         #region Parameters
         [CascadingParameter]
-        public MudDialogInstance Dialog { get; set; }
+        public MudDialogInstance? Dialog { get; set; }
         [Parameter]
         public States State { get; set; }
         [Parameter]
-        public PurchaseOrders Reference { get; set; }
+        public PurchaseOrdersView? Reference { get; set; }
         [Parameter]
         public ArticlesToPurchase Model { get; set; } = new();
         #endregion

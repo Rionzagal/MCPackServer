@@ -66,8 +66,8 @@
                                          RequiredError="Inserte cantidad" Variant="Variant.Outlined"/>
                     </div>
                     <div class="form-group">
-                        <MudNumericField T="double" @bind-Value="Model.SalePrice" Label="Precio de venta"
-                                         Min="0.0" HideSpinButtons Adornment="Adornment.Start"
+                        <MudNumericField T="float" @bind-Value="Model.SalePrice" Label="Precio de venta"
+                                         Min="0f" HideSpinButtons Adornment="Adornment.Start"
                                          AdornmentIcon="@Icons.Material.Filled.AttachMoney"
                                          Required ReadOnly="@Disabled" Variant="Variant.Outlined"
                                          RequiredError="Inserte precio de venta"/>

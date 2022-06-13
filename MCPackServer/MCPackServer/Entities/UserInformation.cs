@@ -11,6 +11,8 @@ namespace MCPackServer.Entities
     public partial class UserInformation
     {
         [Key]
+        public int Id { get; set; }
+        [Required]
         [StringLength(450)]
         public string AspNetUserId { get; set; }
         [Required]

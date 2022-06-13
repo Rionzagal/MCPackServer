@@ -16,7 +16,7 @@ namespace MCPackServer.Entities
         [StringLength(50)]
         public string Name { get; set; }
         [Required]
-        [StringLength(100)]
+        [StringLength(250)]
         public string Description { get; set; }
         [Required]
         [StringLength(20)]
@@ -31,13 +31,12 @@ namespace MCPackServer.Entities
         public string FamilyName { get; set; }
         public int GroupId { get; set; }
         [Required]
-        [StringLength(30)]
+        [StringLength(50)]
         public string GroupName { get; set; }
         [Required]
         [StringLength(62)]
         public string Code { get; set; }
-        public short MustQuoteDaily { get; set; }
-        [StringLength(100)]
+        [StringLength(250)]
         public string Observations { get; set; }
     }
 }

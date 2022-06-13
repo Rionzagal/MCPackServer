@@ -171,22 +171,6 @@ namespace MCPackServer.Pages.PurchaseOrdersModule
             var result = await dialog.Result;
             if (!result.Cancelled)
             {
-                JObject element = new();
-                var resultString = result.Data.ToString();
-                bool Success = false;
-                if (!string.IsNullOrEmpty(resultString))
-                {
-                    element = JObject.Parse(resultString);
-                    Success = bool.Parse(element.GetValue("SuccessOrderUpdate").ToString() ?? "false");
-                }
-                    
-                if (Success)
-                {
-                    Snackbar.Add("Orden de compra marcada exitosamente como recibida", Severity.Success);
-                    Snackbar.Add($"{int.Parse(element.GetValue("SuccessfulArticlesUpdate").ToString())} artículos se han recibido", Severity.Success);
-                }
-                else
-                    Snackbar.Add("Error al marcar orden de compra como recibida", Severity.Error);
                 await OrdersTable.ReloadServerData();
                 SelectedOrder = await _service.GetByKeyAsync<PurchaseOrdersView>(SelectedOrder.Id);
             }
@@ -214,7 +198,7 @@ namespace MCPackServer.Pages.PurchaseOrdersModule
             int? count = await _service.GetTotalCountAsync<ArticlesToPurchaseView>(request, nameof(ArticlesToPurchaseView.QuoteId));
             subtotal = 0;
             discount = subtotal * (SelectedOrder.Discount / 100);
-            tax = (1 == SelectedOrder.HasTaxes) ? (subtotal - discount) * 0.16f : 0f;
+            tax = SelectedOrder.HasTaxes ? (subtotal - discount) * 0.16f : 0f;
             total = subtotal + tax - discount;
             return new TableData<ArticlesToPurchaseView>
             {
@@ -238,14 +222,13 @@ namespace MCPackServer.Pages.PurchaseOrdersModule
             Parameters = new()
             {
                 ["State"] = AddArticlesDialog.States.Add,
-                ["Reference"] = SelectedOrder
+                ["OrderId"] = SelectedOrder.Id
             };
             var dialog = Dialogs.Show<AddArticlesDialog>("Añadir artículos a orden", Parameters);
             var result = await dialog.Result;
             if (!result.Cancelled)
             {
-                var resultElements = JsonSerializer.Deserialize<HashSet<ArticlesToPurchase>>(result.Data.ToString());
-                Snackbar.Add($"{resultElements.Count} artículos han sido añadidos a orden de compra", Severity.Info);                
+                await ArticlesTable.ReloadServerData();
             }
         }
         private async Task EditArticle(ArticlesToPurchaseView article)

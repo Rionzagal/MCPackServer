@@ -78,7 +78,7 @@
 @if (VisibleOrderInformation)
 {
     <MudPaper Elevation="0" Class="m-3">
-        <MudText Typo="Typo.h6" Align="Align.Center">Orden de compra: @SelectedOrder.Id</MudText>
+        <MudText Typo="Typo.h6" Align="Align.Center">Orden de compra: @SelectedOrder.OrderNumber</MudText>
         <MudTabs @ref="OrderInformationTabs" Elevation="2" Rounded ApplyEffectsToContainer Color="Color.Primary">
             <Header>
                 <MudTooltip Text="Cerrar órden">
@@ -115,21 +115,21 @@
             </TabPanelHeader>
             <ChildContent>
                 <MudTabPanel Text="Información general" ID="@Guid.NewGuid()" Tag="@Guid.NewGuid()">
-                    @*<MudButton Class="mx-3" Color="Color.Primary" Variant="Variant.Filled"
-                               OnClick="MarkOrderAsReceived">
-                        Marcar como entregada
-                    </MudButton>*@
                     <MudGrid Class="m-3" Style="height:500px; overflow-y:scroll; width: inherit">
-                        <MudItem xs="12">
+                        <MudItem xs="8">
                             <MudText Typo="Typo.subtitle1">Número de orden</MudText>
                             <MudTextField Value="SelectedOrder.OrderNumber" ReadOnly />
+                        </MudItem>
+                        <MudItem xs="4">
+                            <MudText Typo="Typo.subtitle1">Estatus</MudText>
+                            <MudTextField Value="SelectedOrder.Status" ReadOnly />
                         </MudItem>
                         <MudItem xs="6">
                             <MudText Typo="Typo.subtitle1">Fecha de emisión</MudText>
                             <MudTextField Value="SelectedOrder.IssuedDate" Format="dddd, MMM dd yyyy" ReadOnly />
                         </MudItem>
                         <MudItem xs="6">
-                            <MudText Typo="Typo.subtitle1">Fecha de entrega</MudText>
+                            <MudText Typo="Typo.subtitle1">Fecha de entrega total</MudText>
                             <MudTextField Value="SelectedOrder.DeliveryDate" Format="dddd, MMM dd yyyy" ReadOnly />
                         </MudItem>
                         <MudItem xs="6">
@@ -200,7 +200,7 @@
                             </MudTh>
                             <MudTh>
                                 <MudTableSortLabel SortLabel="@nameof(ArticlesToPurchaseView.ArticleName)" T="ArticlesToPurchaseView">
-                                    Nombre
+                                    Nombre de artículo
                                 </MudTableSortLabel>
                             </MudTh>
                             <MudTh>
@@ -209,7 +209,7 @@
                                 </MudTableSortLabel>
                             </MudTh>
                             <MudTh>
-                                <MudTableSortLabel SortLabel="@nameof(ArticlesToPurchaseView.DateUpdated)" T="ArticlesToPurchaseView">
+                                <MudTableSortLabel SortLabel="@nameof(ArticlesToPurchaseView.QuoteDate)" T="ArticlesToPurchaseView">
                                     Fecha de cotización
                                 </MudTableSortLabel>
                             </MudTh>
@@ -223,14 +223,18 @@
                                     Cantidad
                                 </MudTableSortLabel>
                             </MudTh>
+                            <MudTh>
+                                Fecha de recepción
+                            </MudTh>
                         </HeaderContent>
                         <RowTemplate>
                             <MudTd DataLabel="Código">@context.ArticleCode</MudTd>
                             <MudTd DataLabel="Nombre">@context.ArticleName</MudTd>
                             <MudTd DataLabel="SKU">@(context.SKU ?? "N/A")</MudTd>
-                            <MudTd DataLabel="Fecha de cotización">@context.DateUpdated.ToShortDateString()</MudTd>
+                            <MudTd DataLabel="Fecha de cotización">@context.QuoteDate.ToShortDateString()</MudTd>
                             <MudTd DataLabel="Precio">@($"$ {context.SalePrice.ToString("n2")} {SelectedOrder.Currency}")</MudTd>
                             <MudTd DataLabel="Cantidad">@($"{context.Quantity} {context.Unit}")</MudTd>
+                            <MudTd DataLabel="Fecha de recepción">@(context.ReceptionDate?.ToString() ?? "PENDIENTE")</MudTd>
                         </RowTemplate>
                         <PagerContent>
                             <MudTablePager />
@@ -265,17 +269,18 @@
                                         <MudText Typo="Typo.subtitle1">Familia</MudText>
                                         <MudTextField Value="article.FamilyName" ReadOnly />
                                     </MudItem>
-                                    @*<MudItem xs="12">
-                                        <MudText Typo="Typo.subtitle1">Descripcíon</MudText>
-                                        <MudTextField Value="article.Description" ReadOnly />
-                                    </MudItem>*@
-                                    <MudItem xs="6">
+                                    
+                                    <MudItem xs="4">
                                         <MudText Typo="Typo.subtitle1">Marca</MudText>
                                         <MudTextField Value="@(article.TradeMark ?? "N/A")" ReadOnly />
                                     </MudItem>
-                                    <MudItem xs="6">
+                                    <MudItem xs="4">
                                         <MudText Typo="Typo.subtitle1">Modelo</MudText>
                                         <MudTextField Value="@(article.Model ?? "N/A")" ReadOnly />
+                                    </MudItem>
+                                    <MudItem xs="4">
+                                        <MudText Typo="Typo.subtitle1">SKU</MudText>
+                                        <MudTextField Value="@(article.SKU ?? "N/A")" ReadOnly />
                                     </MudItem>
                                     <MudItem xs="6">
                                         <MudText Typo="Typo.subtitle1">Precio unitario</MudText>

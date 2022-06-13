@@ -26,7 +26,7 @@ namespace MCPackServer.Entities
         [StringLength(50)]
         public string LegalName { get; set; }
         [Required]
-        [StringLength(50)]
+        [StringLength(100)]
         public string FiscalAddress { get; set; }
         [Required]
         [StringLength(50)]
@@ -38,7 +38,7 @@ namespace MCPackServer.Entities
         [StringLength(50)]
         public string Country { get; set; }
         [Required]
-        [StringLength(50)]
+        [StringLength(20)]
         public string PostalCode { get; set; }
         [Required]
         [StringLength(20)]
@@ -50,14 +50,15 @@ namespace MCPackServer.Entities
         [StringLength(50)]
         public string TypeOfPayment { get; set; }
         [Required]
-        [StringLength(50)]
+        [StringLength(250)]
         public string PaymentCondition { get; set; }
         [StringLength(50)]
         public string CreditLimit { get; set; }
-        public double Discount { get; set; }
-        public short HomeDelivery { get; set; }
+        public float Discount { get; set; }
+        public bool HomeDelivery { get; set; }
+        [StringLength(250)]
         public string Observations { get; set; }
-        public short HasTaxes { get; set; }
+        public bool HasTaxes { get; set; }
 
         [InverseProperty("Provider")]
         public virtual ICollection<ProviderContacts> ProviderContacts { get; set; }

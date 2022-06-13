@@ -20,7 +20,7 @@ namespace MCPackServer.Entities
         [Key]
         public int Id { get; set; }
         [Required]
-        [StringLength(50)]
+        [StringLength(20)]
         public string RequisitionNumber { get; set; }
         public DateTime? IssuedDate { get; set; }
         [Required]

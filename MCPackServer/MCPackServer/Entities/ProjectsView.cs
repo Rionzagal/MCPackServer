@@ -16,33 +16,36 @@ namespace MCPackServer.Entities
         [StringLength(50)]
         public string Type { get; set; }
         [Required]
+        [StringLength(250)]
         public string Description { get; set; }
-        public double Discount { get; set; }
+        public float Discount { get; set; }
         public DateTime? AdmissionDate { get; set; }
         public DateTime? CommitmentDate { get; set; }
         public DateTime? DeliveryDate { get; set; }
         public DateTime? RealDeliveryDate { get; set; }
         [Required]
-        [StringLength(100)]
+        [StringLength(250)]
         public string DeliveryTime { get; set; }
         [Required]
-        [StringLength(10)]
+        [StringLength(5)]
         public string AgreedCurrency { get; set; }
         [Required]
-        [StringLength(10)]
+        [StringLength(5)]
         public string PaymentCurrency { get; set; }
         [Required]
-        [StringLength(100)]
+        [StringLength(250)]
         public string PaymentConditions { get; set; }
         [Required]
         [StringLength(50)]
         public string SalesPerson { get; set; }
-        public double Comision { get; set; }
-        public short HasTaxes { get; set; }
+        public float Comision { get; set; }
+        public bool HasTaxes { get; set; }
+        [StringLength(250)]
         public string Observations { get; set; }
         [Required]
         [StringLength(20)]
         public string Code { get; set; }
+        [Required]
         [StringLength(20)]
         public string ProjectNumber { get; set; }
         [Required]
