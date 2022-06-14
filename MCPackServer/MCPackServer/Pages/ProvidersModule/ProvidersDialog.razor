@@ -9,7 +9,7 @@
     <DialogContent>
         @if (_processing)
         {
-            <MudProgressCircular Class="m-sm-n1" Size="Size.Large" Indeterminate="true" />
+            <MudProgressCircular Class="m-sm-n1" Size="Size.Large" Indeterminate />
             <MudText Class="m-sm-2">Esperando respuesta de servidor...</MudText>
         }
         else
@@ -26,45 +26,45 @@
         <MudForm Model="Model" @ref="Form">
             <MudGrid>
                 <MudItem xs="12">
-                    <MudTextField T="string" Label="Nombre comercial" Required="true"
+                    <MudTextField T="string" Label="Nombre comercial" Required
                                   RequiredError="Insertar nombre comercial de proveedor"
                                   @bind-Value="Model.MarketName"
                                   ReadOnly="@Disabled" />
                 </MudItem>
                 <MudItem xs="12">
-                    <MudTextField T="string" Label="Razón social" Required="true"
+                    <MudTextField T="string" Label="Razón social" Required
                                   RequiredError="Insertar razón social de proveedor"
                                   @bind-Value="Model.LegalName"
                                   ReadOnly="@Disabled" />
                 </MudItem>
                 <MudItem xs="12">
-                    <MudTextField T="string" Label="Domicilio fiscal" Required="true"
+                    <MudTextField T="string" Label="Domicilio fiscal" Required
                                   RequiredError="Insertar domicilio fiscal de proveedor"
                                   @bind-Value="Model.FiscalAddress"
                                   ReadOnly="@Disabled" />
                 </MudItem>
                 <MudItem xs="6">
-                    <MudTextField T="string" Label="Código postal" Required="true"
+                    <MudTextField T="string" Label="Código postal" Required
                                   RequiredError="Insertar código postal de proveedor"
                                   @bind-Value="Model.PostalCode"
                                   ReadOnly="@Disabled" />
                 </MudItem>
                 <MudItem xs="6">
-                    <MudTextField T="string" Label="Ciudad" Required="true"
+                    <MudTextField T="string" Label="Ciudad" Required
                                   RequiredError="Insertar ciudad de domicilio de proveedor"
                                   Validation="@(new Func<string, IEnumerable<string>>(ValidateName))"
                                   @bind-Value="Model.City"
                                   ReadOnly="@Disabled" />
                 </MudItem>
                 <MudItem xs="6">
-                    <MudTextField T="string" Label="Provincia/Estado" Required="true"
+                    <MudTextField T="string" Label="Provincia/Estado" Required
                                   RequiredError="Insertar provincia/estado de domicilio de proveedor"
                                   Validation="@(new Func<string, IEnumerable<string>>(ValidateName))"
                                   @bind-Value="Model.Province"
                                   ReadOnly="@Disabled" />
                 </MudItem>
                 <MudItem xs="6">
-                    <MudTextField T="string" Label="País" Required="true"
+                    <MudTextField T="string" Label="País" Required
                                   RequiredError="Insertar país de domicilio de proveedor"
                                   Validation="@(new Func<string, IEnumerable<string>>(ValidateName))"
                                   @bind-Value="Model.Country"
@@ -76,7 +76,7 @@
                                   ReadOnly="@Disabled" />
                 </MudItem>
                 <MudItem xs="6">
-                    <MudTextField T="string" Label="Número telefónico de cliente" Required="true"
+                    <MudTextField T="string" Label="Número telefónico de cliente" Required
                                   RequiredError="Insertar número telefónico de cliente"
                                   Validation="@(new Func<string, IEnumerable<string>>(ValidatePhone))"
                                   InputType="InputType.Telephone"
@@ -84,13 +84,13 @@
                                   ReadOnly="@Disabled" />
                 </MudItem>
                 <MudItem xs="12">
-                    <MudTextField T="string" Label="Tipo de pago" Required="true"
+                    <MudTextField T="string" Label="Tipo de pago" Required
                                   RequiredError="Insertar tipo de pago"
                                   @bind-Value="Model.TypeOfPayment"
                                   ReadOnly="@Disabled" />
                 </MudItem>
                 <MudItem xs="12">
-                    <MudTextField T="string" Label="Condición de pago" Required="true"
+                    <MudTextField T="string" Label="Condición de pago" Required
                                   RequiredError="Insertar condición de pago"
                                   @bind-Value="Model.PaymentCondition"
                                   ReadOnly="@Disabled" />
@@ -105,9 +105,9 @@
                                  ReadOnly="@Disabled" />
                 </MudItem>
                 <MudItem xs="3">
-                    <MudNumericField T="float" Label="Descuento" Required="true"
+                    <MudNumericField T="float" Label="Descuento" Required
                                      RequiredError="Insertar descuento" @bind-Value="Model.Discount"
-                                     Min="0.00f" Max="100.00f" Step="1" Format="N2"
+                                     Min="0f" Max="100f" Step="1" Format="N2"
                                      AdornmentText="%" Adornment="Adornment.End"
                                      ReadOnly="@Disabled" />
                 </MudItem>

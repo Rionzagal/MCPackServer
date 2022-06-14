@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace MCPackServer.Entities
 {
+    [Index(nameof(ClientId), Name = "FK_Proyects_Clients")]
     public partial class Projects
     {
         public Projects()
@@ -23,37 +24,36 @@ namespace MCPackServer.Entities
         [StringLength(50)]
         public string Type { get; set; }
         [Required]
+        [StringLength(250)]
         public string Description { get; set; }
         public float Discount { get; set; }
-        [Column(TypeName = "datetime")]
         public DateTime? AdmissionDate { get; set; }
-        [Column(TypeName = "datetime")]
         public DateTime? CommitmentDate { get; set; }
-        [Column(TypeName = "datetime")]
         public DateTime? DeliveryDate { get; set; }
-        [Column(TypeName = "datetime")]
         public DateTime? RealDeliveryDate { get; set; }
         [Required]
-        [StringLength(100)]
+        [StringLength(250)]
         public string DeliveryTime { get; set; }
         [Required]
-        [StringLength(10)]
+        [StringLength(5)]
         public string AgreedCurrency { get; set; }
         [Required]
-        [StringLength(10)]
+        [StringLength(5)]
         public string PaymentCurrency { get; set; }
         [Required]
-        [StringLength(100)]
+        [StringLength(250)]
         public string PaymentConditions { get; set; }
         [Required]
         [StringLength(50)]
         public string SalesPerson { get; set; }
         public float Comision { get; set; }
         public bool HasTaxes { get; set; }
+        [StringLength(250)]
         public string Observations { get; set; }
         [Required]
         [StringLength(20)]
         public string Code { get; set; }
+        [Required]
         [StringLength(20)]
         public string ProjectNumber { get; set; }
 

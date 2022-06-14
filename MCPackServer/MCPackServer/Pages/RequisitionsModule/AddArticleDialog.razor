@@ -17,9 +17,9 @@
         else
         {
             <MudContainer Style="max-height: 500px; overflow-y: scroll;">
-                <MudTable @ref="ArticlesTable" T="RequisitionArticles" MultiSelection Hover FixedHeader Height="350px"
+                <MudTable @ref="ArticlesTable" T="RequisitionArticlesView" MultiSelection Hover FixedHeader Height="350px"
                           CanCancelEdit
-                          ServerData="new Func<TableState, Task<TableData<RequisitionArticles>>>(ArticlesServerReload)"
+                          ServerData="new Func<TableState, Task<TableData<RequisitionArticlesView>>>(ArticlesServerReload)"
                           @bind-SelectedItems="@SelectedArticles" Class="my-3">
                     <ToolBarContent>
                         <MudText Typo="Typo.h6">Artículos cotizados</MudText>
@@ -35,24 +35,28 @@
                         </MudButton>
                     </ToolBarContent>
                     <HeaderContent>
-                        <MudTh><MudTableSortLabel T="PurchaseArticles" SortLabel="Code" />Código</MudTh>
-                        <MudTh><MudTableSortLabel T="PurchaseArticles" SortLabel="Name" />Nombre</MudTh>
-                        <MudTh><MudTableSortLabel SortBy="new Func<RequisitionArticles, object>(x => x.ProjectId)" />Proyecto</MudTh>
-                        <MudTh><MudTableSortLabel SortBy="new Func<RequisitionArticles, object>(x => x.Quantity)" />Cantidad</MudTh>
+                        <MudTh><MudTableSortLabel T="ArticlesView" SortLabel="Code" />Código</MudTh>
+                        <MudTh><MudTableSortLabel T="ArticlesView" SortLabel="Name" />Nombre</MudTh>
+                        <MudTh><MudTableSortLabel SortBy="new Func<RequisitionArticlesView, object>(x => x.ProjectId)" />
+                            Proyecto
+                        </MudTh>
+                        <MudTh><MudTableSortLabel SortBy="new Func<RequisitionArticlesView, object>(x => x.Quantity)" />
+                            Cantidad
+                        </MudTh>
                     </HeaderContent>
                     <RowTemplate>
-                        <MudTd DataLabel="Código">@context.Article.Code</MudTd>
-                        <MudTd DataLabel="Name">@context.Article.Name</MudTd>
-                        <MudTd DataLabel="Proyecto">@(0 != context.ProjectId ? context.ProjectId : "N/A")</MudTd>
-                        <MudTd DataLabel="Quantity">@($"{context.Quantity} {context.Article.Unit}")</MudTd>
+                        <MudTd DataLabel="Código">@context.ArticleCode</MudTd>
+                        <MudTd DataLabel="Name">@context.ArticleName</MudTd>
+                        <MudTd DataLabel="Proyecto">@(0 != context.ProjectId ? context.ProjectNumber : "N/A")</MudTd>
+                        <MudTd DataLabel="Quantity">@($"{context.Quantity} {context.Unit}")</MudTd>
                     </RowTemplate>
                     <RowEditingTemplate>
-                        <MudTd DataLabel="Código">@context.Article.Code</MudTd>
-                        <MudTd DataLabel="Name">@context.Article.Name</MudTd>
+                        <MudTd DataLabel="Código">@context.ArticleCode</MudTd>
+                        <MudTd DataLabel="Name">@context.ArticleName</MudTd>
                         <MudTd DataLabel="Proyecto">
-                            <MudAutocomplete T="int" @bind-Value="context.ProjectId"
-                                 SearchFunc="f => ProjectsServerReload(f)"
-                                 ToStringFunc="new Func<int, string>(GetProjectNumber)" />                        
+                            <MudAutocomplete T="int" Value="context.ProjectId" SearchFunc="f => ProjectsServerReload(f)"
+                                ToStringFunc="new Func<int, string>(GetProjectNumber)" 
+                                ValueChanged="(id) => { context.ProjectId = id; context.ProjectNumber = GetProjectNumber(id); }"/>
                         </MudTd>
                         <MudTd DataLabel="Quantity">
                             <MudNumericField T="int" @bind-Value="@context.Quantity" Required
@@ -74,7 +78,7 @@
     </DialogContent>
     <DialogActions>
         <MudButton Variant="Variant.Text" Class="mx-1"
-                   OnClick="() => Dialog.Cancel()" Disabled="_processing">
+                   OnClick="() => Dialog?.Cancel()" Disabled="_processing">
             Cerrar
         </MudButton>
         <MudButton Variant="Variant.Filled" Color="@ButtonColor" Class="mx-1"

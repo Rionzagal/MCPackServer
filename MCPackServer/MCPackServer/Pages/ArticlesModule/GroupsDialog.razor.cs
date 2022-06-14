@@ -28,10 +28,11 @@ namespace MCPackServer.Pages.ArticlesModule
         #endregion
 
         #region API elements
-        private MudForm Form;
+        private MudForm Form = new();
         #endregion
 
-        protected override async Task OnInitializedAsync()
+        private bool ModelHasVariablePrice = false;
+        protected override void OnInitialized()
         {
             if (States.Add == State) //representing an Add dialog
             {
@@ -63,18 +64,51 @@ namespace MCPackServer.Pages.ArticlesModule
         private async Task Submit()
         {
             _processing = true;
-            string response = string.Empty;
             await Form.Validate();
             if (Form.IsValid)
             {
+                Model.HasVariablePrice = ModelHasVariablePrice;
                 if (States.Add == State)
-                    response = JsonConvert.SerializeObject(await _service.AddAsync(Model));
+                {
+                    var response = await _service.AddAsync(Model);
+                    if (response.IsSuccessful)
+                        Snackbar.Add("Grupo añadido con éxito.", Severity.Success);
+                    else
+                    {
+                        foreach (var error in response.Errors)
+                        {
+                            Snackbar.Add(error, Severity.Error);
+                        }
+                    }
+                }
                 else if (States.Edit == State)
-                    response = JsonConvert.SerializeObject(await _service.UpdateAsync(Model));
+                {
+                    var response = await _service.UpdateAsync(Model);
+                    if (response.IsSuccessful)
+                        Snackbar.Add("Grupo editado con éxito.", Severity.Success);
+                    else
+                    {
+                        foreach (var error in response.Errors)
+                        {
+                            Snackbar.Add(error, Severity.Error);
+                        }
+                    }
+                }
                 else if (States.Delete == State)
-                    response = JsonConvert.SerializeObject(await _service.RemoveAsync(Model));
+                {
+                    var response = await _service.RemoveAsync(Model);
+                    if (response.IsSuccessful)
+                        Snackbar.Add("Grupo eliminado con éxito.", Severity.Success);
+                    else
+                    {
+                        foreach (var error in response.Errors)
+                        {
+                            Snackbar.Add(error, Severity.Error);
+                        }
+                    }
+                }
                 _processing = false;
-                Dialog.Close(DialogResult.Ok(JsonConvert.DeserializeObject<ActionResponse<ArticleGroups>>(response)));
+                Dialog.Close();
             }
             else
             {

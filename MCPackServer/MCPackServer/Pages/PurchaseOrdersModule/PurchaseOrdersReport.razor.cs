@@ -26,7 +26,7 @@ namespace MCPackServer.Pages.PurchaseOrdersModule
         private Projects OrderProject = new();
         private Clients ProjectClient = new();
         private List<ArticlesToPurchase> OrderArticles = new();
-        private float Subtotal, Tax, Discount, Total = 0f;
+        private double Subtotal, Tax, Discount, Total = 0f;
         private List<string> MaterialNumbers = new();
         protected override async Task OnInitializedAsync()
         {

@@ -122,15 +122,43 @@
          "ObjectType": 0
       },
       {
-         "Name": "[dbo].[SystemRolePermissions]",
-         "ObjectType": 0
-      },
-      {
          "Name": "[dbo].[UserInformation]",
          "ObjectType": 0
       },
       {
+         "Name": "[dbo].[ArticlesToPurchaseView]",
+         "ObjectType": 3
+      },
+      {
+         "Name": "[dbo].[ArticlesView]",
+         "ObjectType": 3
+      },
+      {
          "Name": "[dbo].[AssociatedContactsView]",
+         "ObjectType": 3
+      },
+      {
+         "Name": "[dbo].[ProjectProductsView]",
+         "ObjectType": 3
+      },
+      {
+         "Name": "[dbo].[ProjectsView]",
+         "ObjectType": 3
+      },
+      {
+         "Name": "[dbo].[PurchaseOrdersView]",
+         "ObjectType": 3
+      },
+      {
+         "Name": "[dbo].[QuotesView]",
+         "ObjectType": 3
+      },
+      {
+         "Name": "[dbo].[RequisitionArticlesView]",
+         "ObjectType": 3
+      },
+      {
+         "Name": "[dbo].[RequisitionsView]",
          "ObjectType": 3
       },
       {
@@ -138,7 +166,7 @@
          "ObjectType": 3
       }
    ],
-   "UiHint": "DESKTOP-HS8MA5R.MC-PACK-DB",
+   "UiHint": "DESKTOP-MUSHFVU.MCPackDb",
    "UseBoolPropertiesWithoutDefaultSql": false,
    "UseDatabaseNames": true,
    "UseDbContextSplitting": false,

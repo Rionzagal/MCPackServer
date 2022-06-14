@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace MCPackServer.Entities
 {
+    [Index(nameof(GroupId), Name = "FK_ArticleFamilies_ArticleGroups")]
     public partial class ArticleFamilies
     {
         public ArticleFamilies()

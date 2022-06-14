@@ -12,37 +12,52 @@ namespace MCPackServer.Pages.PurchaseOrdersModule
 
         #region Parameters
         [CascadingParameter]
-        public MudDialogInstance Dialog { get; set; }
+        public MudDialogInstance? Dialog { get; set; }
         [Parameter]
         public States State { get; set; }
         [Parameter]
-        public PurchaseOrders Model { get; set; }
+        public PurchaseOrdersView? ModelView { get; set; }
         #endregion
 
         #region Dialog variables
-        private string Title;
-        private string TitleIcon;
+        private string Title = string.Empty;
+        private string TitleIcon = string.Empty;
         private bool Disabled;
         private Color ButtonColor;
         private bool _processing = false;
         #endregion
 
         #region API elements
-        private MudForm Form;
+        private MudForm Form = new();
         private List<Providers> providers = new();
-        private List<Projects> projects = new();
+        private List<ProjectsView> projects = new();
         private List<Requisitions> requisitions = new();
+        private PurchaseOrders Model = new()
+        {
+            OrderNumber = "0001",
+            DeliveryDate = DateTime.Today,
+            Status = "Pendiente"
+        };
         #endregion
 
         protected override async Task OnInitializedAsync()
         {
+            string MostRecentOrderNumber = (await _service.GetForGridAsync<PurchaseOrders>(
+                new() { Take = 1 },
+                sortField: nameof(PurchaseOrders.IssuedDate),
+                order: "DESC"))?
+                .FirstOrDefault()?
+                .OrderNumber ?? "0";
+            int ODdigits = (int)Math.Floor(Math.Log10(int.Parse(MostRecentOrderNumber) + 1) + 1);
+            Model.OrderNumber = (int.Parse(MostRecentOrderNumber) + 1).ToString($"d{(ODdigits < 4 ? 4 : ODdigits)}");
+            if (null != ModelView)
+                Model = await _service.GetByKeyAsync<PurchaseOrders>(ModelView.Id);
             if (States.Add == State) //representing an Add dialog
             {
                 Title = "Añadir nuevo proyecto";
                 TitleIcon = Icons.Material.Filled.Create;
                 Disabled = false;
                 ButtonColor = Color.Success;
-                Model.Status = "Pendiente";
             }
             else if (States.Edit == State) //representing an Edit dialog
             {
@@ -59,9 +74,8 @@ namespace MCPackServer.Pages.PurchaseOrdersModule
                 ButtonColor = Color.Error;
             }
             else //should not get to this option
-            {
-                Dialog.Cancel();
-            }
+                Dialog?.Cancel();
+            // Load the Autocomplete elements items.
             await ProjectsServerReload(string.Empty);
             await ProvidersServerReload(string.Empty);
             await RequisitionsServerReload(string.Empty);
@@ -70,18 +84,44 @@ namespace MCPackServer.Pages.PurchaseOrdersModule
         private async Task Submit()
         {
             _processing = true;
-            string response = string.Empty;
             await Form.Validate();
             if (Form.IsValid)
             {
-                if (States.Add == State) Model.IssuedDate = DateTime.Now;
-                if (States.Add == State) 
-                    response = JsonConvert.SerializeObject(await _ordersService.AddAsync(Model));
-                else if (States.Edit == State) 
-                    response = JsonConvert.SerializeObject(await _ordersService.UpdateAsync(Model));
-                else if (States.Delete == State) 
-                    response = JsonConvert.SerializeObject(await _ordersService.RemoveAsync(Model));
-                Dialog.Close(DialogResult.Ok(JsonConvert.DeserializeObject<ActionResponse<PurchaseOrders>>(response)));
+                if (States.Add == State)
+                {
+                    Model.IssuedDate = DateTime.Now;
+                    var response = await _service.AddAsync(Model);
+                    if (response.IsSuccessful)
+                        Snackbar.Add("Órden de compra añadida con éxito.", Severity.Success);
+                    else
+                        foreach (var error in response.Errors)
+                        {
+                            Snackbar.Add(error, Severity.Error);
+                        }
+                }
+                else if (States.Edit == State)
+                {
+                    var response = await _service.UpdateAsync(Model);
+                    if (response.IsSuccessful)
+                        Snackbar.Add("Órden de compra editada con éxito.", Severity.Success);
+                    else
+                        foreach (var error in response.Errors)
+                        {
+                            Snackbar.Add(error, Severity.Error);
+                        }
+                }
+                else if (States.Delete == State)
+                {
+                    var response = await _service.RemoveAsync(Model);
+                    if (response.IsSuccessful)
+                        Snackbar.Add("Órden de compra eliminada con éxito.", Severity.Success);
+                    else
+                        foreach (var error in response.Errors)
+                        {
+                            Snackbar.Add(error, Severity.Error);
+                        }
+                }
+                Dialog?.Close();
             }
             else
             {
@@ -99,10 +139,10 @@ namespace MCPackServer.Pages.PurchaseOrdersModule
                 RequiresCounts = false,
                 Where = new List<WhereFilter>
                 {
-                    new WhereFilter { Field = "LegalName", Value = filter }
+                    new WhereFilter { Field = nameof(Providers.LegalName), Value = filter }
                 }
             };
-            var response = await _providersService.GetForGridAsync<Providers>(dm, getAll: true);
+            var response = await _service.GetForGridAsync<Providers>(dm, getAll: true);
             if (null != response)
             {
                 providers = response.ToList();
@@ -117,7 +157,8 @@ namespace MCPackServer.Pages.PurchaseOrdersModule
             if (0 != Id)
             {
                 var match = providers.SingleOrDefault(p => Id == p.Id);
-                if (null != match) providerName = match.LegalName;
+                if (null != match)
+                    providerName = match.LegalName;
             }
             return providerName;
         }
@@ -128,7 +169,8 @@ namespace MCPackServer.Pages.PurchaseOrdersModule
             if (0 != Id)
             {
                 var match = providers.SingleOrDefault(providers => providers.Id == Id);
-                if (null != match) discount = match.Discount;
+                if (null != match)
+                    discount = match.Discount;
             }
             return discount;
         }
@@ -140,10 +182,10 @@ namespace MCPackServer.Pages.PurchaseOrdersModule
             {
                 Where = new List<WhereFilter>()
                 {
-                    new WhereFilter(){ Field = "ProjectNumber", Value = filter }
+                    new WhereFilter(){ Field = nameof(Projects.ProjectNumber), Value = filter }
                 }
             };
-            var response = await _projectsService.GetForGridAsync<Projects>(ProjectsDm, getAll: true);
+            var response = await _service.GetForGridAsync<ProjectsView>(ProjectsDm, getAll: true);
             if (null != response)
             {
                 projects = response.ToList();
@@ -158,7 +200,8 @@ namespace MCPackServer.Pages.PurchaseOrdersModule
             if (Id > 0)
             {
                 var match = projects.SingleOrDefault(p => p.Id == Id);
-                if (null != match) number = match.ProjectNumber;
+                if (null != match)
+                    number = match.ProjectNumber;
             }
             return number;
         }
@@ -171,10 +214,10 @@ namespace MCPackServer.Pages.PurchaseOrdersModule
                 Take = 0,
                 Where = new List<WhereFilter>
                 {
-                    new WhereFilter { Field = "RequisitionNumber", Value = filter }
+                    new WhereFilter { Field = nameof(Requisitions.RequisitionNumber), Value = filter }
                 }
             };
-            var response = await _requisitionsService.GetForGridAsync<Requisitions>(dm, getAll: true);
+            var response = await _service.GetForGridAsync<Requisitions>(dm, getAll: true);
             if (null != response)
             {
                 requisitions = response.ToList();
@@ -189,7 +232,8 @@ namespace MCPackServer.Pages.PurchaseOrdersModule
             if (Id.HasValue && 0 != Id.Value)
             {
                 var match = requisitions.SingleOrDefault(requisition => requisition.Id == Id);
-                if (null != match) number = match.RequisitionNumber;
+                if (null != match)
+                    number = match.RequisitionNumber;
             }
             return number;
         }
@@ -200,7 +244,8 @@ namespace MCPackServer.Pages.PurchaseOrdersModule
             if (Id.HasValue && 0 != Id.Value)
             {
                 var match = requisitions.SingleOrDefault(requisitions => requisitions.Id == Id);
-                if (null != match && match.RequiredDate.HasValue) date = match.RequiredDate.Value;
+                if (null != match && match.RequiredDate.HasValue)
+                    date = match.RequiredDate.Value;
             }
             return date;
         }

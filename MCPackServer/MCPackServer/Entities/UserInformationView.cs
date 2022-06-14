@@ -18,13 +18,13 @@ namespace MCPackServer.Entities
         public string UserName { get; set; }
         [StringLength(256)]
         public string Email { get; set; }
-        public bool Active { get; set; }
+        public short Active { get; set; }
         [Required]
         [StringLength(101)]
         public string ShortName { get; set; }
+        [Required]
         [StringLength(203)]
         public string FullName { get; set; }
-        [Column(TypeName = "datetime")]
         public DateTime? BirthDate { get; set; }
         [StringLength(50)]
         public string Gender { get; set; }

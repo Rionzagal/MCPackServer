@@ -19,16 +19,16 @@ namespace MCPackServer.Pages.ProjectsModule
 
         #region Parameters
         [CascadingParameter]
-        public MudDialogInstance Dialog { get; set; }
+        public MudDialogInstance? Dialog { get; set; }
         [Parameter]
         public States State { get; set; }
         [Parameter]
-        public Projects Model { get; set; }
+        public ProjectsView? ModelView { get; set; }
         #endregion
 
         #region Dialog variables
-        private string Title;
-        private string TitleIcon;
+        private string Title = string.Empty;
+        private string TitleIcon = string.Empty;
         private bool Disabled;
         private Color ButtonColor;
         private bool _processing = false;
@@ -36,9 +36,17 @@ namespace MCPackServer.Pages.ProjectsModule
         #endregion
 
         #region API elements
-        private MudForm Form;
-        private List<Projects> ExistentProjects = new();
+        private MudForm Form = new();
+        private List<ProjectsView> ExistentProjects = new();
         private List<Clients> ClientsList = new();
+        private Projects Model = new()
+        {
+            ProjectNumber = "01",
+            Type = "Proyecto",
+            AdmissionDate = DateTime.Today,
+            CommitmentDate = DateTime.Today,
+            DeliveryDate = DateTime.Today
+        };
         #endregion
 
         protected override async Task OnInitializedAsync()
@@ -73,21 +81,22 @@ namespace MCPackServer.Pages.ProjectsModule
             }
             else //should not get to this option
             {
-                Dialog.Cancel();
+                Dialog?.Cancel();
             }
-
             await GetExistentProjects();
-            if (ExistentProjects.Any())
-                Model.ProjectNumber = (ExistentProjects.Max(p => int.Parse(p.ProjectNumber)) + 1).ToString("d4");
+            if (null != ModelView)
+                Model = await _service.GetByKeyAsync<Projects>(ModelView.Id);
             else
-                Model.ProjectNumber = "0001";
+            {
+                if (ExistentProjects.Any())
+                    Model.ProjectNumber = (ExistentProjects.Max(p => int.Parse(p.ProjectNumber)) + 1).ToString("d4");
+            }
         }
 
         private async Task Submit()
         {
             bool ProjectValid = true;
             _processing = true;
-            string response = string.Empty;
             if (States.Add == State)
             {
                 Model.Code = $"{Model.Id}C{Model.ClientId:4d}T{Model.Type.FirstOrDefault()}";
@@ -105,13 +114,46 @@ namespace MCPackServer.Pages.ProjectsModule
             await Form.Validate();
             if (Form.IsValid && ProjectValid)
             {
-                if (States.Add == State) 
-                    response = JsonConvert.SerializeObject(await _projectsService.AddAsync(Model));
+                if (States.Add == State)
+                {
+                    var response = await _service.AddAsync(Model);
+                    if (response.IsSuccessful)
+                        Snackbar.Add("Proyecto añadido con éxito.", Severity.Success);
+                    else
+                    {
+                        foreach (var error in response.Errors)
+                        {
+                            Snackbar.Add(error, Severity.Error);
+                        }
+                    }
+                }
                 else if (States.Edit == State)
-                    response = JsonConvert.SerializeObject(await _projectsService.UpdateAsync(Model));
+                {
+                    var response = await _service.UpdateAsync(Model);
+                    if (response.IsSuccessful)
+                        Snackbar.Add("Proyecto editado con éxito.", Severity.Success);
+                    else
+                    {
+                        foreach (var error in response.Errors)
+                        {
+                            Snackbar.Add(error, Severity.Error);
+                        }
+                    }
+                }
                 else if (States.Delete == State)
-                    response = JsonConvert.SerializeObject(await _projectsService.RemoveAsync(Model));
-                Dialog.Close(DialogResult.Ok(JsonConvert.DeserializeObject<ActionResponse<Projects>>(response)));
+                {
+                    var response = await _service.RemoveAsync(Model);
+                    if (response.IsSuccessful)
+                        Snackbar.Add("Proyecto eliminado con éxito.", Severity.Success);
+                    else
+                    {
+                        foreach (var error in response.Errors)
+                        {
+                            Snackbar.Add(error, Severity.Error);
+                        }
+                    }
+                }
+                Dialog?.Close();
             }
             else
             {
@@ -126,8 +168,9 @@ namespace MCPackServer.Pages.ProjectsModule
         private async Task GetExistentProjects()
         {
             DataManagerRequest request = new();
-            var response = await _projectsService.GetForGridAsync<Projects>(request, "ProjectNumber", "DESC");
-            if (response != null) ExistentProjects = response.ToList();
+            var response = await _service.GetForGridAsync<ProjectsView>(request, "ProjectNumber", "DESC");
+            if (response != null)
+                ExistentProjects = response.ToList();
         }
 
         private async Task<IEnumerable<int>> ClientsServerReload(string filter = "")
@@ -164,7 +207,7 @@ namespace MCPackServer.Pages.ProjectsModule
         private string ProjectValidation(string input)
         {
             if (ExistentProjects.Any(p => p.ProjectNumber == input)) return "Este proyecto ya existe; inserte un número válido.";
-            return null;
+            return string.Empty;
         }
     }
 }

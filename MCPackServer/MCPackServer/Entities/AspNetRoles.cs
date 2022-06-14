@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace MCPackServer.Entities
 {
+    [Index(nameof(NormalizedName), Name = "RoleNameIndex", IsUnique = true)]
     public partial class AspNetRoles
     {
         public AspNetRoles()
@@ -17,6 +18,7 @@ namespace MCPackServer.Entities
         }
 
         [Key]
+        [StringLength(450)]
         public string Id { get; set; }
         [StringLength(256)]
         public string Name { get; set; }
@@ -24,8 +26,6 @@ namespace MCPackServer.Entities
         public string NormalizedName { get; set; }
         public string ConcurrencyStamp { get; set; }
 
-        [InverseProperty("Role")]
-        public virtual SystemRolePermissions SystemRolePermissions { get; set; }
         [InverseProperty("Role")]
         public virtual ICollection<AspNetRoleClaims> AspNetRoleClaims { get; set; }
         [InverseProperty("Role")]

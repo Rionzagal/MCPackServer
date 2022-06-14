@@ -35,7 +35,6 @@ namespace MCPackServer.Services
             return await conn.QueryAsync<AspNetUsers, UserInformation, AspNetUsers>(
                 query, param: parameters, map: (user, userInfo) =>
                 {
-                    user.UserInformation = userInfo;
                     return user;
                 }) as IEnumerable<T>;
         }
@@ -52,10 +51,9 @@ namespace MCPackServer.Services
                 var result = await conn.QueryAsync<AspNetUsers, UserInformation, AspNetUsers>(
                 query, param: parameters, map: (user, userInfo) =>
                 {
-                    user.UserInformation = userInfo;
                     return user;
                 }, splitOn: "Id, AspNetUserId");
-                return result.FirstOrDefault() as T;
+                return result.First() as T;
             }
             catch (Exception ex)
             {

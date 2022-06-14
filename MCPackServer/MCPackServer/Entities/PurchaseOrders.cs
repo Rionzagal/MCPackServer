@@ -8,6 +8,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace MCPackServer.Entities
 {
+    [Index(nameof(ProjectId), Name = "FK_PurchaseOrders_Projects_idx")]
+    [Index(nameof(ProviderId), Name = "FK_PurchaseOrders_Providers")]
     public partial class PurchaseOrders
     {
         public PurchaseOrders()
@@ -18,25 +20,24 @@ namespace MCPackServer.Entities
         [Key]
         public int Id { get; set; }
         public int ProjectId { get; set; }
-        [Column(TypeName = "datetime")]
         public DateTime? IssuedDate { get; set; }
         public int ProviderId { get; set; }
         public int? RequisitionId { get; set; }
-        [Column(TypeName = "datetime")]
         public DateTime? DeliveryDate { get; set; }
         [Required]
-        [StringLength(10)]
+        [StringLength(5)]
         public string Currency { get; set; }
         public float Discount { get; set; }
         [Required]
-        [StringLength(50)]
+        [StringLength(20)]
         public string Status { get; set; }
-        [Column(TypeName = "datetime")]
         public DateTime? ReceptionDate { get; set; }
         [StringLength(50)]
         public string InvoiceNumber { get; set; }
+        [StringLength(250)]
         public string Observations { get; set; }
-        [StringLength(50)]
+        [Required]
+        [StringLength(20)]
         public string OrderNumber { get; set; }
 
         [ForeignKey(nameof(ProjectId))]
@@ -45,9 +46,6 @@ namespace MCPackServer.Entities
         [ForeignKey(nameof(ProviderId))]
         [InverseProperty(nameof(Providers.PurchaseOrders))]
         public virtual Providers Provider { get; set; }
-        [ForeignKey(nameof(RequisitionId))]
-        [InverseProperty(nameof(Requisitions.PurchaseOrders))]
-        public virtual Requisitions Requisition { get; set; }
         [InverseProperty("PurchaseOrder")]
         public virtual ICollection<ArticlesToPurchase> ArticlesToPurchase { get; set; }
     }

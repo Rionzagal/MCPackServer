@@ -1,6 +1,4 @@
 ﻿@page "/Articles"
-@inject IFamiliesService _familiesService
-@inject IQuotesService _quotesService
 @inject IProvidersService _providersService
 
 @attribute [Authorize (Policy = @Constants.Permissions.Articles.View)]
@@ -8,7 +6,7 @@
 <MudText Typo="Typo.h3" Align="Align.Center">CATÁLOGO DE MATERIALES Y COTIZACIONES</MudText>
 
 <MudExpansionPanels MultiExpansion>
-    <MudExpansionPanel @ref="GroupsPanel" Text="@($"Grupo seleccionado: {SelectedGroup.Name ?? "N/A"}")">
+    <MudExpansionPanel @ref="GroupsPanel" Text="@($"Grupo seleccionado: {SelectedGroup.Name ?? "N/A"}")" IsInitiallyExpanded >
         <MudCard Class="my-2" Elevation="0">
             <MudCardHeader>
                 <CardHeaderContent>
@@ -96,9 +94,8 @@
     <MudExpansionPanel @ref="ArticlesPanel" Disabled="@(0 == SelectedFamily.Id)" IsExpandedChanged="RenderArticles" 
                        Text="@($"Artículo seleccionado: {SelectedArticle.Name ?? "N/A"}")">
         <MudPaper Class="my-3" Elevation="0">
-            <MudTable @ref="ArticleTable" T="PurchaseArticles" Dense Hover FixedHeader Height="400px"
-                      CustomHeader Striped OnRowClick="OnSelectedArticleRow"
-                      ServerData="@(new Func<TableState, Task<TableData<PurchaseArticles>>>(ArticleServerReload))">
+            <MudTable @ref="ArticleTable" T="ArticlesView" Dense Hover FixedHeader Height="400px"
+                      CustomHeader Striped OnRowClick="OnSelectedArticleRow" ServerData="ArticleServerReload">
                 <ToolBarContent>
                     <MudText Typo="Typo.h6">Artículos registrados</MudText>
                     <MudSpacer />
@@ -119,9 +116,9 @@
                 </ToolBarContent>
                 <HeaderContent>
                     <MudTHeadRow>
-                        <MudTh><MudTableSortLabel SortLabel="Name" T="PurchaseArticles">Nomrbe</MudTableSortLabel></MudTh>
-                        <MudTh><MudTableSortLabel SortLabel="TradeMark" T="PurchaseArticles">Marca</MudTableSortLabel></MudTh>
-                        <MudTh><MudTableSortLabel SortLabel="Code" T="PurchaseArticles">Código</MudTableSortLabel></MudTh>
+                        <MudTh><MudTableSortLabel SortLabel="Name" T="ArticlesView">Nomrbe</MudTableSortLabel></MudTh>
+                        <MudTh><MudTableSortLabel SortLabel="TradeMark" T="ArticlesView">Marca</MudTableSortLabel></MudTh>
+                        <MudTh><MudTableSortLabel SortLabel="Code" T="ArticlesView">Código</MudTableSortLabel></MudTh>
                     </MudTHeadRow>
                     <MudTHeadRow>
                         <MudTh>
@@ -138,7 +135,7 @@
                 <RowTemplate>
                     <MudTd DataLabel="Nombre">@context.Name</MudTd>
                     <MudTd DataLabel="Marca comercial">@(context.TradeMark ?? "N/A")</MudTd>
-                    <MudTd DataLabel="Código">@($"{SelectedGroup.Code}-{SelectedFamily.Code}-{context.Code}")</MudTd>
+                    <MudTd DataLabel="Código">@context.Code</MudTd>
                 </RowTemplate>
                 <NoRecordsContent>
                     <MudText>Sin artículos encontrados</MudText>
@@ -193,7 +190,7 @@
                     <MudGrid Class="m-3" Style="width: inherit; height:500px; overflow-y:scroll;">
                         <MudItem xs="12">
                             <MudText Typo="Typo.subtitle1" Align="Align.Left">Código</MudText>
-                            <MudTextField Variant="Variant.Outlined" Value="@($"{SelectedGroup.Code}-{SelectedFamily.Code}-{SelectedArticle.Code}")" ReadOnly />
+                            <MudTextField Variant="Variant.Outlined" Value="@SelectedArticle.Code" ReadOnly />
                         </MudItem>
                         <MudItem xs="12">
                             <MudText Typo="Typo.subtitle1" Align="Align.Left">Nombre</MudText>
@@ -221,9 +218,9 @@
                 {
                     <MudTabPanel Text="Cotizaciones" ID="@Guid.NewGuid()" Tag="@Guid.NewGuid()" >
                         <MudPaper Elevation="0" Class="my-3" Style="height:500px;">
-                            <MudTable @ref="QuoteTable" T="Quotes" Dense Hover FixedHeader
+                            <MudTable @ref="QuoteTable" T="QuotesView" Dense Hover FixedHeader
                                       CustomHeader Striped Height="400px" OnRowClick="OnSelectedQuoteRow"
-                                      ServerData="@(new Func<TableState, Task<TableData<Quotes>>>(QuotesServerReload))">
+                                      ServerData="QuotesServerReload">
                                 <ToolBarContent>
                                     <MudText Typo="Typo.h6">Cotizaciones registradas</MudText>
                                     <MudSpacer />
@@ -243,11 +240,11 @@
                                 </ToolBarContent>
                                 <HeaderContent>
                                     <MudTHeadRow>
-                                        <MudTh><MudTableSortLabel SortLabel="ProviderId" T="Quotes">Proveedor</MudTableSortLabel></MudTh>
-                                        <MudTh><MudTableSortLabel SortLabel="SKU" T="Quotes">SKU</MudTableSortLabel></MudTh>
-                                        <MudTh><MudTableSortLabel SortLabel="Price" T="Quotes">Precio</MudTableSortLabel></MudTh>
-                                        <MudTh><MudTableSortLabel SortLabel="Currency" T="Quotes">Divisa</MudTableSortLabel></MudTh>
-                                        <MudTh><MudTableSortLabel SortLabel="DateUpdated" T="Quotes">Fecha de actualización</MudTableSortLabel></MudTh>
+                                        <MudTh><MudTableSortLabel SortLabel="ProviderId" T="QuotesView">Proveedor</MudTableSortLabel></MudTh>
+                                        <MudTh><MudTableSortLabel SortLabel="SKU" T="QuotesView">SKU</MudTableSortLabel></MudTh>
+                                        <MudTh><MudTableSortLabel SortLabel="Price" T="QuotesView">Precio</MudTableSortLabel></MudTh>
+                                        <MudTh><MudTableSortLabel SortLabel="Currency" T="QuotesView">Divisa</MudTableSortLabel></MudTh>
+                                        <MudTh><MudTableSortLabel SortLabel="DateUpdated" T="QuotesView">Fecha de actualización</MudTableSortLabel></MudTh>
                                     </MudTHeadRow>
                                     <MudTHeadRow>
                                         <MudTh>
@@ -268,7 +265,7 @@
                                     </MudTHeadRow>
                                 </HeaderContent>
                                 <RowTemplate>
-                                    <MudTd DataLabel="Proveedor">@context.Provider.MarketName</MudTd>
+                                    <MudTd DataLabel="Proveedor">@context.ProviderMarketName</MudTd>
                                     <MudTd DataLabel="SKU">@(context.SKU ?? "N/A")</MudTd>
                                     <MudTd DataLabel="Precio">$@context.Price.ToString("n2")</MudTd>
                                     <MudTd DataLabel="Divisa">@context.Currency</MudTd>
@@ -288,12 +285,12 @@
                     </MudTabPanel>
                     @foreach (var quote in SelectedQuotes)
                     {
-                        <MudTabPanel Text="@($"Cotización: {quote.Provider.MarketName}")" Tag="@quote.Id" ID="@quote.Id">
+                        <MudTabPanel Text="@($"Cotización: {quote.ProviderMarketName}")" Tag="@quote.Id" ID="@quote.Id">
                             <MudCard Class="m-3" Elevation="0">
                                 <MudCardHeader Style="height:100px;">
                                     <CardHeaderContent>
                                         <MudText Typo="Typo.subtitle1">
-                                            <b>Artículo cotizado con:</b> @quote.Provider.MarketName
+                                            <b>Artículo cotizado con:</b> @quote.ProviderMarketName
                                         </MudText>
                                     </CardHeaderContent>
                                 </MudCardHeader>
@@ -309,7 +306,7 @@
                                         </MudItem>
                                         <MudItem xs="6">
                                             <MudText Typo="Typo.subtitle1" Align="Align.Left">Precio con descuento</MudText>
-                                            <MudTextField Value="@($"${(quote.Price*(1 - quote.Provider.Discount/100)).ToString("n2")} {quote.Currency}")"
+                                            <MudTextField Value="@($"${(quote.Price*(1 - quote.ProviderDiscount/100)).ToString("n2")} {quote.Currency}")"
                                                 Variant="Variant.Outlined" ReadOnly />
                                         </MudItem>
                                         <MudItem xs="12">

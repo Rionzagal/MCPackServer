@@ -12,15 +12,17 @@ namespace MCPackServer.Entities
     public partial class Keys
     {
         [Key]
+        [StringLength(450)]
         public string Id { get; set; }
         public int Version { get; set; }
         public DateTime Created { get; set; }
+        [StringLength(450)]
         public string Use { get; set; }
         [Required]
         [StringLength(100)]
         public string Algorithm { get; set; }
-        public bool IsX509Certificate { get; set; }
-        public bool DataProtected { get; set; }
+        public short IsX509Certificate { get; set; }
+        public short DataProtected { get; set; }
         [Required]
         public string Data { get; set; }
     }

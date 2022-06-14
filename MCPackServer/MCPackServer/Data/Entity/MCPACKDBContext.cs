@@ -23,6 +23,8 @@ namespace MCPackServer.Data.Entity
         public virtual DbSet<ArticleFamilies> ArticleFamilies { get; set; }
         public virtual DbSet<ArticleGroups> ArticleGroups { get; set; }
         public virtual DbSet<ArticlesToPurchase> ArticlesToPurchase { get; set; }
+        public virtual DbSet<ArticlesToPurchaseView> ArticlesToPurchaseView { get; set; }
+        public virtual DbSet<ArticlesView> ArticlesView { get; set; }
         public virtual DbSet<AspNetRoleClaims> AspNetRoleClaims { get; set; }
         public virtual DbSet<AspNetRoles> AspNetRoles { get; set; }
         public virtual DbSet<AspNetUserClaims> AspNetUserClaims { get; set; }
@@ -40,21 +42,26 @@ namespace MCPackServer.Data.Entity
         public virtual DbSet<MCProducts> MCProducts { get; set; }
         public virtual DbSet<PersistedGrants> PersistedGrants { get; set; }
         public virtual DbSet<ProjectProducts> ProjectProducts { get; set; }
+        public virtual DbSet<ProjectProductsView> ProjectProductsView { get; set; }
         public virtual DbSet<Projects> Projects { get; set; }
+        public virtual DbSet<ProjectsView> ProjectsView { get; set; }
         public virtual DbSet<ProviderContacts> ProviderContacts { get; set; }
         public virtual DbSet<Providers> Providers { get; set; }
         public virtual DbSet<PurchaseArticles> PurchaseArticles { get; set; }
         public virtual DbSet<PurchaseOrders> PurchaseOrders { get; set; }
+        public virtual DbSet<PurchaseOrdersView> PurchaseOrdersView { get; set; }
         public virtual DbSet<Quotes> Quotes { get; set; }
+        public virtual DbSet<QuotesView> QuotesView { get; set; }
         public virtual DbSet<RequisitionArticles> RequisitionArticles { get; set; }
+        public virtual DbSet<RequisitionArticlesView> RequisitionArticlesView { get; set; }
         public virtual DbSet<Requisitions> Requisitions { get; set; }
-        public virtual DbSet<SystemRolePermissions> SystemRolePermissions { get; set; }
+        public virtual DbSet<RequisitionsView> RequisitionsView { get; set; }
         public virtual DbSet<UserInformation> UserInformation { get; set; }
         public virtual DbSet<UserInformationView> UserInformationView { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.HasAnnotation("Relational:Collation", "Modern_Spanish_CI_AS");
+            modelBuilder.HasAnnotation("Relational:Collation", "SQL_Latin1_General_CP1_CI_AS");
 
             modelBuilder.Entity<ArticleFamilies>(entity =>
             {
@@ -72,6 +79,8 @@ namespace MCPackServer.Data.Entity
 
             modelBuilder.Entity<ArticleGroups>(entity =>
             {
+                entity.Property(e => e.Code).IsUnicode(false);
+
                 entity.Property(e => e.Description).IsUnicode(false);
 
                 entity.Property(e => e.Name).IsUnicode(false);
@@ -79,7 +88,12 @@ namespace MCPackServer.Data.Entity
 
             modelBuilder.Entity<ArticlesToPurchase>(entity =>
             {
-                entity.HasKey(e => new { e.QuoteId, e.PurchaseOrderId });
+                entity.HasKey(e => new { e.QuoteId, e.PurchaseOrderId })
+                    .HasName("PK__Articles__FFA0320B4F242D90");
+
+                entity.Property(e => e.DepartureDate).HasPrecision(3);
+
+                entity.Property(e => e.ReceptionDate).HasPrecision(3);
 
                 entity.HasOne(d => d.PurchaseOrder)
                     .WithMany(p => p.ArticlesToPurchase)
@@ -93,33 +107,146 @@ namespace MCPackServer.Data.Entity
                     .HasConstraintName("FK_ArticlesToPurchase_Quotes");
             });
 
+            modelBuilder.Entity<ArticlesToPurchaseView>(entity =>
+            {
+                entity.ToView("ArticlesToPurchaseView");
+
+                entity.Property(e => e.ArticleCode).IsUnicode(false);
+
+                entity.Property(e => e.ArticleName).IsUnicode(false);
+
+                entity.Property(e => e.Currency).IsUnicode(false);
+
+                entity.Property(e => e.DepartureDate).HasPrecision(3);
+
+                entity.Property(e => e.FamilyName).IsUnicode(false);
+
+                entity.Property(e => e.GroupName).IsUnicode(false);
+
+                entity.Property(e => e.Model).IsUnicode(false);
+
+                entity.Property(e => e.QuoteDate).HasPrecision(3);
+
+                entity.Property(e => e.ReceptionDate).HasPrecision(3);
+
+                entity.Property(e => e.SKU).IsUnicode(false);
+
+                entity.Property(e => e.TradeMark).IsUnicode(false);
+
+                entity.Property(e => e.Unit).IsUnicode(false);
+            });
+
+            modelBuilder.Entity<ArticlesView>(entity =>
+            {
+                entity.ToView("ArticlesView");
+
+                entity.Property(e => e.Code).IsUnicode(false);
+
+                entity.Property(e => e.Description).IsUnicode(false);
+
+                entity.Property(e => e.FamilyName).IsUnicode(false);
+
+                entity.Property(e => e.GroupName).IsUnicode(false);
+
+                entity.Property(e => e.Model).IsUnicode(false);
+
+                entity.Property(e => e.Name).IsUnicode(false);
+
+                entity.Property(e => e.Observations).IsUnicode(false);
+
+                entity.Property(e => e.TradeMark).IsUnicode(false);
+
+                entity.Property(e => e.Unit).IsUnicode(false);
+            });
+
+            modelBuilder.Entity<AspNetRoleClaims>(entity =>
+            {
+                entity.Property(e => e.ClaimType).IsUnicode(false);
+
+                entity.Property(e => e.ClaimValue).IsUnicode(false);
+
+                entity.Property(e => e.RoleId).IsUnicode(false);
+            });
+
             modelBuilder.Entity<AspNetRoles>(entity =>
             {
-                entity.HasIndex(e => e.NormalizedName, "RoleNameIndex")
-                    .IsUnique()
-                    .HasFilter("([NormalizedName] IS NOT NULL)");
+                entity.Property(e => e.Id).IsUnicode(false);
+
+                entity.Property(e => e.ConcurrencyStamp).IsUnicode(false);
+
+                entity.Property(e => e.Name).IsUnicode(false);
+
+                entity.Property(e => e.NormalizedName).IsUnicode(false);
+            });
+
+            modelBuilder.Entity<AspNetUserClaims>(entity =>
+            {
+                entity.Property(e => e.ClaimType).IsUnicode(false);
+
+                entity.Property(e => e.ClaimValue).IsUnicode(false);
+
+                entity.Property(e => e.UserId).IsUnicode(false);
             });
 
             modelBuilder.Entity<AspNetUserLogins>(entity =>
             {
-                entity.HasKey(e => new { e.LoginProvider, e.ProviderKey });
+                entity.HasKey(e => new { e.LoginProvider, e.ProviderKey })
+                    .HasName("PK__AspNetUs__2B2C5B52AF8CE553");
+
+                entity.Property(e => e.LoginProvider).IsUnicode(false);
+
+                entity.Property(e => e.ProviderKey).IsUnicode(false);
+
+                entity.Property(e => e.ProviderDisplayName).IsUnicode(false);
+
+                entity.Property(e => e.UserId).IsUnicode(false);
             });
 
             modelBuilder.Entity<AspNetUserRoles>(entity =>
             {
-                entity.HasKey(e => new { e.UserId, e.RoleId });
+                entity.HasKey(e => new { e.UserId, e.RoleId })
+                    .HasName("PK__AspNetUs__AF2760ADC0C08EC5");
+
+                entity.Property(e => e.UserId).IsUnicode(false);
+
+                entity.Property(e => e.RoleId).IsUnicode(false);
             });
 
             modelBuilder.Entity<AspNetUserTokens>(entity =>
             {
-                entity.HasKey(e => new { e.UserId, e.LoginProvider, e.Name });
+                entity.HasKey(e => new { e.UserId, e.LoginProvider, e.Name })
+                    .HasName("PK__AspNetUs__8CC49841C513B5D3");
+
+                entity.Property(e => e.UserId).IsUnicode(false);
+
+                entity.Property(e => e.LoginProvider).IsUnicode(false);
+
+                entity.Property(e => e.Name).IsUnicode(false);
+
+                entity.Property(e => e.Value).IsUnicode(false);
             });
 
             modelBuilder.Entity<AspNetUsers>(entity =>
             {
-                entity.HasIndex(e => e.NormalizedUserName, "UserNameIndex")
-                    .IsUnique()
-                    .HasFilter("([NormalizedUserName] IS NOT NULL)");
+                entity.Property(e => e.Id).IsUnicode(false);
+
+                entity.Property(e => e.ConcurrencyStamp).IsUnicode(false);
+
+                entity.Property(e => e.Email).IsUnicode(false);
+
+                entity.Property(e => e.LockoutEnd).HasPrecision(6);
+
+                entity.Property(e => e.NormalizedEmail).IsUnicode(false);
+
+                entity.Property(e => e.NormalizedUserName).IsUnicode(false);
+
+                entity.Property(e => e.PasswordHash).IsUnicode(false);
+
+                entity.Property(e => e.PhoneNumber).IsUnicode(false);
+
+                entity.Property(e => e.SecurityStamp).IsUnicode(false);
+
+                entity.Property(e => e.UserName).IsUnicode(false);
             });
 
             modelBuilder.Entity<AssociatedContactsView>(entity =>
@@ -136,12 +263,13 @@ namespace MCPackServer.Data.Entity
 
                 entity.Property(e => e.Position).IsUnicode(false);
 
-                entity.Property(e => e.status).IsUnicode(false);
+                entity.Property(e => e.Status).IsUnicode(false);
             });
 
             modelBuilder.Entity<ClientContacts>(entity =>
             {
-                entity.HasKey(e => new { e.ClientId, e.ContactId });
+                entity.HasKey(e => new { e.ClientId, e.ContactId })
+                    .HasName("PK__ClientCo__43B8787D0917B1E8");
 
                 entity.HasOne(d => d.Client)
                     .WithMany(p => p.ClientContacts)
@@ -159,6 +287,8 @@ namespace MCPackServer.Data.Entity
                 entity.Property(e => e.City).IsUnicode(false);
 
                 entity.Property(e => e.Country).IsUnicode(false);
+
+                entity.Property(e => e.FiscalAddress).IsUnicode(false);
 
                 entity.Property(e => e.LegalName).IsUnicode(false);
 
@@ -186,18 +316,60 @@ namespace MCPackServer.Data.Entity
                 entity.Property(e => e.Position).IsUnicode(false);
             });
 
+            modelBuilder.Entity<DeviceCodes>(entity =>
+            {
+                entity.HasKey(e => e.UserCode)
+                    .HasName("PK__DeviceCo__1DF52D0DBB559CC6");
+
+                entity.Property(e => e.UserCode).IsUnicode(false);
+
+                entity.Property(e => e.ClientId).IsUnicode(false);
+
+                entity.Property(e => e.CreationTime).HasPrecision(6);
+
+                entity.Property(e => e.Data).IsUnicode(false);
+
+                entity.Property(e => e.Description).IsUnicode(false);
+
+                entity.Property(e => e.DeviceCode).IsUnicode(false);
+
+                entity.Property(e => e.Expiration).HasPrecision(6);
+
+                entity.Property(e => e.SessionId).IsUnicode(false);
+
+                entity.Property(e => e.SubjectId).IsUnicode(false);
+            });
+
+            modelBuilder.Entity<Keys>(entity =>
+            {
+                entity.Property(e => e.Id).IsUnicode(false);
+
+                entity.Property(e => e.Algorithm).IsUnicode(false);
+
+                entity.Property(e => e.Created).HasPrecision(6);
+
+                entity.Property(e => e.Data).IsUnicode(false);
+
+                entity.Property(e => e.Use).IsUnicode(false);
+            });
+
             modelBuilder.Entity<Logs>(entity =>
             {
                 entity.Property(e => e.Action).IsUnicode(false);
+
+                entity.Property(e => e.Exception).IsUnicode(false);
 
                 entity.Property(e => e.Message).IsUnicode(false);
 
                 entity.Property(e => e.TableName).IsUnicode(false);
 
+                entity.Property(e => e.TimeOfAction).HasPrecision(0);
+
+                entity.Property(e => e.UserId).IsUnicode(false);
+
                 entity.HasOne(d => d.User)
                     .WithMany(p => p.Logs)
                     .HasForeignKey(d => d.UserId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Logs_AspNetUsers");
             });
 
@@ -209,33 +381,85 @@ namespace MCPackServer.Data.Entity
 
                 entity.Property(e => e.Description).IsUnicode(false);
 
+                entity.Property(e => e.Model).IsUnicode(false);
+
+                entity.Property(e => e.Observations).IsUnicode(false);
+
+                entity.Property(e => e.Type).IsUnicode(false);
+            });
+
+            modelBuilder.Entity<PersistedGrants>(entity =>
+            {
+                entity.HasKey(e => e.Key)
+                    .HasName("PK__Persiste__C41E0288EF6C8C17");
+
+                entity.Property(e => e.Key).IsUnicode(false);
+
+                entity.Property(e => e.ClientId).IsUnicode(false);
+
+                entity.Property(e => e.ConsumedTime).HasPrecision(6);
+
+                entity.Property(e => e.CreationTime).HasPrecision(6);
+
+                entity.Property(e => e.Data).IsUnicode(false);
+
+                entity.Property(e => e.Description).IsUnicode(false);
+
+                entity.Property(e => e.Expiration).HasPrecision(6);
+
+                entity.Property(e => e.SessionId).IsUnicode(false);
+
+                entity.Property(e => e.SubjectId).IsUnicode(false);
+
                 entity.Property(e => e.Type).IsUnicode(false);
             });
 
             modelBuilder.Entity<ProjectProducts>(entity =>
             {
-                entity.HasKey(e => new { e.ProductId, e.ProjectId });
+                entity.HasKey(e => new { e.ProductId, e.ProjectId })
+                    .HasName("PK__ProjectP__A36D6D2248A13FAB");
 
                 entity.Property(e => e.Observations).IsUnicode(false);
 
                 entity.HasOne(d => d.Product)
                     .WithMany(p => p.ProjectProducts)
                     .HasForeignKey(d => d.ProductId)
-                    .HasConstraintName("FK_ProyectProducts_MCProducts");
+                    .HasConstraintName("FK_ProjectProducts_MCProducts");
 
                 entity.HasOne(d => d.Project)
                     .WithMany(p => p.ProjectProducts)
                     .HasForeignKey(d => d.ProjectId)
-                    .HasConstraintName("FK_ProyectProducts_Proyects");
+                    .HasConstraintName("FK_ProjectProducts_Projects");
+            });
+
+            modelBuilder.Entity<ProjectProductsView>(entity =>
+            {
+                entity.ToView("ProjectProductsView");
+
+                entity.Property(e => e.Observations).IsUnicode(false);
+
+                entity.Property(e => e.ProductCode).IsUnicode(false);
+
+                entity.Property(e => e.ProductDescription).IsUnicode(false);
+
+                entity.Property(e => e.ProductModel).IsUnicode(false);
+
+                entity.Property(e => e.ProductType).IsUnicode(false);
+
+                entity.Property(e => e.ProjectNumber).IsUnicode(false);
             });
 
             modelBuilder.Entity<Projects>(entity =>
             {
-                entity.Property(e => e.Id).ValueGeneratedNever();
+                entity.Property(e => e.AdmissionDate).HasPrecision(3);
 
                 entity.Property(e => e.AgreedCurrency).IsUnicode(false);
 
                 entity.Property(e => e.Code).IsUnicode(false);
+
+                entity.Property(e => e.CommitmentDate).HasPrecision(3);
+
+                entity.Property(e => e.DeliveryDate).HasPrecision(3);
 
                 entity.Property(e => e.DeliveryTime).IsUnicode(false);
 
@@ -247,6 +471,10 @@ namespace MCPackServer.Data.Entity
 
                 entity.Property(e => e.PaymentCurrency).IsUnicode(false);
 
+                entity.Property(e => e.ProjectNumber).IsUnicode(false);
+
+                entity.Property(e => e.RealDeliveryDate).HasPrecision(3);
+
                 entity.Property(e => e.SalesPerson).IsUnicode(false);
 
                 entity.Property(e => e.Type).IsUnicode(false);
@@ -257,9 +485,47 @@ namespace MCPackServer.Data.Entity
                     .HasConstraintName("FK_Proyects_Clients");
             });
 
+            modelBuilder.Entity<ProjectsView>(entity =>
+            {
+                entity.ToView("ProjectsView");
+
+                entity.Property(e => e.AdmissionDate).HasPrecision(3);
+
+                entity.Property(e => e.AgreedCurrency).IsUnicode(false);
+
+                entity.Property(e => e.ClientLegalName).IsUnicode(false);
+
+                entity.Property(e => e.ClientMarketName).IsUnicode(false);
+
+                entity.Property(e => e.Code).IsUnicode(false);
+
+                entity.Property(e => e.CommitmentDate).HasPrecision(3);
+
+                entity.Property(e => e.DeliveryDate).HasPrecision(3);
+
+                entity.Property(e => e.DeliveryTime).IsUnicode(false);
+
+                entity.Property(e => e.Description).IsUnicode(false);
+
+                entity.Property(e => e.Observations).IsUnicode(false);
+
+                entity.Property(e => e.PaymentConditions).IsUnicode(false);
+
+                entity.Property(e => e.PaymentCurrency).IsUnicode(false);
+
+                entity.Property(e => e.ProjectNumber).IsUnicode(false);
+
+                entity.Property(e => e.RealDeliveryDate).HasPrecision(3);
+
+                entity.Property(e => e.SalesPerson).IsUnicode(false);
+
+                entity.Property(e => e.Type).IsUnicode(false);
+            });
+
             modelBuilder.Entity<ProviderContacts>(entity =>
             {
-                entity.HasKey(e => new { e.ProviderId, e.ContactId });
+                entity.HasKey(e => new { e.ProviderId, e.ContactId })
+                    .HasName("PK__Provider__108A0A24318D726D");
 
                 entity.HasOne(d => d.Contact)
                     .WithMany(p => p.ProviderContacts)
@@ -327,32 +593,65 @@ namespace MCPackServer.Data.Entity
             {
                 entity.Property(e => e.Currency).IsUnicode(false);
 
+                entity.Property(e => e.DeliveryDate).HasPrecision(3);
+
                 entity.Property(e => e.InvoiceNumber).IsUnicode(false);
 
+                entity.Property(e => e.IssuedDate).HasPrecision(3);
+
                 entity.Property(e => e.Observations).IsUnicode(false);
+
+                entity.Property(e => e.OrderNumber).IsUnicode(false);
+
+                entity.Property(e => e.ReceptionDate).HasPrecision(3);
 
                 entity.Property(e => e.Status).IsUnicode(false);
 
                 entity.HasOne(d => d.Project)
                     .WithMany(p => p.PurchaseOrders)
                     .HasForeignKey(d => d.ProjectId)
-                    .HasConstraintName("FK_PurchaseOrders_Proyects");
+                    .HasConstraintName("FK_PurchaseOrders_Projects");
 
                 entity.HasOne(d => d.Provider)
                     .WithMany(p => p.PurchaseOrders)
                     .HasForeignKey(d => d.ProviderId)
                     .HasConstraintName("FK_PurchaseOrders_Providers");
+            });
 
-                entity.HasOne(d => d.Requisition)
-                    .WithMany(p => p.PurchaseOrders)
-                    .HasForeignKey(d => d.RequisitionId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_PurchaseOrders_Requisitions");
+            modelBuilder.Entity<PurchaseOrdersView>(entity =>
+            {
+                entity.ToView("PurchaseOrdersView");
+
+                entity.Property(e => e.ClientMarketName).IsUnicode(false);
+
+                entity.Property(e => e.Currency).IsUnicode(false);
+
+                entity.Property(e => e.DeliveryDate).HasPrecision(3);
+
+                entity.Property(e => e.InvoiceNumber).IsUnicode(false);
+
+                entity.Property(e => e.IssuedDate).HasPrecision(3);
+
+                entity.Property(e => e.Observations).IsUnicode(false);
+
+                entity.Property(e => e.OrderNumber).IsUnicode(false);
+
+                entity.Property(e => e.ProjectNumber).IsUnicode(false);
+
+                entity.Property(e => e.ProviderLegalName).IsUnicode(false);
+
+                entity.Property(e => e.ReceptionDate).HasPrecision(3);
+
+                entity.Property(e => e.RequisitionNumber).IsUnicode(false);
+
+                entity.Property(e => e.Status).IsUnicode(false);
             });
 
             modelBuilder.Entity<Quotes>(entity =>
             {
                 entity.Property(e => e.Currency).IsUnicode(false);
+
+                entity.Property(e => e.DateUpdated).HasPrecision(3);
 
                 entity.Property(e => e.SKU).IsUnicode(false);
 
@@ -367,9 +666,41 @@ namespace MCPackServer.Data.Entity
                     .HasConstraintName("FK_Quotes_Providers");
             });
 
+            modelBuilder.Entity<QuotesView>(entity =>
+            {
+                entity.ToView("QuotesView");
+
+                entity.Property(e => e.ArticleCode).IsUnicode(false);
+
+                entity.Property(e => e.ArticleDescription).IsUnicode(false);
+
+                entity.Property(e => e.ArticleName).IsUnicode(false);
+
+                entity.Property(e => e.Currency).IsUnicode(false);
+
+                entity.Property(e => e.DateUpdated).HasPrecision(3);
+
+                entity.Property(e => e.FamilyName).IsUnicode(false);
+
+                entity.Property(e => e.GroupName).IsUnicode(false);
+
+                entity.Property(e => e.Model).IsUnicode(false);
+
+                entity.Property(e => e.ProviderLegalName).IsUnicode(false);
+
+                entity.Property(e => e.ProviderMarketName).IsUnicode(false);
+
+                entity.Property(e => e.SKU).IsUnicode(false);
+
+                entity.Property(e => e.TradeMark).IsUnicode(false);
+
+                entity.Property(e => e.Unit).IsUnicode(false);
+            });
+
             modelBuilder.Entity<RequisitionArticles>(entity =>
             {
-                entity.HasKey(e => new { e.RequisitionId, e.ProjectId, e.ArticleId });
+                entity.HasKey(e => new { e.RequisitionId, e.ProjectId, e.ArticleId })
+                    .HasName("PK__Requisit__3DBA4BB02CE5CF19");
 
                 entity.HasOne(d => d.Article)
                     .WithMany(p => p.RequisitionArticles)
@@ -380,7 +711,6 @@ namespace MCPackServer.Data.Entity
                 entity.HasOne(d => d.Project)
                     .WithMany(p => p.RequisitionArticles)
                     .HasForeignKey(d => d.ProjectId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_RequisitionArticles_Projects");
 
                 entity.HasOne(d => d.Requisition)
@@ -390,9 +720,36 @@ namespace MCPackServer.Data.Entity
                     .HasConstraintName("FK_RequisitionArticles_Requisitions");
             });
 
+            modelBuilder.Entity<RequisitionArticlesView>(entity =>
+            {
+                entity.ToView("RequisitionArticlesView");
+
+                entity.Property(e => e.ArticleCode).IsUnicode(false);
+
+                entity.Property(e => e.ArticleName).IsUnicode(false);
+
+                entity.Property(e => e.FamilyName).IsUnicode(false);
+
+                entity.Property(e => e.GroupName).IsUnicode(false);
+
+                entity.Property(e => e.ProjectNumber).IsUnicode(false);
+
+                entity.Property(e => e.RequiredDate).HasPrecision(3);
+
+                entity.Property(e => e.RequisitionNumber).IsUnicode(false);
+
+                entity.Property(e => e.Unit).IsUnicode(false);
+            });
+
             modelBuilder.Entity<Requisitions>(entity =>
             {
+                entity.Property(e => e.IssuedDate).HasPrecision(3);
+
+                entity.Property(e => e.RequiredDate).HasPrecision(3);
+
                 entity.Property(e => e.RequisitionNumber).IsUnicode(false);
+
+                entity.Property(e => e.UserId).IsUnicode(false);
 
                 entity.HasOne(d => d.User)
                     .WithMany(p => p.Requisitions)
@@ -401,17 +758,31 @@ namespace MCPackServer.Data.Entity
                     .HasConstraintName("FK_Requisitions_AspNetUsers");
             });
 
-            modelBuilder.Entity<SystemRolePermissions>(entity =>
+            modelBuilder.Entity<RequisitionsView>(entity =>
             {
-                entity.HasOne(d => d.Role)
-                    .WithOne(p => p.SystemRolePermissions)
-                    .HasForeignKey<SystemRolePermissions>(d => d.RoleId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_SystemRolePermissions_AspNetRoles");
+                entity.ToView("RequisitionsView");
+
+                entity.Property(e => e.IssuedDate).HasPrecision(3);
+
+                entity.Property(e => e.RequiredDate).HasPrecision(3);
+
+                entity.Property(e => e.RequisitionNumber).IsUnicode(false);
+
+                entity.Property(e => e.UserId).IsUnicode(false);
+
+                entity.Property(e => e.UserName).IsUnicode(false);
+
+                entity.Property(e => e.UserShortName).IsUnicode(false);
             });
 
             modelBuilder.Entity<UserInformation>(entity =>
             {
+                entity.Property(e => e.Id).ValueGeneratedNever();
+
+                entity.Property(e => e.AspNetUserId).IsUnicode(false);
+
+                entity.Property(e => e.BirthDate).HasPrecision(3);
+
                 entity.Property(e => e.FatherSurname).IsUnicode(false);
 
                 entity.Property(e => e.FirstName).IsUnicode(false);
@@ -423,8 +794,8 @@ namespace MCPackServer.Data.Entity
                 entity.Property(e => e.MotherSurname).IsUnicode(false);
 
                 entity.HasOne(d => d.AspNetUser)
-                    .WithOne(p => p.UserInformation)
-                    .HasForeignKey<UserInformation>(d => d.AspNetUserId)
+                    .WithMany(p => p.UserInformation)
+                    .HasForeignKey(d => d.AspNetUserId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_UserInformation_AspNetUsers");
             });
@@ -433,11 +804,19 @@ namespace MCPackServer.Data.Entity
             {
                 entity.ToView("UserInformationView");
 
+                entity.Property(e => e.BirthDate).HasPrecision(3);
+
+                entity.Property(e => e.Email).IsUnicode(false);
+
                 entity.Property(e => e.FullName).IsUnicode(false);
 
                 entity.Property(e => e.Gender).IsUnicode(false);
 
+                entity.Property(e => e.Id).IsUnicode(false);
+
                 entity.Property(e => e.ShortName).IsUnicode(false);
+
+                entity.Property(e => e.UserName).IsUnicode(false);
             });
 
             OnModelCreatingPartial(modelBuilder);

@@ -8,6 +8,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace MCPackServer.Entities
 {
+    [Index(nameof(ProviderId), Name = "FK_Quotes_Providers")]
+    [Index(nameof(ArticleId), Name = "FK_Quotes_PurchaseArticles")]
     public partial class Quotes
     {
         public Quotes()
@@ -22,10 +24,9 @@ namespace MCPackServer.Entities
         public float Price { get; set; }
         [StringLength(50)]
         public string SKU { get; set; }
-        [Column(TypeName = "datetime")]
         public DateTime DateUpdated { get; set; }
         [Required]
-        [StringLength(10)]
+        [StringLength(5)]
         public string Currency { get; set; }
 
         [ForeignKey(nameof(ArticleId))]

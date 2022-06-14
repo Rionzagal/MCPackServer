@@ -39,7 +39,6 @@ namespace MCPackServer.Services
                 {
                     order.Project = project ?? null;
                     order.Provider = provider ?? null;
-                    order.Requisition = requisition ?? null;
                     return order;
                 }) as IEnumerable<T>;
         }
@@ -59,7 +58,6 @@ namespace MCPackServer.Services
                 {
                     order.Provider = provider ?? null;
                     order.Project = project ?? null;
-                    order.Requisition = requisition ?? null;
                     return order;
                 });
             return entities.FirstOrDefault() as T;

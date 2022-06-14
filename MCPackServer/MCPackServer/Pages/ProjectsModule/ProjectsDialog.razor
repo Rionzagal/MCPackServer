@@ -1,7 +1,4 @@
-﻿@inject IProjectsService _projectsService
-@inject IProjectProductsService _productsService
-
-<MudDialog>
+﻿<MudDialog>
     <TitleContent>
         <MudText Typo="Typo.h6">
             <MudIcon Icon="@TitleIcon" /> @Title
@@ -24,121 +21,119 @@
                         </MudText>
                     </div>
                 }
-            <MudForm Model="Model" @ref="Form">
-                <MudGrid>
-                    <MudItem xs="4">
-                        <MudText Typo="Typo.subtitle1" Align="Align.Start">Número de proyecto</MudText>
-                        <MudTextField @bind-Value="Model.ProjectNumber" Required T="string" Placeholder="Número de proyecto"
-                                        ReadOnly="@(Disabled || States.Edit == State)" Variant="Variant.Outlined"
-                                        RequiredError="Este campo es obligatorio" Validation="new Func<string, string>(ProjectValidation)" />
-                    </MudItem>
-                    <MudItem xs="4">
-                        <MudText Typo="Typo.subtitle1" Align="Align.Start">Tipo de proyecto</MudText>
-                        <MudSelect @bind-Value="Model.Type" Required T="string" Placeholder="Tipo de proyecto"
-                            RequiredError="Este campo es obligatorio" Variant="Variant.Outlined" ReadOnly="@(Disabled)" >
-                            <MudSelectItem T="string" Value="@("Proyecto")" />
-                            <MudSelectItem T="string" Value="@("Refacciones")" />
-                            <MudSelectItem T="string" Value="@("Servicio")" />
-                        </MudSelect>
-                    </MudItem>
-                    <MudItem xs="12">
-                        <MudText Typo="Typo.subtitle1" Align="Align.Start">Cliente</MudText>
-                        <MudAutocomplete T="int" @bind-Value="Model.ClientId" Placeholder="Cliente" Required
-                                         SearchFunc="f => ClientsServerReload(f)" ReadOnly="@(Disabled || !CanChangeClient)"
-                                         ToStringFunc="new Func<int, string>(GetClientName)"
-                                         RequiredError="Este campo es obligatorio" Variant="Variant.Outlined" />
-                    </MudItem>
-                    <MudItem xs="12">
-                        <MudText Typo="Typo.subtitle1" Align="Align.Start">Descripción</MudText>
-                        <MudTextField T="string" @bind-Text="@Model.Description" Variant="Variant.Outlined"
-                                      Required RequiredError="Este campo es obligatorio"
-                                      Placeholder="Descripción" Lines="5" ReadOnly="@Disabled" />
-                    </MudItem>
-                    <MudItem xs="6">
-                        <MudText Typo="Typo.subtitle1" Align="Align.Start">Fecha de entrada</MudText>
-                        <MudDatePicker @bind-Date="@Model.AdmissionDate" Placeholder="Fecha de entrada" Variant="Variant.Outlined"
-                                       Required ReadOnly="@Disabled" RequiredError="Este campo es obligatorio" />
-                    </MudItem>
-                    <MudItem xs="6">
-                        <MudText Typo="Typo.subtitle1" Align="Align.Start">Fecha de compromiso</MudText>
-                        <MudDatePicker @bind-Date="@Model.CommitmentDate" Placeholder="Fecha de compromiso" Variant="Variant.Outlined"
-                                       Required ReadOnly="@Disabled" RequiredError="Este campo es obligatorio" />
-                    </MudItem>
-                    <MudItem xs="6">
-                        <MudText Typo="Typo.subtitle1" Align="Align.Start">Fecha de entrega tentativa</MudText>
-                        <MudDatePicker @bind-Date="@Model.DeliveryDate" Placeholder="Fecha de entrega tentativa" Variant="Variant.Outlined"
-                                       Required ReadOnly="@Disabled" RequiredError="Este campo es obligatorio" />
-                    </MudItem>
-                    <MudItem xs="6">
-                        <MudText Typo="Typo.subtitle1" Align="Align.Start">Fecha de entrega real</MudText>
-                        <MudDatePicker @bind-Date="@Model.RealDeliveryDate"
-                                       Placeholder="Fecha de entrega real" Variant="Variant.Outlined"
-                                        ReadOnly="@Disabled" />
-                    </MudItem>
-                    <MudItem xs="12">
-                        <MudText Typo="Typo.subtitle1" Align="Align.Start">Tiempos de entrega</MudText>
-                        <MudTextField T="string" @bind-Text="@Model.DeliveryTime"
-                                      Placeholder="Tiempos de entrega" Lines="2"
-                                      Required ReadOnly="@Disabled" Variant="Variant.Outlined"
-                                      RequiredError="Este campo es obligatorio" />
-                    </MudItem>
-                    <MudItem xs="6">
-                        <MudText Typo="Typo.subtitle1" Align="Align.Start">Moneda pactada</MudText>
-                        <MudSelect @bind-Value="Model.AgreedCurrency" Required T="string" Placeholder="Moneda pactada"
-                            RequiredError="Este campo es obligatorio" Variant="Variant.Outlined">
-                            <MudSelectItem T="string" Value="@("MXN")" />
-                            <MudSelectItem T="string" Value="@("USD")" />
-                        </MudSelect>
-                    </MudItem>
-                    <MudItem xs="6">
-                        <MudText Typo="Typo.subtitle1" Align="Align.Start">Moneda de pago</MudText>
-                        <MudSelect @bind-Value="Model.PaymentCurrency" Required T="string" Placeholder="Moneda de pago"
-                            RequiredError="Este campo es obligatorio" Variant="Variant.Outlined">
-                            <MudSelectItem T="string" Value="@("MXN")" />
-                            <MudSelectItem T="string" Value="@("USD")" />
-                        </MudSelect>
-                    </MudItem>
-                    <MudItem xs="12">
-                        <MudText Typo="Typo.subtitle1" Align="Align.Start">Condiciones de pago</MudText>
-                        <MudTextField T="string" @bind-Text="@Model.PaymentConditions"
-                                      Placeholder="Condiciones de pago" Lines="5"
-                                      Required ReadOnly="@Disabled" Variant="Variant.Outlined"
-                                      RequiredError="Este campo es obligatorio" />
-                    </MudItem>
-                    <MudItem xs="4">
-                        <MudText Typo="Typo.subtitle1" Align="Align.Start">Nombre de vendedor</MudText>
-                        <MudTextField T="string" @bind-Text="@Model.SalesPerson" Variant="Variant.Outlined"
-                                      Placeholder="Nombre de vendedor" ReadOnly="@Disabled"
-                                      Required RequiredError="Este campo es obligatorio" />
-                    </MudItem>
-                    <MudItem xs="4">
-                        <MudText Typo="Typo.subtitle1" Align="Align.Start">Comisión</MudText>
-                        <MudNumericField T="float" @bind-Value="Model.Comision"
-                                         Placeholder="Comisión"  Variant="Variant.Outlined"
-                                         AdornmentText="%" Adornment="Adornment.Start"
-                                         ReadOnly="@Disabled" Min="0.0f" Max="100.0f"
-                                         HideSpinButtons />
-                    </MudItem>
-                    <MudItem xs="4">
-                        <MudText Typo="Typo.subtitle1" Align="Align.Start">¿Aplica IVA?</MudText>
-                        <MudCheckBox @bind-Checked="Model.HasTaxes" ReadOnly="@Disabled" />
-                    </MudItem>
-                    <MudItem xs="12">
-                        <MudText Typo="Typo.subtitle1" Align="Align.Start">Observaciones</MudText>
-                        <MudTextField T="string" @bind-Text="@Model.Observations"
-                                      Placeholder="Observaciones"  Variant="Variant.Outlined"
-                                      Lines="5" ReadOnly="@Disabled" />
-                    </MudItem>
-                </MudGrid>
-                    @*TODO: Añadir permiso especial sobre diálogo para poder cambiar el cliente
-                        asociado al proyecto en cuestión en estado de edición *@
-            </MudForm>
+                <MudForm Model="Model" @ref="Form">
+                    <MudGrid>
+                        <MudItem xs="4">
+                            <MudText Typo="Typo.subtitle1" Align="Align.Start">Número de proyecto</MudText>
+                            <MudTextField @bind-Value="Model.ProjectNumber" Required T="string" Placeholder="Número de proyecto"
+                                            ReadOnly="@(Disabled || States.Edit == State)" Variant="Variant.Outlined"
+                                            RequiredError="Este campo es obligatorio" Validation="new Func<string, string>(ProjectValidation)" />
+                        </MudItem>
+                        <MudItem xs="4">
+                            <MudText Typo="Typo.subtitle1" Align="Align.Start">Tipo de proyecto</MudText>
+                            <MudSelect @bind-Value="Model.Type" Required T="string" Placeholder="Tipo de proyecto"
+                                RequiredError="Este campo es obligatorio" Variant="Variant.Outlined" ReadOnly="@(Disabled)" >
+                                <MudSelectItem T="string" Value="@("Proyecto")" />
+                                <MudSelectItem T="string" Value="@("Refacciones")" />
+                                <MudSelectItem T="string" Value="@("Servicio")" />
+                            </MudSelect>
+                        </MudItem>
+                        <MudItem xs="12">
+                            <MudText Typo="Typo.subtitle1" Align="Align.Start">Cliente</MudText>
+                            <MudAutocomplete T="int" @bind-Value="Model.ClientId" Placeholder="Cliente" Required
+                                             SearchFunc="f => ClientsServerReload(f)" ReadOnly="@(Disabled || !CanChangeClient)"
+                                             ToStringFunc="new Func<int, string>(GetClientName)"
+                                             RequiredError="Este campo es obligatorio" Variant="Variant.Outlined" />
+                        </MudItem>
+                        <MudItem xs="12">
+                            <MudText Typo="Typo.subtitle1" Align="Align.Start">Descripción</MudText>
+                            <MudTextField T="string" @bind-Text="@Model.Description" Variant="Variant.Outlined"
+                                          Required RequiredError="Este campo es obligatorio"
+                                          Placeholder="Descripción" Lines="5" ReadOnly="@Disabled" />
+                        </MudItem>
+                        <MudItem xs="6">
+                            <MudText Typo="Typo.subtitle1" Align="Align.Start">Fecha de entrada</MudText>
+                            <MudDatePicker @bind-Date="@Model.AdmissionDate" Placeholder="Fecha de entrada" Variant="Variant.Outlined"
+                                           Required ReadOnly="@Disabled" RequiredError="Este campo es obligatorio" />
+                        </MudItem>
+                        <MudItem xs="6">
+                            <MudText Typo="Typo.subtitle1" Align="Align.Start">Fecha de compromiso</MudText>
+                            <MudDatePicker @bind-Date="@Model.CommitmentDate" Placeholder="Fecha de compromiso" Variant="Variant.Outlined"
+                                           Required ReadOnly="@Disabled" RequiredError="Este campo es obligatorio" />
+                        </MudItem>
+                        <MudItem xs="6">
+                            <MudText Typo="Typo.subtitle1" Align="Align.Start">Fecha de entrega tentativa</MudText>
+                            <MudDatePicker @bind-Date="@Model.DeliveryDate" Placeholder="Fecha de entrega tentativa" Variant="Variant.Outlined"
+                                           Required ReadOnly="@Disabled" RequiredError="Este campo es obligatorio" />
+                        </MudItem>
+                        <MudItem xs="6">
+                            <MudText Typo="Typo.subtitle1" Align="Align.Start">Fecha de entrega real</MudText>
+                            <MudDatePicker @bind-Date="@Model.RealDeliveryDate"
+                                           Placeholder="Fecha de entrega real" Variant="Variant.Outlined"
+                                            ReadOnly="@Disabled" />
+                        </MudItem>
+                        <MudItem xs="12">
+                            <MudText Typo="Typo.subtitle1" Align="Align.Start">Tiempos de entrega</MudText>
+                            <MudTextField T="string" @bind-Text="@Model.DeliveryTime"
+                                          Placeholder="Tiempos de entrega" Lines="2"
+                                          Required ReadOnly="@Disabled" Variant="Variant.Outlined"
+                                          RequiredError="Este campo es obligatorio" />
+                        </MudItem>
+                        <MudItem xs="6">
+                            <MudText Typo="Typo.subtitle1" Align="Align.Start">Moneda pactada</MudText>
+                            <MudSelect @bind-Value="Model.AgreedCurrency" Required T="string" Placeholder="Moneda pactada"
+                                RequiredError="Este campo es obligatorio" Variant="Variant.Outlined">
+                                <MudSelectItem T="string" Value="@("MXN")" />
+                                <MudSelectItem T="string" Value="@("USD")" />
+                            </MudSelect>
+                        </MudItem>
+                        <MudItem xs="6">
+                            <MudText Typo="Typo.subtitle1" Align="Align.Start">Moneda de pago</MudText>
+                            <MudSelect @bind-Value="Model.PaymentCurrency" Required T="string" Placeholder="Moneda de pago"
+                                RequiredError="Este campo es obligatorio" Variant="Variant.Outlined">
+                                <MudSelectItem T="string" Value="@("MXN")" />
+                                <MudSelectItem T="string" Value="@("USD")" />
+                            </MudSelect>
+                        </MudItem>
+                        <MudItem xs="12">
+                            <MudText Typo="Typo.subtitle1" Align="Align.Start">Condiciones de pago</MudText>
+                            <MudTextField T="string" @bind-Text="@Model.PaymentConditions"
+                                          Placeholder="Condiciones de pago" Lines="5"
+                                          Required ReadOnly="@Disabled" Variant="Variant.Outlined"
+                                          RequiredError="Este campo es obligatorio" />
+                        </MudItem>
+                        <MudItem xs="4">
+                            <MudText Typo="Typo.subtitle1" Align="Align.Start">Nombre de vendedor</MudText>
+                            <MudTextField T="string" @bind-Text="@Model.SalesPerson" Variant="Variant.Outlined"
+                                          Placeholder="Nombre de vendedor" ReadOnly="@Disabled"
+                                          Required RequiredError="Este campo es obligatorio" />
+                        </MudItem>
+                        <MudItem xs="4">
+                            <MudText Typo="Typo.subtitle1" Align="Align.Start">Comisión</MudText>
+                            <MudNumericField T="float" @bind-Value="Model.Comision"
+                                             Placeholder="Comisión"  Variant="Variant.Outlined"
+                                             AdornmentText="%" Adornment="Adornment.Start"
+                                             ReadOnly="@Disabled" Min="0f" Max="100f"
+                                             HideSpinButtons />
+                        </MudItem>
+                        <MudItem xs="4">
+                            <MudText Typo="Typo.subtitle1" Align="Align.Start">¿Aplica IVA?</MudText>
+                            <MudCheckBox @bind-Checked="Model.HasTaxes" ReadOnly="@Disabled" />
+                        </MudItem>
+                        <MudItem xs="12">
+                            <MudText Typo="Typo.subtitle1" Align="Align.Start">Observaciones</MudText>
+                            <MudTextField T="string" @bind-Text="@Model.Observations"
+                                          Placeholder="Observaciones"  Variant="Variant.Outlined"
+                                          Lines="5" ReadOnly="@Disabled" />
+                        </MudItem>
+                    </MudGrid>
+                </MudForm>
             </MudContainer>
         }
         </DialogContent>
     <DialogActions>
         <MudButton Variant="Variant.Text" Class="mx-1"
-                   OnClick="() => Dialog.Cancel()" Disabled="_processing">
+                   OnClick="() => Dialog?.Cancel()" Disabled="_processing">
             Cerrar
         </MudButton>
         <MudButton Variant="Variant.Filled" Color="@ButtonColor" Class="mx-1"

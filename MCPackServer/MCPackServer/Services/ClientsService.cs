@@ -95,6 +95,7 @@ namespace MCPackServer.Services
             await LogResponse(response);
             return response;
         }
+        
         public async Task<ActionResponse<ClientContacts>> RemoveContact(object clientId, object contactId)
         {
             using IDbConnection conn = Connection;

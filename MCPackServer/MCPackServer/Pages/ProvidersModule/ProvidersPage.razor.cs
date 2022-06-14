@@ -147,11 +147,6 @@ namespace MCPackServer.Pages.ProvidersModule
             var result = await dialog.Result;
             if (!result.Cancelled)
             {
-                ActionResponse<Providers> response = (ActionResponse<Providers>)result.Data;
-                if (response.IsSuccessful)
-                    Snackbar.Add("Proveedor añadido con éxito.", Severity.Success);
-                else
-                    Snackbar.Add("Error al añadir el proveedor.", Severity.Error);
                 await ProvidersTable.ReloadServerData();
             }
         }
@@ -166,16 +161,8 @@ namespace MCPackServer.Pages.ProvidersModule
             var result = await dialog.Result;
             if (!result.Cancelled)
             {
-                ActionResponse<Providers> response = (ActionResponse<Providers>)result.Data;
-                if (response.IsSuccessful)
-                {
-                    VisibleProviderInformation = false;
-                    SelectedProvider = new();
-                    Snackbar.Add("Proveedor editado con éxito.", Severity.Success);
-                }
-                else
-                    Snackbar.Add("Error al editado el proveedor.", Severity.Error);
                 await ProvidersTable.ReloadServerData();
+                SelectedProvider = await _service.GetByKeyAsync<Providers>(SelectedProvider.Id);
             }
         }
         private async Task DeleteProvider()
@@ -189,16 +176,9 @@ namespace MCPackServer.Pages.ProvidersModule
             var result = await dialog.Result;
             if (!result.Cancelled)
             {
-                ActionResponse<Providers> response = (ActionResponse<Providers>)result.Data;
-                if (response.IsSuccessful)
-                {
-                    VisibleProviderInformation = false;
-                    SelectedProvider = new();
-                    Snackbar.Add("Proveedor eliminado con éxito.", Severity.Success);
-                }
-                else
-                    Snackbar.Add("Error al eliminar el proveedor.", Severity.Error);
                 await ProvidersTable.ReloadServerData();
+                VisibleProviderInformation = false;
+                SelectedProvider = new();
             }
         }
         #endregion

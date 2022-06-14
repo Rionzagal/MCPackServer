@@ -8,6 +8,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace MCPackServer.Entities
 {
+    [Index(nameof(ProjectId), Name = "FK_RequisitionArticles_Projects_idx")]
+    [Index(nameof(ArticleId), Name = "FK_RequisitionArticles_PurchaseArticles")]
     public partial class RequisitionArticles
     {
         [Key]

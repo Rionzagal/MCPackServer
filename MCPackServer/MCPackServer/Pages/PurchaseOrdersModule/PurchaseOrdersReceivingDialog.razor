@@ -1,7 +1,4 @@
-﻿@inject IPurchaseOrdersService _ordersService
-@inject IArticlesToPurchaseService _articlesService
-
-<MudDialog>
+﻿<MudDialog>
     <TitleContent>
         <MudText Typo="Typo.h6">
             <MudIcon Icon="@TitleIcon" /> @Title
@@ -10,7 +7,7 @@
     <DialogContent>
         @if (_processing)
         {
-            <MudProgressCircular Class="m-sm-n1" Size="Size.Large" Indeterminate="true" />
+            <MudProgressCircular Class="m-sm-n1" Size="Size.Large" Indeterminate />
             <MudText Class="m-sm-2">Esperando respuesta de servidor...</MudText>
         }
         else
@@ -20,11 +17,11 @@
             <MudGrid>
                 <MudItem xs="6">
                     <MudText Typo="Typo.subtitle1">Número de orden</MudText>
-                    <MudTextField Variant="Variant.Outlined" Value="@Model.Id" ReadOnly />
+                    <MudTextField Variant="Variant.Outlined" Value="@Model.OrderNumber" ReadOnly />
                 </MudItem>
                 <MudItem xs="6">
                     <MudText Typo="Typo.subtitle1">Proyecto</MudText>
-                    <MudTextField Variant="Variant.Outlined" Value="@Model.ProjectId" ReadOnly />
+                    <MudTextField Variant="Variant.Outlined" Value="@ModelView.ProjectNumber" ReadOnly />
                 </MudItem>
                 <MudItem xs="6">
                     <MudText Typo="Typo.subtitle1">Fecha de emisión</MudText>
@@ -33,11 +30,11 @@
                 </MudItem>
                 <MudItem xs="6">
                     <MudText Typo="Typo.subtitle1">Proveedor</MudText>
-                    <MudTextField Variant="Variant.Outlined" Value="@Model.Provider.LegalName" ReadOnly />
+                    <MudTextField Variant="Variant.Outlined" Value="@ModelView.ProviderLegalName" ReadOnly />
                 </MudItem>
                 <MudItem xs="6">
                     <MudText Typo="Typo.subtitle1">Número de requisición</MudText>
-                    <MudTextField Variant="Variant.Outlined" Value="@Model.Requisition.RequisitionNumber"
+                    <MudTextField Variant="Variant.Outlined" Value="@ModelView.RequisitionNumber"
                                   ReadOnly />
                 </MudItem>
                 <MudItem xs="6">
@@ -47,11 +44,16 @@
                                    ReadOnly="@Disabled" />
                 </MudItem>
                 <MudItem xs="12">
-                    <MudTable Items="Model.ArticlesToPurchase" FixedHeader Dense Striped Height="300px">
+                    <MudTable T="ArticlesToPurchaseView" ServerData="ArticlesServerReload" Hover MultiSelection
+                        FixedHeader Dense Striped Height="300px" SelectedItems="SelectedArticles">
                         <ToolBarContent>
                             <MudText Typo="Typo.subtitle1">
-                                Artículos cotizados en orden de compra
+                                <b>Artículos cotizados en orden de compra</b>
                             </MudText>
+                            <MudSpacer />
+                            <MudButton Disabled=@(SelectedArticles.Any())>
+                                Recibir artículos seleccionados
+                            </MudButton>
                         </ToolBarContent>
                         <HeaderContent>
                             <MudTh>Código</MudTh>
@@ -60,13 +62,13 @@
                             <MudTh>Cantidad</MudTh>
                         </HeaderContent>
                         <RowTemplate>
-                            <MudTd DataLabel="Código">@context.Quote.Article.Code</MudTd>
-                            <MudTd DataLabel="Nombre">@context.Quote.Article.Name</MudTd>
+                            <MudTd DataLabel="Código">@context.ArticleCode</MudTd>
+                            <MudTd DataLabel="Nombre">@context.ArticleName</MudTd>
                             <MudTd DataLabel="Precio unitario">@($"${context.SalePrice.ToString("n2")} {Model.Currency}")</MudTd>
-                            <MudTd DataLabel="Cantidad">@($"{context.Quantity} {context.Quote.Article.Unit}")</MudTd>
+                            <MudTd DataLabel="Cantidad">@($"{context.Quantity} {context.Unit}")</MudTd>
                         </RowTemplate>
                         <PagerContent>
-                            <MudTablePager />
+                            <MudTablePager PageSizeOptions="new int[]{ 10, 20, 30, 50 }"/>
                         </PagerContent>
                     </MudTable>
                 </MudItem>
@@ -77,7 +79,7 @@
         </DialogContent>
     <DialogActions>
         <MudButton Variant="Variant.Text" Class="mx-1"
-                   OnClick="() => Dialog.Cancel()" Disabled="_processing">
+                   OnClick="() => Dialog?.Cancel()" Disabled="_processing">
             Cerrar
         </MudButton>
         <MudButton Variant="Variant.Filled" Color="@ButtonColor" Class="mx-1"

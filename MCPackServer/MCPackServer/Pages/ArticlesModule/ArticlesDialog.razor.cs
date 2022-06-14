@@ -1,13 +1,7 @@
 ﻿using MCPackServer.Entities;
-using MCPackServer.Models;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http.Json;
 using System.Text.RegularExpressions;
-using Newtonsoft.Json;
 
 namespace MCPackServer.Pages.ArticlesModule
 {
@@ -17,27 +11,31 @@ namespace MCPackServer.Pages.ArticlesModule
 
         #region Parameters
         [CascadingParameter]
+        #pragma warning disable CS8618 // Un campo que no acepta valores NULL debe contener un valor distinto de NULL al salir del constructor. Considere la posibilidad de declararlo como que admite un valor NULL.
         public MudDialogInstance Dialog { get; set; }
+        #pragma warning restore CS8618 // Un campo que no acepta valores NULL debe contener un valor distinto de NULL al salir del constructor. Considere la posibilidad de declararlo como que admite un valor NULL.
         [Parameter]
         public States State { get; set; }
         [Parameter]
-        public PurchaseArticles Model { get; set; }
+        public ArticlesView? ModelView { get; set; }
         [Parameter]
-        public string GroupCode { get; set; }
-        [Parameter]
-        public string FamilyCode { get; set; }
+        public int? FamilyId { get; set; }
         #endregion
 
         #region Dialog variables
-        private string Title;
-        private string TitleIcon;
+        private string Title = string.Empty;
+        private string TitleIcon = string.Empty;
         private bool Disabled;
         private Color ButtonColor;
         private bool _processing = false;
         #endregion
 
-        #region API elements
-        private MudForm Form;
+        #region Models and elements
+        private MudForm Form = new();
+
+        private PurchaseArticles Model = new();
+        private string GroupCode = string.Empty;
+        private string FamilyCode = string.Empty;
         #endregion
 
         protected override async Task OnInitializedAsync()
@@ -67,23 +65,69 @@ namespace MCPackServer.Pages.ArticlesModule
             {
                 Dialog.Cancel();
             }
+            if (null != ModelView)
+            {
+                Model = await _service.GetByKeyAsync<PurchaseArticles>(ModelView.Id);
+                Model.Code = ModelView.Code;
+                FamilyCode = (await _service.GetByKeyAsync<ArticleFamilies>(ModelView.FamilyId)).Code;
+                GroupCode = (await _service.GetByKeyAsync<ArticleGroups>(ModelView.GroupId)).Code;
+            }
+            else if (FamilyId.HasValue)
+            {
+                Model.FamilyId = FamilyId.Value;
+                var currentFamily = await _service.GetByKeyAsync<ArticleFamilies>(FamilyId);
+                FamilyCode = currentFamily.Code;
+                GroupCode = (await _service.GetByKeyAsync<ArticleGroups>(currentFamily.GroupId)).Code;
+            }
         }
 
         private async Task Submit()
         {
             _processing = true;
-            string response = string.Empty;
             await Form.Validate();
             if (Form.IsValid)
             {
-                if (States.Add == State) 
-                    response = JsonConvert.SerializeObject(await _service.AddAsync(Model));
-                else if (States.Edit == State) 
-                    response = JsonConvert.SerializeObject(await _service.UpdateAsync(Model));
-                else if (States.Delete == State) 
-                    response = JsonConvert.SerializeObject(await _service.RemoveAsync(Model));
+                if (States.Add == State)
+                {
+                    var response = await _service.AddAsync(Model);
+                    if (response?.IsSuccessful ?? false)
+                        Snackbar.Add("Artículo añadido con éxito.", Severity.Success);
+                    else
+                    {
+                        foreach (var error in response?.Errors ?? new List<string>())
+                        {
+                            Snackbar.Add(error, Severity.Error);
+                        }
+                    }
+                }
+                else if (States.Edit == State)
+                {
+                    var response = await _service.UpdateAsync(Model);
+                    if (response?.IsSuccessful ?? false)
+                        Snackbar.Add("Artículo editado con éxito.", Severity.Success);
+                    else
+                    {
+                        foreach (var error in (response?.Errors ?? new List<string>()))
+                        {
+                            Snackbar.Add(error, Severity.Error);
+                        }
+                    }
+                }
+                else if (States.Delete == State)
+                {
+                    var response = await _service.RemoveAsync(Model);
+                    if (response?.IsSuccessful ?? false)
+                        Snackbar.Add("Artículo eliminado con éxito.", Severity.Success);
+                    else
+                    {
+                        foreach (var error in (response?.Errors ?? new List<string>()))
+                        {
+                            Snackbar.Add(error, Severity.Error);
+                        }
+                    }
+                }
                 _processing = false;
-                Dialog.Close(DialogResult.Ok(JsonConvert.DeserializeObject<ActionResponse<PurchaseArticles>>(response)));
+                Dialog.Close();
             }
             else
             {

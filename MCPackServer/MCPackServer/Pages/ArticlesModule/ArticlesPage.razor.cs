@@ -2,6 +2,7 @@
 using MCPackServer.Models;
 using Microsoft.AspNetCore.Authorization;
 using MudBlazor;
+using Newtonsoft.Json;
 
 namespace MCPackServer.Pages.ArticlesModule
 {
@@ -27,8 +28,8 @@ namespace MCPackServer.Pages.ArticlesModule
         DialogParameters Parameters;
         #endregion
         #region MudBlazor Tables
-        private MudTable<PurchaseArticles> ArticleTable;
-        private MudTable<Quotes> QuoteTable;
+        private MudTable<ArticlesView> ArticleTable = new();
+        private MudTable<QuotesView> QuoteTable = new();
         #endregion
         #region Tabs and properties
         private MudTabs ArticleInformationTabs;
@@ -60,8 +61,7 @@ namespace MCPackServer.Pages.ArticlesModule
 
         #region Entities and Models
         #region Purchase Articles
-        PurchaseArticles SelectedArticle = new();
-        private string ArticleCode;
+        ArticlesView SelectedArticle = new();
         #endregion
         #region Article Groups
         ArticleGroups SelectedGroup = new();
@@ -72,7 +72,7 @@ namespace MCPackServer.Pages.ArticlesModule
         List<ArticleFamilies> FamiliesList = new();
         #endregion
         #region Quotes
-        List<Quotes> SelectedQuotes = new();
+        List<QuotesView> SelectedQuotes = new();
         #endregion
         List<Providers> ProvidersList = new();
         #endregion
@@ -120,7 +120,7 @@ namespace MCPackServer.Pages.ArticlesModule
 
         #region Purchase Articles related methods
         #region ArticleTable methods
-        private async Task<TableData<PurchaseArticles>> ArticleServerReload(TableState state)
+        private async Task<TableData<ArticlesView>> ArticleServerReload(TableState state)
         {
             if (0 == SelectedFamily.Id) VisibleArticleInformation = false;
             List<WhereFilter> filters = new()
@@ -138,15 +138,15 @@ namespace MCPackServer.Pages.ArticlesModule
             };
             string field = state.SortLabel ?? "Id";
             string order = state.SortDirection == SortDirection.Ascending ? "ASC" : "DESC";
-            var items = await _service.GetForGridAsync<PurchaseArticles>(request, field, order);
-            int? count = await _service.GetTotalCountAsync<PurchaseArticles>(request);
-            return new TableData<PurchaseArticles>
+            var items = await _service.GetForGridAsync<ArticlesView>(request, field, order);
+            int? count = await _service.GetTotalCountAsync<ArticlesView>(request);
+            return new TableData<ArticlesView>
             {
                 Items = items,
                 TotalItems = count ?? 0
             };
         }
-        private void OnSelectedArticleRow(TableRowClickEventArgs<PurchaseArticles> args)
+        private void OnSelectedArticleRow(TableRowClickEventArgs<ArticlesView> args)
         {
             SelectedArticle = args.Item;
             GroupsPanel.Collapse();
@@ -163,84 +163,39 @@ namespace MCPackServer.Pages.ArticlesModule
             Parameters = new()
             {
                 ["State"] = ArticlesDialog.States.Add,
-                ["Model"] = new PurchaseArticles() { FamilyId = SelectedFamily.Id },
-                ["GroupCode"] = SelectedGroup.Code,
-                ["FamilyCode"] = SelectedFamily.Code
+                ["FamilyId"] = SelectedFamily.Id
             };
             var dialog = Dialogs.Show<ArticlesDialog>("Añadir nuevo artículo", Parameters);
             var result = await dialog.Result;
             if (!result.Cancelled)
-            {
-                ActionResponse<PurchaseArticles> response = (ActionResponse<PurchaseArticles>)result.Data;
-                if (response.IsSuccessful)
-                {
-                    Snackbar.Add("Artículo añadido con éxito.", Severity.Success);
-                }
-                else
-                {
-                    foreach (var error in response.Errors)
-                    {
-                        Snackbar.Add(error, Severity.Error);
-                    }
-                }
                 await ArticleTable.ReloadServerData();
-            }
         }
         private async Task EditArticle()
         {
             Parameters = new()
             {
                 ["State"] = ArticlesDialog.States.Edit,
-                ["Model"] = SelectedArticle,
-                ["GroupCode"] = SelectedGroup.Code,
-                ["FamilyCode"] = SelectedFamily.Code
+                ["ModelView"] = SelectedArticle
             };
             var dialog = Dialogs.Show<ArticlesDialog>("Editar artículo seleccionado", Parameters);
             var result = await dialog.Result;
             if (!result.Cancelled)
-            {
-                ActionResponse<PurchaseArticles> response = (ActionResponse<PurchaseArticles>)result.Data;
-                if (response.IsSuccessful)
-                {
-                    Snackbar.Add("Artículo editado con éxito.", Severity.Success);
-                }
-                else
-                {
-                    foreach (var error in response.Errors)
-                    {
-                        Snackbar.Add(error, Severity.Error);
-                    }
-                }
                 await ArticleTable.ReloadServerData();
-            }
         }
         private async Task DeleteArticle()
         {
             Parameters = new()
             {
                 ["State"] = ArticlesDialog.States.Delete,
-                ["Model"] = SelectedArticle,
-                ["GroupCode"] = SelectedGroup.Code,
-                ["FamilyCode"] = SelectedFamily.Code
+                ["ModelView"] = SelectedArticle
             };
             var dialog = Dialogs.Show<ArticlesDialog>("Eliminar artículo seleccionado", Parameters);
             var result = await dialog.Result;
             if (!result.Cancelled)
             {
-                ActionResponse<PurchaseArticles> response = (ActionResponse<PurchaseArticles>)result.Data;
-                if (response.IsSuccessful)
-                {
-                    Snackbar.Add("Artículo eliminado con éxito.", Severity.Info);
-                    VisibleArticleInformation = false;
-                    SelectedArticle = new();
-                }
-                else
-                {
-                    foreach (var error in response.Errors)
-                    {
-                        Snackbar.Add(error, Severity.Error);
-                    }
-                }
+                VisibleArticleInformation = false;
+                SelectedArticle = new();
+                ArticlesPanel.Expand();
                 await ArticleTable.ReloadServerData();
             }
         }
@@ -280,11 +235,8 @@ namespace MCPackServer.Pages.ArticlesModule
             var result = await dialog.Result;
             if (!result.Cancelled)
             {
-                ActionResponse<ArticleGroups> response = (ActionResponse<ArticleGroups>)result.Data;
-                if (response.IsSuccessful)
-                    Snackbar.Add("Grupo añadido con éxito.", Severity.Success);
-                else
-                    Snackbar.Add("Error al añadir grupo.", Severity.Error);
+                await GroupsServerReload(string.Empty);
+                SelectedGroup = GroupsList.OrderByDescending(g => g.Id).First();
             }
         }
         private async Task EditGroup()
@@ -298,14 +250,8 @@ namespace MCPackServer.Pages.ArticlesModule
             var result = await dialog.Result;
             if (!result.Cancelled)
             {
-                ActionResponse<ArticleGroups> response = (ActionResponse<ArticleGroups>)result.Data;
-                if (response.IsSuccessful)
-                {
-                    Snackbar.Add("Grupo editado con éxito.", Severity.Success);
-                    SelectedGroup = new();
-                }
-                else
-                    Snackbar.Add("Error al editar grupo.", Severity.Error);
+                await GroupsServerReload(string.Empty);
+                SelectedGroup = GroupsList.Single(g => SelectedGroup.Id == g.Id);
             }
         }
         private async Task DeleteGroup()
@@ -319,15 +265,13 @@ namespace MCPackServer.Pages.ArticlesModule
             var result = await dialog.Result;
             if (!result.Cancelled)
             {
-                ActionResponse<ArticleGroups> response = (ActionResponse<ArticleGroups>)result.Data;
-                if (response.IsSuccessful)
-                {
-                    Snackbar.Add("Grupo eliminado con éxito.", Severity.Info);
-                    GroupsPanel.Collapse();
-                    SelectedGroup = new();
-                }
-                else
-                    Snackbar.Add("Error al eliminar grupo.", Severity.Error);
+                SelectedGroup = new();
+                await GroupsServerReload(string.Empty);
+                SelectedArticle = new();
+                SelectedFamily = new();
+                VisibleArticleInformation = false;
+                ArticlesPanel.Collapse();
+                FamiliesPanel.Collapse();
             }
         }
         #endregion
@@ -346,8 +290,9 @@ namespace MCPackServer.Pages.ArticlesModule
             {
                 Where = filters
             };
-            var items = await _familiesService.GetForGridAsync<ArticleFamilies>(request);
-            if (null != items) FamiliesList = items.ToList();
+            var items = await _service.GetForGridAsync<ArticleFamilies>(request);
+            if (null != items) 
+                FamiliesList = items.ToList();
             return FamiliesList;
         }
         private async Task CreateFamily()
@@ -361,13 +306,8 @@ namespace MCPackServer.Pages.ArticlesModule
             var result = await dialog.Result;
             if (!result.Cancelled)
             {
-                ActionResponse<ArticleFamilies> response = (ActionResponse<ArticleFamilies>)result.Data;
-                if (response.IsSuccessful)
-                {
-                    Snackbar.Add("Familia añadida con éxito.", Severity.Success);
-                }
-                else
-                    Snackbar.Add("Error al añadir familia.", Severity.Error);
+                await FamiliesServerReload(string.Empty);
+                SelectedFamily = FamiliesList.OrderByDescending(f => f.Id).First();
             }
         }
         private async Task EditFamily()
@@ -381,14 +321,8 @@ namespace MCPackServer.Pages.ArticlesModule
             var result = await dialog.Result;
             if (!result.Cancelled)
             {
-                ActionResponse<ArticleFamilies> response = (ActionResponse<ArticleFamilies>)result.Data;
-                if (response.IsSuccessful)
-                {
-                    Snackbar.Add("Familia editada con éxito.", Severity.Success);
-                    SelectedFamily = new();
-                }
-                else
-                    Snackbar.Add("Error al editar familia.", Severity.Error);
+                await FamiliesServerReload(string.Empty);
+                SelectedFamily = FamiliesList.Single(f => f.Id == SelectedFamily.Id);
             }
         }
         private async Task DeleteFamily()
@@ -402,21 +336,18 @@ namespace MCPackServer.Pages.ArticlesModule
             var result = await dialog.Result;
             if (!result.Cancelled)
             {
-                ActionResponse<ArticleFamilies> response = (ActionResponse<ArticleFamilies>)result.Data;
-                if (response.IsSuccessful)
-                {
-                    Snackbar.Add("Familia eliminada con éxito.", Severity.Success);
-                    SelectedGroup = new();
-                }
-                else
-                    Snackbar.Add("Error al eliminar familia.", Severity.Error);
+                VisibleArticleInformation = false;
+                ArticlesPanel.Collapse();
+                SelectedArticle = new();
+                SelectedFamily = new();
+                await FamiliesServerReload(string.Empty);
             }
         }
         #endregion
 
         #region Quotes related methods
         #region QuoteTable related methods
-        private async Task<TableData<Quotes>> QuotesServerReload(TableState state)
+        private async Task<TableData<QuotesView>> QuotesServerReload(TableState state)
         {
             List<WhereFilter> filters = new()
             {
@@ -432,15 +363,15 @@ namespace MCPackServer.Pages.ArticlesModule
             };
             string field = state.SortLabel ?? "Id";
             string order = state.SortDirection == SortDirection.Ascending ? "ASC" : "DESC";
-            var items = await _quotesService.GetForGridAsync<Quotes>(request, field, order);
-            int? count = await _quotesService.GetTotalCountAsync<Quotes>(request);
-            return new TableData<Quotes>
+            var items = await _service.GetForGridAsync<QuotesView>(request, field, order);
+            int? count = await _service.GetTotalCountAsync<QuotesView>(request);
+            return new TableData<QuotesView>
             {
                 Items = items,
                 TotalItems = count ?? 0
             };
         }
-        private void OnSelectedQuoteRow(TableRowClickEventArgs<Quotes> args)
+        private void OnSelectedQuoteRow(TableRowClickEventArgs<QuotesView> args)
         {
             var selectedId = args.Item.Id;
             if (!SelectedQuotes.Any(q => selectedId == q.Id))
@@ -455,68 +386,42 @@ namespace MCPackServer.Pages.ArticlesModule
             Parameters = new()
             {
                 ["State"] = QuotesDialog.States.Add,
-                ["Model"] = new Quotes() { ArticleId = SelectedArticle.Id },
                 ["ArticleId"] = SelectedArticle.Id
             };
             var dialog = Dialogs.Show<QuotesDialog>("Añadir nueva cotización", Parameters);
             var result = await dialog.Result;
             if (!result.Cancelled)
-            {
-                ActionResponse<Quotes> response = (ActionResponse<Quotes>)result.Data;
-                if (response.IsSuccessful)
-                {
-                    Snackbar.Add("Cotización añadida con éxito.", Severity.Success);
-                }
-                else
-                    Snackbar.Add("Error al añadir cotización.", Severity.Error);
-            }
-            await QuoteTable.ReloadServerData();
+                await QuoteTable.ReloadServerData();
         }
-        private async Task EditQuote(Quotes quote)
+        private async Task EditQuote(QuotesView quote)
         {
             Parameters = new()
             {
                 ["State"] = QuotesDialog.States.Edit,
-                ["Model"] = quote,
-                ["ArticleId"] = SelectedArticle.Id
+                ["ModelView"] = quote,
             };
             var dialog = Dialogs.Show<QuotesDialog>("Editar cotización seleccionada", Parameters);
             var result = await dialog.Result;
             if (!result.Cancelled)
             {
-                ActionResponse<Quotes> response = (ActionResponse<Quotes>)result.Data;
-                if (response.IsSuccessful)
-                {
-                    Snackbar.Add("Cotización editada con éxito.", Severity.Success);
-                    RemoveTab(selectedQuote: quote);
-                }
-                else
-                    Snackbar.Add("Error al editar cotización.", Severity.Error);
+                RemoveTab(selectedQuote: quote);
+                await QuoteTable.ReloadServerData();
             }
-            await QuoteTable.ReloadServerData();
         }
-        private async Task DeleteQuote(Quotes quote)
+        private async Task DeleteQuote(QuotesView quote)
         {
             Parameters = new()
             {
                 ["State"] = QuotesDialog.States.Delete,
-                ["Model"] = quote,
-                ["ArticleId"] = SelectedArticle.Id
+                ["ModelView"] = quote
             };
             var dialog = Dialogs.Show<QuotesDialog>("Eliminar cotización seleccionada", Parameters);
             var result = await dialog.Result;
             if (!result.Cancelled)
             {
-                ActionResponse<Quotes> response = (ActionResponse<Quotes>)result.Data;
-                if (response.IsSuccessful)
-                {
-                    Snackbar.Add("Cotización eliminada con éxito.", Severity.Info);
-                    RemoveTab(selectedQuote: quote);
-                }
-                else
-                    Snackbar.Add("Error al eliminar cotización.", Severity.Error);
+                RemoveTab(selectedQuote: quote);
+                await QuoteTable.ReloadServerData();
             }
-            await QuoteTable.ReloadServerData();
         }
         private async Task FilterQuotes() => await QuoteTable.ReloadServerData();
         private void DeleteQuoteFilters()
@@ -524,7 +429,7 @@ namespace MCPackServer.Pages.ArticlesModule
             CurrencyFilter = string.Empty;
             ProviderFilter = 0;
         }
-        private void RemoveTab(MudTabPanel? tabPanel = null, Quotes? selectedQuote = null)
+        private void RemoveTab(MudTabPanel? tabPanel = null, QuotesView? selectedQuote = null)
         {
             int? Id = (null != tabPanel) ? (int)tabPanel.Tag : null;
             var quote = selectedQuote ?? SelectedQuotes.FirstOrDefault(q => Id == q.Id);

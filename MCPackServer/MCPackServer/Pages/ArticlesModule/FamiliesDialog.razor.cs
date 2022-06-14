@@ -68,18 +68,50 @@ namespace MCPackServer.Pages.ArticlesModule
         private async Task Submit()
         {
             _processing = true;
-            string response = string.Empty;
             await Form.Validate();
             if (Form.IsValid)
             {
                 if (States.Add == State)
-                    response = JsonConvert.SerializeObject(await _familiesService.AddAsync(Model));
+                {
+                    var response = await _service.AddAsync(Model);
+                    if (response.IsSuccessful)
+                        Snackbar.Add("Familia añadida con éxito.", Severity.Success);
+                    else
+                    {
+                        foreach (var error in response.Errors)
+                        {
+                            Snackbar.Add(error, Severity.Error);
+                        }
+                    }
+                }
                 else if (States.Edit == State)
-                    response = JsonConvert.SerializeObject(await _familiesService.UpdateAsync(Model));
+                {
+                    var response = await _service.UpdateAsync(Model);
+                    if (response.IsSuccessful)
+                        Snackbar.Add("Familia editada con éxito.", Severity.Success);
+                    else
+                    {
+                        foreach (var error in response.Errors)
+                        {
+                            Snackbar.Add(error, Severity.Error);
+                        }
+                    }
+                }
                 else if (States.Delete == State)
-                    response = JsonConvert.SerializeObject(await _familiesService.RemoveAsync(Model));
+                {
+                    var response = await _service.RemoveAsync(Model);
+                    if (response.IsSuccessful)
+                        Snackbar.Add("Familia eliminada con éxito.", Severity.Success);
+                    else
+                    {
+                        foreach (var error in response.Errors)
+                        {
+                            Snackbar.Add(error, Severity.Error);
+                        }
+                    }
+                }
                 _processing = false;
-                Dialog.Close(DialogResult.Ok(JsonConvert.DeserializeObject<ActionResponse<ArticleFamilies>>(response)));
+                Dialog.Close();
             }
             else
             {

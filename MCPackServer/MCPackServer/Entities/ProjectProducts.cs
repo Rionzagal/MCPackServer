@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace MCPackServer.Entities
 {
+    [Index(nameof(ProjectId), Name = "FK_ProjectProducts_Projects_idx")]
     public partial class ProjectProducts
     {
         [Key]
@@ -16,6 +17,7 @@ namespace MCPackServer.Entities
         public int ProjectId { get; set; }
         public float SalePrice { get; set; }
         public int Quantity { get; set; }
+        [StringLength(250)]
         public string Observations { get; set; }
 
         [ForeignKey(nameof(ProductId))]

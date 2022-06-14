@@ -11,6 +11,9 @@ namespace MCPackServer.Entities
     public partial class UserInformation
     {
         [Key]
+        public int Id { get; set; }
+        [Required]
+        [StringLength(450)]
         public string AspNetUserId { get; set; }
         [Required]
         [StringLength(50)]
@@ -23,7 +26,6 @@ namespace MCPackServer.Entities
         [Required]
         [StringLength(50)]
         public string MotherSurname { get; set; }
-        [Column(TypeName = "datetime")]
         public DateTime? BirthDate { get; set; }
         [StringLength(50)]
         public string Gender { get; set; }

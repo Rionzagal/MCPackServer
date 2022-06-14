@@ -16,39 +16,52 @@ namespace MCPackServer.Pages.RequisitionsModule
     {
         #region Parameters
         [CascadingParameter]
-        public MudDialogInstance Dialog { get; set; }
+        public MudDialogInstance? Dialog { get; set; }
         [Parameter]
-        public Requisitions Reference { get; set; }
+        public RequisitionsView? Reference { get; set; }
         #endregion
 
         #region Dialog variables
-        private string Title;
-        private string TitleIcon;
+        private string Title = string.Empty;
+        private string TitleIcon = string.Empty;
         private bool Disabled;
         private Color ButtonColor;
         private bool _processing = false;
         #endregion
 
         #region API elements
-        private HashSet<RequisitionArticles> OrderArticles = new();
-        private HashSet<RequisitionArticles> SelectedArticles = new();
+        private HashSet<RequisitionArticlesView> OrderArticles = new();
+        private HashSet<RequisitionArticlesView> SelectedArticles = new();
         private List<ArticleGroups> Groups = new();
         private List<ArticleFamilies> Families = new();
         private List<Projects> projects = new();
         #region Filters
         private int? FamilyFilter, GroupFilter;
-        private string NameFilter;
+        private string NameFilter = string.Empty;
         #endregion
         #endregion
 
-        private MudTable<RequisitionArticles> ArticlesTable;
+        private MudTable<RequisitionArticlesView> ArticlesTable = new();
         protected override async Task OnInitializedAsync()
         {
+            if (null == Reference)
+                Dialog?.Cancel();
+
             Title = "Añadir nuevo artículo a orden de compra";
             TitleIcon = Icons.Material.Filled.Create;
             Disabled = false;
             ButtonColor = Color.Success;
-            OrderArticles = Reference.RequisitionArticles.ToHashSet();
+
+            DataManagerRequest request = new()
+            {
+                Where = new List<WhereFilter>()
+                {
+                    new WhereFilter { Field = nameof(RequisitionArticles.RequisitionId), Value = Reference?.Id.ToString() ?? "" }
+                }
+            };
+            OrderArticles = (await _service.GetForGridAsync<RequisitionArticlesView>
+                (request, nameof(RequisitionArticles.ArticleId), getAll: true))
+                .ToHashSet();
 
             #region Get groups and families
             DataManagerRequest familiesRequest = new();
@@ -68,13 +81,36 @@ namespace MCPackServer.Pages.RequisitionsModule
         private async Task Submit()
         {
             _processing = true;
-            List<ActionResponse<RequisitionArticles>> responses = new();
-            foreach (var Model in SelectedArticles)
+            List<ActionResponse<RequisitionArticles>> SuccessResponses = new();
+            List<ActionResponse<RequisitionArticles>> FailureResponses = new();
+            foreach (var article in SelectedArticles)
             {
+                RequisitionArticles Model = new()
+                {
+                    RequisitionId = article.RequisitionId,
+                    ArticleId = article.ArticleId,
+                    ProjectId = article.ProjectId,
+                    Quantity = article.Quantity
+                };
                 var response = await _articlesService.AddAsync(Model);
-                if (response.IsSuccessful) responses.Add(response);
+                if (response.IsSuccessful)
+                    SuccessResponses.Add(response);
+                else
+                    FailureResponses.Add(response);
             }
-            Dialog.Close(DialogResult.Ok(responses));
+            if (SuccessResponses.Any())
+                Snackbar.Add($"{SuccessResponses.Count} de {SelectedArticles.Count} artículos han sido añadidos " +
+                    $"correctamente a la requisición {Reference?.RequisitionNumber ?? "0"}.", Severity.Success);
+            if (FailureResponses.Any())
+            {
+                Snackbar.Add($"Se ha detectado error al añadir {FailureResponses.Count} de {SelectedArticles.Count} " +
+                    $"artículos a la requisición {Reference?.RequisitionNumber ?? "0"}.", Severity.Error);
+                for (int i = 0; i < FailureResponses.Count; i++)
+                {
+                    Snackbar.Add($"Error {i + 1} de {FailureResponses.Count}: {FailureResponses[i].Errors}", Severity.Error);
+                }
+            }
+            Dialog?.Close();
         }
 
         private async Task<IEnumerable<int?>> SearchGroupFilters(string filter)
@@ -160,24 +196,24 @@ namespace MCPackServer.Pages.RequisitionsModule
             return projectNumber;
         }
 
-        private async Task<TableData<RequisitionArticles>> ArticlesServerReload(TableState state)
+        private async Task<TableData<RequisitionArticlesView>> ArticlesServerReload(TableState state)
         {
-            List<RequisitionArticles> requestedArticles = new();
+            List<RequisitionArticlesView> requestedArticles = new();
             DataManagerRequest request = new()
             {
                 Take = state.PageSize,
                 Skip = state.Page * state.PageSize,
                 Where = new List<WhereFilter>
                 {
-                    new WhereFilter { Field = "FamilyId", Value = FamilyFilter.HasValue ? FamilyFilter.Value.ToString() : string.Empty },
+                    new WhereFilter { Field = nameof(ArticlesView.FamilyId), Value = FamilyFilter?.ToString() ?? "" },
                     new WhereFilter { Field = "Name", Value = NameFilter }
                 }
             };
             string field = state.SortLabel ?? "Id";
             string order = state.SortDirection == SortDirection.Ascending ? "ASC" : "DESC";
             
-            var articles = (await _service.GetForGridAsync<PurchaseArticles>(request, field, order)).ToList();
-            int? TotalCount = await _service.GetTotalCountAsync<PurchaseArticles>(request);
+            var articles = (await _service.GetForGridAsync<ArticlesView>(request, field, order)).ToList();
+            int TotalCount = await _service.GetTotalCountAsync<ArticlesView>(request) ?? 0;
             if (null != articles)
             {
                 if (GroupFilter.HasValue && 0 != GroupFilter)
@@ -192,11 +228,15 @@ namespace MCPackServer.Pages.RequisitionsModule
                 foreach (var item in articles)
                 {
                     requestedArticles.Add(
-                        new RequisitionArticles()
+                        new RequisitionArticlesView()
                         {
                             ArticleId = item.Id,
-                            Article = item,
-                            RequisitionId = Reference.Id
+                            ArticleCode = item.Code,
+                            ArticleName = item.Name,
+                            FamilyId = item.FamilyId,
+                            FamilyName = item.FamilyName,
+                            Unit = item.Unit,
+                            RequisitionId = Reference?.Id ?? 0
                         });
                 }
                 foreach (var item in OrderArticles)
@@ -205,8 +245,8 @@ namespace MCPackServer.Pages.RequisitionsModule
                         (requestedArticles.Single(x => item.ArticleId == x.ArticleId));
                 }
             }
-            return new TableData<RequisitionArticles>() 
-            { Items = requestedArticles, TotalItems = TotalCount ?? 0 };
+            return new TableData<RequisitionArticlesView>() 
+            { Items = requestedArticles, TotalItems = TotalCount };
         }
     }
 }

@@ -16,18 +16,18 @@ namespace MCPackServer.Pages.RequisitionsModule
 
         #region Parameters
         [CascadingParameter]
-        public MudDialogInstance Dialog { get; set; }
+        public MudDialogInstance? Dialog { get; set; }
         [Parameter]
         public States State { get; set; }
         [Parameter]
-        public Requisitions Reference { get; set; }
+        public RequisitionsView? Reference { get; set; }
         [Parameter]
-        public RequisitionArticles Model { get; set; } = new();
+        public RequisitionArticlesView? ModelView { get; set; } = new();
         #endregion
 
         #region Dialog variables
-        private string Title;
-        private string TitleIcon;
+        private string Title = string.Empty;
+        private string TitleIcon = string.Empty;
         private bool Disabled;
         private Color ButtonColor;
         private bool _processing = false;
@@ -38,8 +38,27 @@ namespace MCPackServer.Pages.RequisitionsModule
         private List<Projects> ProjectsList = new();
         #endregion
 
+        private RequisitionArticles Model = new();
+
         protected override async Task OnInitializedAsync()
         {
+            if (null == Reference || null == ModelView)
+                Dialog?.Cancel();
+            else
+            {
+                DataManagerRequest request = new()
+                {
+                    Where = new List<WhereFilter>
+                    {
+                        new WhereFilter { Field = nameof(RequisitionArticles.ArticleId), Value = ModelView.ArticleId.ToString() },
+                        new WhereFilter { Field = nameof(RequisitionArticles.RequisitionId), Value = Reference.Id.ToString() },
+                        new WhereFilter { Field = nameof(RequisitionArticles.ProjectId), Value = ModelView.ProjectId.ToString() }
+                    }
+                };
+                Model = (await _service.GetForGridAsync<RequisitionArticles>
+                    (request, nameof(RequisitionArticles.ArticleId), getAll: true))
+                    .First();
+            }
             if (States.Edit == State) //representing an Edit dialog
             {
                 Title = "Editar artículo seleccionado";
@@ -56,7 +75,7 @@ namespace MCPackServer.Pages.RequisitionsModule
             }
             else //should not get to this option
             {
-                Dialog.Cancel();
+                Dialog?.Cancel();
             }
 
             await ProjectsServerReload();
@@ -96,17 +115,49 @@ namespace MCPackServer.Pages.RequisitionsModule
         private async Task Submit()
         {
             _processing = true;
-            string response = string.Empty;
             await Form.Validate();
             if (Form.IsValid)
             {
-                if (States.Add == State) 
-                    response = JsonConvert.SerializeObject(await _articlesService.AddAsync(Model));
-                else if (States.Edit == State) 
-                    response = JsonConvert.SerializeObject(await _articlesService.UpdateAsync(Model));
-                else if (States.Delete == State) 
-                    response = JsonConvert.SerializeObject(await _articlesService.RemoveAsync(Model));
-                Dialog.Close(DialogResult.Ok(JsonConvert.DeserializeObject<ActionResponse<RequisitionArticles>>(response)));
+                if (States.Add == State)
+                {
+                    var response = await _service.AddAsync(Model);
+                    if (response.IsSuccessful)
+                        Snackbar.Add("Artículo añadido con éxito.", Severity.Success);
+                    else
+                    {
+                        foreach (var error in response.Errors)
+                        {
+                            Snackbar.Add(error, Severity.Error);
+                        }
+                    }
+                }
+                else if (States.Edit == State)
+                {
+                    var response = await _service.UpdateAsync(Model);
+                    if (response.IsSuccessful)
+                        Snackbar.Add("Artículo añadido con éxito.", Severity.Success);
+                    else
+                    {
+                        foreach (var error in response.Errors)
+                        {
+                            Snackbar.Add(error, Severity.Error);
+                        }
+                    }
+                }
+                else if (States.Delete == State)
+                {
+                    var response = await _service.RemoveAsync(Model);
+                    if (response.IsSuccessful)
+                        Snackbar.Add("Artículo añadido con éxito.", Severity.Success);
+                    else
+                    {
+                        foreach (var error in response.Errors)
+                        {
+                            Snackbar.Add(error, Severity.Error);
+                        }
+                    }
+                }
+                Dialog?.Close();
             }
             else
             {

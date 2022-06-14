@@ -1,6 +1,4 @@
-﻿@inject IQuotesService _quotesService
-@inject IProvidersService _providersService
-<MudDialog>
+﻿<MudDialog>
     <TitleContent>
         <MudText Typo="Typo.h6">
             <MudIcon Icon="@TitleIcon" /> @Title
@@ -23,49 +21,46 @@
                         </MudText>
                     </div>
                 }
-            <MudForm Model="Model" @ref="Form">
-                @if ((int)States.Add == State)
-                {
+                <MudForm Model="Model" @ref="Form">
+                    @if ((int)States.Add == State)
+                    {
+                        <div class="form-group">
+                            <MudAutocomplete T="int" @bind-Value="Model.ProviderId" Label="Proveedor" Required
+                                             SearchFunc="f => ProvidersServerReload(f)" RequiredError="Seleccionar un proveedor"
+                                             ToStringFunc="new Func<int, string>(GetProviderName)" />
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="form-group">
+                            <MudText Typo="Typo.subtitle1">
+                                @($"Proveedor: {ModelView?.ProviderMarketName}")
+                            </MudText>
+                        </div>
+                    }
                     <div class="form-group">
-                        <MudAutocomplete T="int" @bind-Value="Model.ProviderId"
-                                         Label="Proveedor"
-                                         SearchFunc="f => ProvidersServerReload(f)"
-                                         ToStringFunc="new Func<int, string>(GetProviderName)"
-                                         Required="true"
-                                         RequiredError="Seleccionar un proveedor" />
+                        <MudTextField T="string" Label="SKU"
+                                      @bind-Value="Model.SKU"
+                                      ReadOnly="@Disabled" />
                     </div>
-                }
-                else
-                {
                     <div class="form-group">
-                        <MudText Typo="Typo.subtitle1">
-                            @($"Proveedor: {Model.Provider.MarketName}")
-                        </MudText>
+                        <MudNumericField T="float" Label="Precio unitario" Required
+                                         RequiredError="Insertar precio sugerido"
+                                         @bind-Value="Model.Price" Min="0f" Format="N2"
+                                         Adornment="Adornment.Start" HideSpinButtons
+                                         AdornmentIcon="@Icons.Material.Filled.AttachMoney"
+                                         ReadOnly="@Disabled" />
                     </div>
-                }
-                <div class="form-group">
-                    <MudTextField T="string" Label="SKU"
-                                  @bind-Value="Model.SKU"
-                                  ReadOnly="@Disabled" />
-                </div>
-                <div class="form-group">
-                    <MudNumericField T="float" Label="Precio unitario" Required="true"
-                                     RequiredError="Insertar precio sugerido"
-                                     @bind-Value="Model.Price" Min="0f" Format="N2"
-                                     Adornment="Adornment.Start" HideSpinButtons="true"
-                                     AdornmentIcon="@Icons.Material.Filled.AttachMoney"
-                                     ReadOnly="@Disabled" />
-                </div>
-                <div class="form-group">
-                    <MudSelect T="string" Label="Moneda de cotización" @bind-Value="Model.Currency"
-                               Variant="Variant.Outlined" Required="true"
-                               RequiredError="Inserte moneda de cotización"
-                               ReadOnly="@Disabled" Disabled="0 == Model.ProviderId">
-                        <MudSelectItem Value="@("MXN")" />
-                        <MudSelectItem Value="@("USD")" />
-                    </MudSelect>
-                </div>
-            </MudForm>
+                    <div class="form-group">
+                        <MudSelect T="string" Label="Moneda de cotización" @bind-Value="Model.Currency"
+                                   Variant="Variant.Outlined" Required
+                                   RequiredError="Inserte moneda de cotización"
+                                   ReadOnly="@Disabled" Disabled="0 == Model.ProviderId">
+                            <MudSelectItem Value="@("MXN")" />
+                            <MudSelectItem Value="@("USD")" />
+                        </MudSelect>
+                    </div>
+                </MudForm>
             </MudContainer>
         }
     </DialogContent>

@@ -13,9 +13,9 @@ namespace MCPackServer.Pages.PurchaseOrdersModule
     {
         #region Dependency injection
         [Inject]
-        public NavigationManager _navigationManager { get; set; }
+        public NavigationManager? _navigationManager { get; set; }
         [Inject]
-        public IJSRuntime _jsRuntime { get; set; }
+        public IJSRuntime? _jsRuntime { get; set; }
         #endregion
 
         #region Permissions and Flags
@@ -31,14 +31,14 @@ namespace MCPackServer.Pages.PurchaseOrdersModule
 
         #region MudBlazor Components
         #region Dialogs
-        DialogParameters Parameters;
+        DialogParameters Parameters = new();
         #endregion
         #region MudBlazor Tables
-        private MudTable<PurchaseOrders> OrdersTable;
-        private MudTable<ArticlesToPurchase> ArticlesTable;
+        private MudTable<PurchaseOrdersView> OrdersTable = new();
+        private MudTable<ArticlesToPurchaseView> ArticlesTable = new();
         #endregion
         #region Tabs and properties
-        private MudTabs OrderInformationTabs;
+        private MudTabs OrderInformationTabs = new();
         private int? _selectedId;
         #endregion
         #endregion
@@ -50,12 +50,9 @@ namespace MCPackServer.Pages.PurchaseOrdersModule
         #endregion
 
         #region Entities and Models
-        PurchaseOrders SelectedOrder = new();
-        List<Clients> ProjectClients = new();
-        List<ArticlesToPurchase> SelectedArticles = new();
-        List<ArticleGroups> Groups = new();
-        List<ArticleFamilies> Families = new();
-        private float subtotal, tax, discount, total = 0f;
+        PurchaseOrdersView SelectedOrder = new();
+        List<ArticlesToPurchaseView> SelectedArticles = new();
+        private double subtotal, tax, discount, total = 0f;
         #endregion
 
         protected override async Task OnInitializedAsync()
@@ -75,20 +72,6 @@ namespace MCPackServer.Pages.PurchaseOrdersModule
                     Console.WriteLine(ex);
                 }
             }
-            try
-            {
-                DataManagerRequest request = new();
-                var clients = await _service.GetForGridAsync<Clients>(request);
-                if (null != clients) ProjectClients = clients.ToList();
-                var groups = await _service.GetForGridAsync<ArticleGroups>(request);
-                if (null != groups) Groups = groups.ToList();
-                var families = await _service.GetForGridAsync<ArticleFamilies>(request);
-                if (null != families) Families = Families.ToList();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex.Message);
-            }
         }
 
         protected override void OnAfterRender(bool firstRender)
@@ -102,7 +85,7 @@ namespace MCPackServer.Pages.PurchaseOrdersModule
         }
         #region PurchaseOrders
         #region OrdersTable methods
-        private async Task<TableData<PurchaseOrders>> PurchaseOrdersServerReload(TableState state)
+        private async Task<TableData<PurchaseOrdersView>> PurchaseOrdersServerReload(TableState state)
         {
             List<WhereFilter> filters = new()
             {
@@ -116,20 +99,17 @@ namespace MCPackServer.Pages.PurchaseOrdersModule
             };
             string field = state.SortLabel ?? "IssuedDate";
             string order = state.SortDirection == SortDirection.Ascending ? "ASC" : "DESC";
-            var items = await _ordersService.GetForGridAsync<PurchaseOrders>(request, field, order);
-            int? count = await _ordersService.GetTotalCountAsync<PurchaseOrders>(request);
-            return new TableData<PurchaseOrders>
+            var items = await _service.GetForGridAsync<PurchaseOrdersView>(request, field, order);
+            int? count = await _service.GetTotalCountAsync<PurchaseOrdersView>(request);
+            return new TableData<PurchaseOrdersView>
             {
-                Items = items,
+                Items = items ?? new List<PurchaseOrdersView>(),
                 TotalItems = count ?? 0
             };
         }
-        private async Task OnSelectedPurchaseOrder(TableRowClickEventArgs<PurchaseOrders> args)
+        private void OnSelectedPurchaseOrder(TableRowClickEventArgs<PurchaseOrdersView> args)
         {
-            VisibleOrderInformation = false;
             SelectedOrder = args.Item;
-            SelectedOrder.ArticlesToPurchase = await ArticlesServerReload(args.Item.Id);
-            SelectedOrder.Project.Client = ProjectClients.Single(c => SelectedOrder.Project.ClientId == c.Id);
             VisibleOrderInformation = true;
         }
         #endregion
@@ -138,23 +118,16 @@ namespace MCPackServer.Pages.PurchaseOrdersModule
         {
             Parameters = new()
             {
-                ["State"] = PurchaseOrdersDialog.States.Add,
-                ["Model"] = new PurchaseOrders()
-                {
-                    IssuedDate = DateTime.Today,
-                    DeliveryDate = DateTime.Today
-                }
+                ["State"] = PurchaseOrdersDialog.States.Add
             };
             var dialog = Dialogs.Show<PurchaseOrdersDialog>("Añadir nueva órden de compra", Parameters);
             var result = await dialog.Result;
             if (!result.Cancelled)
             {
-                ActionResponse<PurchaseOrders> response = (ActionResponse<PurchaseOrders>)result.Data;
-                if (response.IsSuccessful)
-                    Snackbar.Add("Órden de compra generada con éxito.", Severity.Success);
-                else
-                    Snackbar.Add("Error al generar órden de compra.", Severity.Error);
                 await OrdersTable.ReloadServerData();
+                DataManagerRequest dm = new() { Take = 1 };
+                SelectedOrder = (await _service.GetForGridAsync<PurchaseOrdersView>(dm, order: "DESC")).First();
+                VisibleOrderInformation = true;
             }
         }
         private async Task EditOrder()
@@ -162,22 +135,14 @@ namespace MCPackServer.Pages.PurchaseOrdersModule
             Parameters = new()
             {
                 ["State"] = PurchaseOrdersDialog.States.Edit,
-                ["Model"] = SelectedOrder
+                ["ModelView"] = SelectedOrder
             };
             var dialog = Dialogs.Show<PurchaseOrdersDialog>("Actualizar órden de compra", Parameters);
             var result = await dialog.Result;
             if (!result.Cancelled)
             {
-                ActionResponse<PurchaseOrders> response = (ActionResponse<PurchaseOrders>)result.Data;
-                if (response.IsSuccessful)
-                {
-                    VisibleOrderInformation = false;
-                    SelectedOrder = new();
-                    Snackbar.Add("Órden de compra actualizada con éxito.", Severity.Success);
-                }
-                else
-                    Snackbar.Add("Error al actualizar órden de compra.", Severity.Error);
                 await OrdersTable.ReloadServerData();
+                SelectedOrder = await _service.GetByKeyAsync<PurchaseOrdersView>(SelectedOrder.Id);
             }
         }
         private async Task DeleteOrder()
@@ -185,52 +150,29 @@ namespace MCPackServer.Pages.PurchaseOrdersModule
             Parameters = new()
             {
                 ["State"] = PurchaseOrdersDialog.States.Delete,
-                ["Model"] = SelectedOrder
+                ["ModelView"] = SelectedOrder
             };
             var dialog = Dialogs.Show<PurchaseOrdersDialog>("Eliminar órden de compra", Parameters);
             var result = await dialog.Result;
             if (!result.Cancelled)
             {
-                ActionResponse<PurchaseOrders> response = (ActionResponse<PurchaseOrders>)result.Data;
-                if (response.IsSuccessful)
-                {
-                    Snackbar.Add("Órden de compra eliminada con éxito.", Severity.Info);
-                    VisibleOrderInformation = false;
-                    SelectedOrder = new();
-                }
-                else
-                    Snackbar.Add("Error al eliminar órden de compra.", Severity.Error);
+                VisibleOrderInformation = false;
+                SelectedOrder = new();
                 await OrdersTable.ReloadServerData();
             }
         }
-
-        private async Task MarkOrderAsReceived()
+        private async Task MarkOrderAsReceived(int? orderId)
         {
-            Parameters = new() { ["Model"] = SelectedOrder };
+            Parameters = new() 
+            {
+                ["Id"] = orderId
+            };
             var dialog = Dialogs.Show<PurchaseOrdersReceivingDialog>("Marcar como recibido", Parameters);
             var result = await dialog.Result;
             if (!result.Cancelled)
             {
-                JObject element = new();
-                var resultString = result.Data.ToString();
-                bool Success = false;
-                if (!string.IsNullOrEmpty(resultString))
-                {
-                    element = JObject.Parse(resultString);
-                    Success = bool.Parse(element.GetValue("SuccessOrderUpdate").ToString() ?? "false");
-                }
-                    
-                if (Success)
-                {
-                    Snackbar.Add("Orden de compra marcada exitosamente como recibida", Severity.Success);
-                    Snackbar.Add($"{int.Parse(element.GetValue("SuccessfulArticlesUpdate").ToString())} artículos se han recibido", Severity.Success);
-                }
-                else
-                    Snackbar.Add("Error al marcar orden de compra como recibida", Severity.Error);
                 await OrdersTable.ReloadServerData();
-                SelectedOrder = await _ordersService.GetByKeyAsync<PurchaseOrders>(SelectedOrder.Id, "Id");
-                SelectedOrder.Project.Client = ProjectClients.Single(c => SelectedOrder.Project.ClientId == c.Id);
-                SelectedOrder.ArticlesToPurchase = await ArticlesServerReload(SelectedOrder.Id);
+                SelectedOrder = await _service.GetByKeyAsync<PurchaseOrdersView>(SelectedOrder.Id);
             }
         }
         #endregion
@@ -238,33 +180,33 @@ namespace MCPackServer.Pages.PurchaseOrdersModule
 
         #region PurchaseArticles
         #region ArticlesTable methods
-        private async Task<ICollection<ArticlesToPurchase>> ArticlesServerReload(object OrderId)
+        private async Task<TableData<ArticlesToPurchaseView>> ArticlesServerReload(TableState state)
         {
-            List<ArticlesToPurchase> articles = new();
+            List<WhereFilter> filters = new()
+            {
+                new WhereFilter { Field = nameof(ArticlesToPurchaseView.PurchaseOrderId), Value = SelectedOrder.Id != 0 ? SelectedOrder.Id.ToString() : string.Empty }
+            };
             DataManagerRequest request = new()
             {
-                Where = new()
-                {
-                    new WhereFilter { Field = "PurchaseOrderId", Value = OrderId.ToString() ?? string.Empty }
-                }
+                Take = state.PageSize,
+                Skip = state.Page * state.PageSize,
+                Where = filters,
             };
-            var response = await _articlesService.GetForGridAsync<ArticlesToPurchase>(request, "QuoteId", "DESC");
-            if (null != response) articles = response.ToList();
+            string field = state.SortLabel ?? nameof(ArticlesToPurchaseView.Quantity);
+            string order = state.SortDirection == SortDirection.Ascending ? "ASC" : "DESC";
+            var items = await _service.GetForGridAsync<ArticlesToPurchaseView>(request, field, order);
+            int? count = await _service.GetTotalCountAsync<ArticlesToPurchaseView>(request, nameof(ArticlesToPurchaseView.QuoteId));
             subtotal = 0;
-            foreach (var item in articles)
-            {
-                subtotal += item.SalePrice * item.Quantity;
-                item.Quote.Article.Family = Families.Single(f => item.Quote.Article.FamilyId == f.Id);
-                item.Quote.Article.Family.Group = Groups.Single(g => item.Quote.Article.Family.GroupId == g.Id);
-                item.Quote.Article.Code = $"{item.Quote.Article.Family.Group.Code}-{item.Quote.Article.Family.Code}-{item.Quote.Article.Code}";
-            }
             discount = subtotal * (SelectedOrder.Discount / 100);
-            tax = SelectedOrder.Provider.HasTaxes ? (subtotal - discount) * 0.16f : 0f;
+            tax = SelectedOrder.HasTaxes ? (subtotal - discount) * 0.16f : 0f;
             total = subtotal + tax - discount;
-            return articles;
+            return new TableData<ArticlesToPurchaseView>
+            {
+                Items = items ?? new List<ArticlesToPurchaseView>(),
+                TotalItems = count ?? 0
+            };
         }
-
-        private void OnSelectedArticle(TableRowClickEventArgs<ArticlesToPurchase> args)
+        private void OnSelectedArticle(TableRowClickEventArgs<ArticlesToPurchaseView> args)
         {
             var selectedId = args.Item.QuoteId;
             if (!SelectedArticles.Any(a => selectedId == a.QuoteId))
@@ -280,65 +222,50 @@ namespace MCPackServer.Pages.PurchaseOrdersModule
             Parameters = new()
             {
                 ["State"] = AddArticlesDialog.States.Add,
-                ["Reference"] = SelectedOrder
+                ["OrderId"] = SelectedOrder.Id
             };
             var dialog = Dialogs.Show<AddArticlesDialog>("Añadir artículos a orden", Parameters);
             var result = await dialog.Result;
             if (!result.Cancelled)
             {
-                var resultElements = JsonSerializer.Deserialize<HashSet<ArticlesToPurchase>>(result.Data.ToString());
-                Snackbar.Add($"{resultElements.Count} artículos han sido añadidos a orden de compra", Severity.Info);                
+                await ArticlesTable.ReloadServerData();
             }
         }
-
-        private async Task EditArticle(ArticlesToPurchase article)
+        private async Task EditArticle(ArticlesToPurchaseView article)
         {
             Parameters = new()
             {
                 ["State"] = ArticlesToPurchaseDialog.States.Edit,
-                ["Model"] = article
+                ["ModelView"] = article
             };
             var dialog = Dialogs.Show<ArticlesToPurchaseDialog>("Actualizar artículo de compra", Parameters);
             var result = await dialog.Result;
             if (!result.Cancelled)
             {
-                JObject element = JObject.Parse(result.Data.ToString());
-                if (bool.Parse(element.GetValue("Success").ToString()))
-                {
-                    Snackbar.Add("Artículo de compra actualizado con éxito.", Severity.Success);
-                }
-                else Snackbar.Add("Error al actualizar artículo seleccionado.", Severity.Error);
+                RemoveTab(article: article);
             }
         }
-
-        private async Task DeleteArticle(ArticlesToPurchase article)
+        private async Task DeleteArticle(ArticlesToPurchaseView article)
         {
             Parameters = new()
             {
                 ["State"] = ArticlesToPurchaseDialog.States.Delete,
-                ["Model"] = article
+                ["ModelView"] = article
             };
             var dialog = Dialogs.Show<ArticlesToPurchaseDialog>("Eliminar artículo de compra", Parameters);
             var result = await dialog.Result;
             if (!result.Cancelled)
-            {
-                JObject element = JObject.Parse(result.Data.ToString());
-                if (bool.Parse(element.GetValue("Success").ToString()))
-                {
-                    Snackbar.Add("Artículo de compra eliminado con éxito.", Severity.Info);
-                }
-                else Snackbar.Add("Error al eliminar artículo seleccionado.", Severity.Error);
-            }
+                RemoveTab(article: article);
         }
         #endregion
         #endregion
 
-        private void VewReport()
+        private void GoToReport()
         {
-            _navigationManager.NavigateTo($"/Report/{SelectedOrder.Id}");
+            _navigationManager?.NavigateTo($"/Report/{SelectedOrder.Id}");
         }
 
-        private void RemoveTab(MudTabPanel tabPanel = null, ArticlesToPurchase article = null)
+        private void RemoveTab(MudTabPanel? tabPanel = null, ArticlesToPurchaseView? article = null)
         {
             int? id = (null != tabPanel) ? (int)tabPanel.Tag : null;
             var selectedArticle = article ?? SelectedArticles.FirstOrDefault(p => id == p.QuoteId);
