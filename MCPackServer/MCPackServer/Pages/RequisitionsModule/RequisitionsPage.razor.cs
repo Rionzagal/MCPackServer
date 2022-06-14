@@ -225,13 +225,13 @@ namespace MCPackServer.Pages.RequisitionsModule
             {
                 ["State"] = RequisitionArticlesDialog.States.Edit,
                 ["Reference"] = SelectedRequisition,
-                ["Model"] = product
+                ["ModelView"] = product
             };
             var dialog = Dialogs.Show<RequisitionArticlesDialog>("Editar artículo", Parameters);
             var result = await dialog.Result;
             if (!result.Cancelled)
             {
-                
+                RemoveTab(selectedArticle: product);
             }
         }
         private async Task DeleteProduct(RequisitionArticlesView product)
@@ -240,13 +240,13 @@ namespace MCPackServer.Pages.RequisitionsModule
             {
                 ["State"] = RequisitionArticlesDialog.States.Delete,
                 ["Reference"] = SelectedRequisition,
-                ["Model"] = product
+                ["ModelView"] = product
             };
             var dialog = Dialogs.Show<RequisitionArticlesDialog>("Eliminar producto", Parameters);
             var result = await dialog.Result;
             if (!result.Cancelled)
             {
-                
+                RemoveTab(selectedArticle: product);
             }
         }
         #endregion
