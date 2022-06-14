@@ -1,6 +1,4 @@
-﻿@inject IArticlesToPurchaseService _articlesService
-
-<MudDialog>
+﻿<MudDialog>
     <TitleContent>
         <MudText Typo="Typo.h6">
             <MudIcon Icon="@TitleIcon" /> @Title
@@ -9,7 +7,7 @@
     <DialogContent>
         @if (_processing)
         {
-            <MudProgressCircular Class="m-sm-n1" Size="Size.Large" Indeterminate="true" />
+            <MudProgressCircular Class="m-sm-n1" Size="Size.Large" Indeterminate />
             <MudText Class="m-sm-2">Esperando respuesta de servidor...</MudText>
         }
         else
@@ -27,11 +25,11 @@
         <MudGrid>
             <MudItem xs="6">
                 <MudText Typo="Typo.subtitle1">No. Orden de compra</MudText>
-                <MudTextField Value="Reference.Id" ReadOnly />
+                <MudTextField Value="@(Reference?.OrderNumber ?? "N/A")" ReadOnly />
             </MudItem>
             <MudItem xs="6">
                 <MudText Typo="Typo.subtitle1">Proyecto de orden de comra</MudText>
-                <MudTextField Value="Reference.ProjectId" ReadOnly />
+                <MudTextField Value="@(Reference?.ProjectNumber ?? "N/A")" ReadOnly />
             </MudItem>
             <MudItem xs="6">
                 <MudText Typo="Typo.subtitle1">Número de requisición</MudText>
@@ -39,15 +37,15 @@
             </MudItem>
             <MudItem xs="6">
                 <MudText Typo="Typo.subtitle1">Proveedor</MudText>
-                <MudTextField Value="Reference.ProviderLegalName" ReadOnly />
+                <MudTextField Value="@(Reference?.ProviderLegalName ?? "N/A")" ReadOnly />
             </MudItem>
             <MudItem xs="6">
                 <MudText Typo="Typo.subtitle1">Nombre de artículo</MudText>
-                <MudTextField Value="Model.QuoteId" ReadOnly />
+                <MudTextField Value="@(ModelView?.ArticleName ?? "N/A")" ReadOnly />
             </MudItem>
             <MudItem xs="6">
                 <MudText Typo="Typo.subtitle1">Código de artículo</MudText>
-                <MudTextField Value="Model.QuoteId" ReadOnly />
+                <MudTextField Value="@(ModelView?.ArticleCode ?? "N/A")" ReadOnly />
             </MudItem>
             <MudItem xs="6">
                 <MudText Typo="Typo.subtitle1">Precio unitario</MudText>
@@ -58,7 +56,7 @@
             <MudItem xs="6">
                 <MudText Typo="Typo.subtitle1">Cantidad</MudText>
                 <MudNumericField @bind-Value="Model.Quantity" Required RequiredError="Inserte cantidad"
-                                 T="int" Min="1" Adornment="Adornment.End" AdornmentText="@Model.Quote.Article.Unit"
+                                 T="int" Min="1" Adornment="Adornment.End" AdornmentText="@(ModelView?.Unit ?? "UNIDAD")"
                                  Step="1" ReadOnly="@Disabled" />
             </MudItem>
         </MudGrid>
@@ -68,7 +66,7 @@
     </DialogContent>   
     <DialogActions>
         <MudButton Variant="Variant.Text" Class="mx-1"
-                   OnClick="() => Dialog.Cancel()" Disabled="_processing">
+                   OnClick="() => Dialog?.Cancel()" Disabled="_processing">
             Cerrar
         </MudButton>
         <MudButton Variant="Variant.Filled" Color="@ButtonColor" Class="mx-1"

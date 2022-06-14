@@ -22,22 +22,47 @@ namespace MCPackServer.Pages.PurchaseOrdersModule
         [Parameter]
         public States State { get; set; }
         [Parameter]
-        public PurchaseOrdersView? Reference { get; set; }
-        [Parameter]
-        public ArticlesToPurchase Model { get; set; } = new();
+        public ArticlesToPurchaseView? ModelView { get; set; } = new();
         #endregion
 
         #region Dialog variables
-        private string Title;
-        private string TitleIcon;
+        private string Title = string.Empty;
+        private string TitleIcon = string.Empty;
         private bool Disabled;
         private Color ButtonColor;
         private bool _processing = false;
         #endregion
 
         #region API elements
-        private MudForm Form;
+        private MudForm Form = new();
         #endregion
+
+        private ArticlesToPurchase Model = new();
+        private PurchaseOrdersView Reference = new();
+
+        protected override async Task OnParametersSetAsync()
+        {
+            #region Parameters checking and reference recovery
+            if (ModelView == null)
+                Dialog?.Cancel();
+            else
+            {
+                Reference = await _service.GetByKeyAsync<PurchaseOrdersView>
+                    (Model.PurchaseOrderId, nameof(PurchaseOrdersView.Id));
+                DataManagerRequest request = new()
+                {
+                    Take = 1,
+                    Where = new List<WhereFilter>()
+                    {
+                        new WhereFilter { Field = nameof(ArticlesToPurchase.PurchaseOrderId), Value = Reference.Id.ToString() },
+                        new WhereFilter { Field = nameof(ArticlesToPurchase.QuoteId), Value = ModelView.QuoteId.ToString() }
+                    }
+                };
+                Model = (await _service.GetForGridAsync<ArticlesToPurchase>(request, nameof(ArticlesToPurchase.QuoteId)))
+                    .First();
+            }
+            #endregion
+        }
 
         protected override async Task OnInitializedAsync()
         {
@@ -64,25 +89,40 @@ namespace MCPackServer.Pages.PurchaseOrdersModule
             }
             else //should not get to this option
             {
-                Dialog.Cancel();
+                Dialog?.Cancel();
             }
         }
 
         private async Task Submit()
         {
             _processing = true;
-            string response = string.Empty;
             await Form.Validate();
             if (Form.IsValid)
             {
-                if (States.Add == State)
-                    response = JsonConvert.SerializeObject(await _articlesService.AddAsync(Model));
-                else if (States.Edit == State)
-                    response = JsonConvert.SerializeObject(await _articlesService.UpdateAsync(Model));
+                if (States.Edit == State)
+                {
+                    var response = await _service.UpdateAsync(Model);
+                    if (response.IsSuccessful)
+                        Snackbar.Add("Artículo de compra actualizado con éxito.", Severity.Success);
+                    else
+                        foreach (var error in response.Errors)
+                        {
+                            Snackbar.Add(error, Severity.Error);
+                        }
+                }
                 else if (States.Delete == State)
-                    response = JsonConvert.SerializeObject(await _articlesService.RemoveAsync(Model));
+                {
+                    var response = await _service.RemoveAsync(Model);
+                    if (response.IsSuccessful)
+                        Snackbar.Add("Artículo de compra eliminado con éxito.", Severity.Success);
+                    else
+                        foreach (var error in response.Errors)
+                        {
+                            Snackbar.Add(error, Severity.Error);
+                        }
+                }
                 _processing = false;
-                Dialog.Close(DialogResult.Ok(JsonConvert.DeserializeObject<ActionResponse<ArticlesToPurchase>>(response)));
+                Dialog?.Close();
             }
             else
             {

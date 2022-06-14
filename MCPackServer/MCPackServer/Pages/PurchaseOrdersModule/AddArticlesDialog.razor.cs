@@ -104,15 +104,56 @@ namespace MCPackServer.Pages.PurchaseOrdersModule
             {
                 Reference = await _service.GetByKeyAsync<PurchaseOrdersView>(OrderId, nameof(PurchaseOrdersView.Id));
                 OrderProvider = await _service.GetByKeyAsync<Providers>(Reference.ProviderId, nameof(Providers.Id));
-                DataManagerRequest request = new()
+                DataManagerRequest OrderArticlesRequest = new()
                 {
                     Where = new()
                     {
                         new WhereFilter { Field = nameof(ArticlesToPurchase.PurchaseOrderId), Value = OrderId?.ToString() ?? "" }
                     }
                 };
-                OrderedArticles = (await _service.GetForGridAsync<ArticlesToPurchase>(request,
+                OrderedArticles = (await _service.GetForGridAsync<ArticlesToPurchase>(OrderArticlesRequest,
                     sortField: nameof(ArticlesToPurchase.QuoteId), getAll: true)).ToList();
+                if (Reference.RequisitionId.HasValue) // Check if the Reference Order is linked to a requisition
+                {
+                    DataManagerRequest RequisitionArticlesRequest = new()
+                    {
+                        Where = new()
+                        {
+                            new WhereFilter
+                            {
+                                Field = nameof(RequisitionArticles.RequisitionId),
+                                Value = Reference.RequisitionId?.ToString() ?? ""
+                            },
+                            new WhereFilter
+                            {
+                                Field = nameof(RequisitionArticles.ProjectId),
+                                Value = Reference.ProjectId.ToString()
+                            }
+                        }
+                    };
+                    RequestedArticles = (await _service.GetForGridAsync<RequisitionArticles>(
+                        RequisitionArticlesRequest, nameof(RequisitionArticles.ArticleId), getAll: true))
+                        .ToList(); // Recover the requisition articles linked to the project of the Purchase Order
+                    foreach (var article in RequestedArticles)
+                    {
+                        QuotesView? QuotedArticle = (await _service.GetForGridAsync<QuotesView>(
+                            new DataManagerRequest()
+                            {
+                                Take = 1,
+                                Where = new List<WhereFilter>()
+                                {
+                                    new WhereFilter { Field = nameof(QuotesView.ArticleId), Value = article.ArticleId.ToString() },
+                                    new WhereFilter { Field = nameof(QuotesView.ProviderId), Value = Reference.ProviderId.ToString() },
+                                    new WhereFilter { Field = nameof(QuotesView.Currency), Value = Reference.Currency }
+                                }
+                            })).FirstOrDefault(); // Search for a quote that matches the requested article and the provider
+                        if (QuotedArticle != null) // If it is found, add that quote as an ordered article and select it
+                            SelectedArticles.Add(new(QuotedArticle, Snackbar, _service)
+                            {
+                                Quantity = article.Quantity
+                            });
+                    }
+                }
             }
             Title = "Añadir artículos a orden de compra";
             TitleIcon = Icons.Material.Filled.Create;

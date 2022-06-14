@@ -236,18 +236,13 @@ namespace MCPackServer.Pages.PurchaseOrdersModule
             Parameters = new()
             {
                 ["State"] = ArticlesToPurchaseDialog.States.Edit,
-                ["Model"] = article
+                ["ModelView"] = article
             };
             var dialog = Dialogs.Show<ArticlesToPurchaseDialog>("Actualizar artículo de compra", Parameters);
             var result = await dialog.Result;
             if (!result.Cancelled)
             {
-                JObject element = JObject.Parse(result.Data.ToString());
-                if (bool.Parse(element.GetValue("Success").ToString()))
-                {
-                    Snackbar.Add("Artículo de compra actualizado con éxito.", Severity.Success);
-                }
-                else Snackbar.Add("Error al actualizar artículo seleccionado.", Severity.Error);
+                RemoveTab(article: article);
             }
         }
         private async Task DeleteArticle(ArticlesToPurchaseView article)
@@ -255,19 +250,12 @@ namespace MCPackServer.Pages.PurchaseOrdersModule
             Parameters = new()
             {
                 ["State"] = ArticlesToPurchaseDialog.States.Delete,
-                ["Model"] = article
+                ["ModelView"] = article
             };
             var dialog = Dialogs.Show<ArticlesToPurchaseDialog>("Eliminar artículo de compra", Parameters);
             var result = await dialog.Result;
             if (!result.Cancelled)
-            {
-                JObject element = JObject.Parse(result.Data.ToString());
-                if (bool.Parse(element.GetValue("Success").ToString()))
-                {
-                    Snackbar.Add("Artículo de compra eliminado con éxito.", Severity.Info);
-                }
-                else Snackbar.Add("Error al eliminar artículo seleccionado.", Severity.Error);
-            }
+                RemoveTab(article: article);
         }
         #endregion
         #endregion
