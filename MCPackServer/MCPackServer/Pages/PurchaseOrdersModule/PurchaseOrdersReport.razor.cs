@@ -25,7 +25,7 @@ namespace MCPackServer.Pages.PurchaseOrdersModule
         private Providers OrderProvider = new();
         private Projects OrderProject = new();
         private Clients ProjectClient = new();
-        private List<ArticlesToPurchase> OrderArticles = new();
+        private List<ArticlesToPurchaseView> OrderArticles = new();
         private double Subtotal, Tax, Discount, Total = 0f;
         private List<string> MaterialNumbers = new();
         protected override async Task OnInitializedAsync()
@@ -43,7 +43,7 @@ namespace MCPackServer.Pages.PurchaseOrdersModule
                     new WhereFilter { Field = nameof(ArticlesToPurchase.PurchaseOrderId), Value = Id }
                 }
             };
-            var response = await _articlesService.GetForGridAsync<ArticlesToPurchase>(request, "Quantity");
+            var response = await _service.GetForGridAsync<ArticlesToPurchaseView>(request, "Quantity", getAll: true);
             if (null != response)
             {
                 OrderArticles = response.ToList();

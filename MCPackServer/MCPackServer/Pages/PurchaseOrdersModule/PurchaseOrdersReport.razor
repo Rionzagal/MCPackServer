@@ -1,6 +1,4 @@
 ﻿@page "/Report/{id}"
-@inject IPurchaseOrdersService _ordersService
-@inject IArticlesToPurchaseService _articlesService
 
 <MudText Typo="Typo.h3" Align="Align.Center">REPORTE PARA OREN DE COMPRA @Id</MudText>
 
@@ -100,10 +98,10 @@
                                 @OrderArticles[i].Quantity
                             </td>
                             <td>
-                                @OrderArticles[i].Quote.Article.Unit
+                                @OrderArticles[i].Unit
                             </td>
                             <td>
-                                @OrderArticles[i].Quote.Article.Description
+                                @OrderArticles[i].ArticleName
                             </td>
                             <td>
                                 @($"${OrderArticles[i].SalePrice.ToString("n2")}")

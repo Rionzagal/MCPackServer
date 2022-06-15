@@ -30,17 +30,9 @@ builder.Services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuth
 builder.Services.AddDbContext<MCPACKDBContext>(options => options.UseMySQL(builder.Configuration.GetConnectionString("MySqlConnection")));
 
 builder.Services.AddScoped<IBaseService, BaseService>();
-builder.Services.AddScoped<IArticlesToPurchaseService, ArticlesToPurchaseService>();
 builder.Services.AddScoped<IClientsService, ClientsService>();
 builder.Services.AddScoped<IContactsService, ContactsService>();
-builder.Services.AddScoped<IFamiliesService, FamiliesService>();
-builder.Services.AddScoped<IProjectProductsService, ProjectProductsService>();
-builder.Services.AddScoped<IProjectsService, ProjectsService>();
 builder.Services.AddScoped<IProvidersService, ProvidersService>();
-builder.Services.AddScoped<IPurchaseOrdersService, PurchaseOrdersService>();
-builder.Services.AddScoped<IQuotesService, QuotesService>();
-builder.Services.AddScoped<IRequisitionArticlesService, RequisitionArticlesService>();
-builder.Services.AddScoped<IRequisitionsService, RequisitionsService>();
 builder.Services.AddScoped<IUsersService, UsersService>();
 builder.Services.AddScoped<IRolesService, RolesService>();
 
