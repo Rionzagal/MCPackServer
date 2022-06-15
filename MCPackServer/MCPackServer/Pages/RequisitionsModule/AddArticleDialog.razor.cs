@@ -65,12 +65,10 @@ namespace MCPackServer.Pages.RequisitionsModule
 
             #region Get groups and families
             DataManagerRequest familiesRequest = new();
-            var familiesResponse = await _familiesService.GetForGridAsync<ArticleFamilies>(familiesRequest);
-            if (null != familiesResponse)
-            {
-                Families = familiesResponse.ToList();
-                Families.ForEach(f => Groups.Add(f.Group));
-            }
+            Families = (await _service.GetForGridAsync<ArticleFamilies>(familiesRequest, getAll: true)).ToList() 
+                ?? new List<ArticleFamilies>();
+            Groups = (await _service.GetForGridAsync<ArticleGroups>(new(), getAll: true)).ToList() 
+                ?? new List<ArticleGroups>();
             #endregion
 
             #region Get projects
@@ -92,7 +90,7 @@ namespace MCPackServer.Pages.RequisitionsModule
                     ProjectId = article.ProjectId,
                     Quantity = article.Quantity
                 };
-                var response = await _articlesService.AddAsync(Model);
+                var response = await _service.AddAsync(Model);
                 if (response.IsSuccessful)
                     SuccessResponses.Add(response);
                 else
