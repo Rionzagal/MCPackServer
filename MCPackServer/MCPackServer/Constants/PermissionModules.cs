@@ -24,6 +24,7 @@ namespace MCPackServer.Constants
         public const string Projects = "Projects";
         public const string PurchaseOrders = "PurchaseOrders";
         public const string Requisitions = "Requisitions";
+        public const string History = "History";
         #endregion
         public static List<string> GeneratePermissionsForModule(string module)
         {
@@ -62,6 +63,7 @@ namespace MCPackServer.Constants
                 ,Projects
                 ,PurchaseOrders
                 ,Requisitions
+                ,History
             };
         }
 
@@ -78,6 +80,7 @@ namespace MCPackServer.Constants
                 ,Projects
                 ,PurchaseOrders
                 ,Requisitions
+                ,History
             };
         }
 

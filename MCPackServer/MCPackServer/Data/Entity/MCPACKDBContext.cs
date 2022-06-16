@@ -37,6 +37,7 @@ namespace MCPackServer.Data.Entity
         public virtual DbSet<Clients> Clients { get; set; }
         public virtual DbSet<Contacts> Contacts { get; set; }
         public virtual DbSet<DeviceCodes> DeviceCodes { get; set; }
+        public virtual DbSet<HistoryView> HistoryView { get; set; }
         public virtual DbSet<Keys> Keys { get; set; }
         public virtual DbSet<Logs> Logs { get; set; }
         public virtual DbSet<MCProducts> MCProducts { get; set; }
@@ -338,6 +339,25 @@ namespace MCPackServer.Data.Entity
                 entity.Property(e => e.SessionId).IsUnicode(false);
 
                 entity.Property(e => e.SubjectId).IsUnicode(false);
+            });
+
+            modelBuilder.Entity<HistoryView>(entity =>
+            {
+                entity.ToView("HistoryView");
+
+                entity.Property(e => e.Action).IsUnicode(false);
+
+                entity.Property(e => e.FullName).IsUnicode(false);
+
+                entity.Property(e => e.ShortName).IsUnicode(false);
+
+                entity.Property(e => e.TableName).IsUnicode(false);
+
+                entity.Property(e => e.TimeOfAction).HasPrecision(0);
+
+                entity.Property(e => e.UserId).IsUnicode(false);
+
+                entity.Property(e => e.UserName).IsUnicode(false);
             });
 
             modelBuilder.Entity<Keys>(entity =>

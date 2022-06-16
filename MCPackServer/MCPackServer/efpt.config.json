@@ -138,6 +138,10 @@
          "ObjectType": 3
       },
       {
+         "Name": "[dbo].[HistoryView]",
+         "ObjectType": 3
+      },
+      {
          "Name": "[dbo].[ProjectProductsView]",
          "ObjectType": 3
       },

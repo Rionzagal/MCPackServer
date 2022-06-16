@@ -106,7 +106,8 @@ namespace MCPackServer.Services
                 query += where;
             }
             query += $"ORDER BY {sortField} {order} ";
-            if (getAll) query += $"LIMIT {request.Skip}, {request.Take} ";
+            if (!getAll) 
+                query += $"LIMIT {request.Skip}, {request.Take} ";
             return await conn.QueryAsync<T>(query, parameters);
         }
 

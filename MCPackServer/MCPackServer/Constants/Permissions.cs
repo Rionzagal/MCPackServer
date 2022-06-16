@@ -14,6 +14,7 @@
             public const string Projects = "Permissions.Menu.Projects";
             public const string PurchaseOrders = "Permissions.Menu.PurchaseOrders";
             public const string Requisitions = "Permissions.Menu.Requisitions";
+            public const string History = "Permissions.Menu.History";
         }
 
         public static class Users
@@ -136,6 +137,11 @@
         public static class ProjectSpecial
         {
             public const string ClientChange = "Permissions.ProjectSpecial.ClientChange";
+        }
+
+        public static class History
+        {
+            public const string View = "Permissions.History.View";
         }
     }
 }
