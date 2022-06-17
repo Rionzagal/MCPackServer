@@ -49,7 +49,7 @@ namespace MCPackServer.Pages.RequisitionsModule
         RequisitionsView SelectedRequisition = new();
         List<RequisitionsView> RequisitionsTableItems = new();
         List<RequisitionArticlesView> SelectedArticles = new();
-        List<UserInformationView> UsersList = new();
+        List<UserPersonalInformationView> UsersList = new();
         #endregion
 
         protected override async Task OnInitializedAsync()
@@ -262,7 +262,7 @@ namespace MCPackServer.Pages.RequisitionsModule
                     new WhereFilter { Field = nameof(AspNetUsers.UserName), Value = filter }
                 }
             };
-            var items = await _service.GetForGridAsync<UserInformationView>(dm);
+            var items = await _service.GetForGridAsync<UserPersonalInformationView>(dm);
             if (null != items)
             {
                 UsersList = items.ToList();

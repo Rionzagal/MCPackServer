@@ -73,7 +73,7 @@ namespace MCPackServer.Pages.UserManagementModule
                 var registrationResult = await _userManager.CreateAsync(user, RegistrationModel.Password);
                 if (registrationResult.Succeeded)
                 {
-                    UserInformation personInformation = new()
+                    PersonInformation personInformation = new()
                     {
                         AspNetUserId = user.Id,
                         FirstName = RegistrationModel.FirstName,

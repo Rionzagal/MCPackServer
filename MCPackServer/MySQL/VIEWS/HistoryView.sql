@@ -8,10 +8,14 @@ VIEW `historyview` AS
         `l`.`Action` AS `Action`,
         `l`.`TableName` AS `TableName`,
         `l`.`UserId` AS `UserId`,
-        `userview`.`ShortName` AS `ShortName`,
-        `userview`.`FullName` AS `FullName`,
-        `userview`.`UserName` AS `UserName`,
+        `userinfo`.`UserName` AS `UserName`,
+        `userinfo`.`UserRoleId` AS `UserRoleId`,
+        `userinfo`.`UserRoleName` AS `UserRoleName`,
+        `userinfo`.`ShortName` AS `PersonShortName`,
+        `userinfo`.`FullName` AS `PersonFullName`,
         `l`.`TimeOfAction` AS `TimeOfAction`
     FROM
         (`logs` `l`
-        JOIN `userinformationview` `userview` ON ((`userview`.`Id` = `l`.`UserId`)))
+        JOIN `userpersonalinformationview` `userinfo` ON ((`l`.`UserId` = `userinfo`.`Id`)))
+    WHERE
+        (`l`.`Succeeded` = 1)

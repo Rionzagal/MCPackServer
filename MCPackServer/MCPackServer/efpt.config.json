@@ -86,6 +86,10 @@
          "ObjectType": 0
       },
       {
+         "Name": "[dbo].[PersonInformation]",
+         "ObjectType": 0
+      },
+      {
          "Name": "[dbo].[ProjectProducts]",
          "ObjectType": 0
       },
@@ -119,10 +123,6 @@
       },
       {
          "Name": "[dbo].[Requisitions]",
-         "ObjectType": 0
-      },
-      {
-         "Name": "[dbo].[UserInformation]",
          "ObjectType": 0
       },
       {
@@ -166,7 +166,7 @@
          "ObjectType": 3
       },
       {
-         "Name": "[dbo].[UserInformationView]",
+         "Name": "[dbo].[UserPersonalInformationView]",
          "ObjectType": 3
       }
    ],

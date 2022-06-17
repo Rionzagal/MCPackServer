@@ -18,14 +18,19 @@ namespace MCPackServer.Entities
         public string TableName { get; set; }
         [StringLength(450)]
         public string UserId { get; set; }
-        [Required]
-        [StringLength(101)]
-        public string ShortName { get; set; }
-        [Required]
-        [StringLength(203)]
-        public string FullName { get; set; }
         [StringLength(256)]
         public string UserName { get; set; }
+        [Required]
+        [StringLength(450)]
+        public string UserRoleId { get; set; }
+        [StringLength(256)]
+        public string UserRoleName { get; set; }
+        [Required]
+        [StringLength(101)]
+        public string PersonShortName { get; set; }
+        [Required]
+        [StringLength(203)]
+        public string PersonFullName { get; set; }
         public DateTime? TimeOfAction { get; set; }
     }
 }
