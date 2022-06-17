@@ -42,6 +42,7 @@ namespace MCPackServer.Data.Entity
         public virtual DbSet<Logs> Logs { get; set; }
         public virtual DbSet<MCProducts> MCProducts { get; set; }
         public virtual DbSet<PersistedGrants> PersistedGrants { get; set; }
+        public virtual DbSet<PersonInformation> PersonInformation { get; set; }
         public virtual DbSet<ProjectProducts> ProjectProducts { get; set; }
         public virtual DbSet<ProjectProductsView> ProjectProductsView { get; set; }
         public virtual DbSet<Projects> Projects { get; set; }
@@ -57,8 +58,7 @@ namespace MCPackServer.Data.Entity
         public virtual DbSet<RequisitionArticlesView> RequisitionArticlesView { get; set; }
         public virtual DbSet<Requisitions> Requisitions { get; set; }
         public virtual DbSet<RequisitionsView> RequisitionsView { get; set; }
-        public virtual DbSet<UserInformation> UserInformation { get; set; }
-        public virtual DbSet<UserInformationView> UserInformationView { get; set; }
+        public virtual DbSet<UserPersonalInformationView> UserPersonalInformationView { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -347,9 +347,9 @@ namespace MCPackServer.Data.Entity
 
                 entity.Property(e => e.Action).IsUnicode(false);
 
-                entity.Property(e => e.FullName).IsUnicode(false);
+                entity.Property(e => e.PersonFullName).IsUnicode(false);
 
-                entity.Property(e => e.ShortName).IsUnicode(false);
+                entity.Property(e => e.PersonShortName).IsUnicode(false);
 
                 entity.Property(e => e.TableName).IsUnicode(false);
 
@@ -358,6 +358,10 @@ namespace MCPackServer.Data.Entity
                 entity.Property(e => e.UserId).IsUnicode(false);
 
                 entity.Property(e => e.UserName).IsUnicode(false);
+
+                entity.Property(e => e.UserRoleId).IsUnicode(false);
+
+                entity.Property(e => e.UserRoleName).IsUnicode(false);
             });
 
             modelBuilder.Entity<Keys>(entity =>
@@ -432,6 +436,23 @@ namespace MCPackServer.Data.Entity
                 entity.Property(e => e.SubjectId).IsUnicode(false);
 
                 entity.Property(e => e.Type).IsUnicode(false);
+            });
+
+            modelBuilder.Entity<PersonInformation>(entity =>
+            {
+                entity.Property(e => e.AspNetUserId).IsUnicode(false);
+
+                entity.Property(e => e.BirthDate).HasPrecision(3);
+
+                entity.Property(e => e.FatherSurname).IsUnicode(false);
+
+                entity.Property(e => e.FirstName).IsUnicode(false);
+
+                entity.Property(e => e.Gender).IsUnicode(false);
+
+                entity.Property(e => e.MiddleName).IsUnicode(false);
+
+                entity.Property(e => e.MotherSurname).IsUnicode(false);
             });
 
             modelBuilder.Entity<ProjectProducts>(entity =>
@@ -795,34 +816,9 @@ namespace MCPackServer.Data.Entity
                 entity.Property(e => e.UserShortName).IsUnicode(false);
             });
 
-            modelBuilder.Entity<UserInformation>(entity =>
+            modelBuilder.Entity<UserPersonalInformationView>(entity =>
             {
-                entity.Property(e => e.Id).ValueGeneratedNever();
-
-                entity.Property(e => e.AspNetUserId).IsUnicode(false);
-
-                entity.Property(e => e.BirthDate).HasPrecision(3);
-
-                entity.Property(e => e.FatherSurname).IsUnicode(false);
-
-                entity.Property(e => e.FirstName).IsUnicode(false);
-
-                entity.Property(e => e.Gender).IsUnicode(false);
-
-                entity.Property(e => e.MiddleName).IsUnicode(false);
-
-                entity.Property(e => e.MotherSurname).IsUnicode(false);
-
-                entity.HasOne(d => d.AspNetUser)
-                    .WithMany(p => p.UserInformation)
-                    .HasForeignKey(d => d.AspNetUserId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_UserInformation_AspNetUsers");
-            });
-
-            modelBuilder.Entity<UserInformationView>(entity =>
-            {
-                entity.ToView("UserInformationView");
+                entity.ToView("UserPersonalInformationView");
 
                 entity.Property(e => e.BirthDate).HasPrecision(3);
 
@@ -837,6 +833,10 @@ namespace MCPackServer.Data.Entity
                 entity.Property(e => e.ShortName).IsUnicode(false);
 
                 entity.Property(e => e.UserName).IsUnicode(false);
+
+                entity.Property(e => e.UserRoleId).IsUnicode(false);
+
+                entity.Property(e => e.UserRoleName).IsUnicode(false);
             });
 
             OnModelCreatingPartial(modelBuilder);

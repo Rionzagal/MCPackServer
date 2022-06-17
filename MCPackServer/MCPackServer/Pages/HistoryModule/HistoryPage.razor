@@ -14,7 +14,7 @@
         </MudTHeadRow>
     </HeaderContent>
     <RowTemplate>
-        <MudTd DataLabel="Id">@context.UserId</MudTd>
+        <MudTd DataLabel="Id">@context.PersonShortName</MudTd>
         <MudTd DataLabel="Table Name">@context.TableName</MudTd>
         <MudTd DataLabel="Action">@context.Action</MudTd>
         <MudTd DataLabel="Action Time">@context.TimeOfAction</MudTd>
@@ -54,7 +54,7 @@
                         </MudItem>
                         <MudItem xs="6">
                             <MudText Typo="Typo.subtitle1" Align="Align.Left">Usuario</MudText>
-                            <MudTextField Value="@SelectedLog.FullName" ReadOnly />
+                            <MudTextField Value="@SelectedLog.PersonFullName" ReadOnly />
                         </MudItem>
                         <MudItem xs="6">
                             <MudText Typo="Typo.subtitle1" Align="Align.Left">Tiempo de registro</MudText>

@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 namespace MCPackServer.Entities
 {
     [Keyless]
-    public partial class UserInformationView
+    public partial class UserPersonalInformationView
     {
         [Required]
         [StringLength(450)]
@@ -19,6 +19,11 @@ namespace MCPackServer.Entities
         [StringLength(256)]
         public string Email { get; set; }
         public short Active { get; set; }
+        [Required]
+        [StringLength(450)]
+        public string UserRoleId { get; set; }
+        [StringLength(256)]
+        public string UserRoleName { get; set; }
         [Required]
         [StringLength(101)]
         public string ShortName { get; set; }

@@ -32,7 +32,7 @@ namespace MCPackServer.Services
             }
             query += $"ORDER BY a.{sortField} {order} ";
             if (!getAll) query += $"LIMIT {request.Skip} {request.Take} ";
-            return await conn.QueryAsync<AspNetUsers, UserInformation, AspNetUsers>(
+            return await conn.QueryAsync<AspNetUsers, PersonInformation, AspNetUsers>(
                 query, param: parameters, map: (user, userInfo) =>
                 {
                     return user;
@@ -48,7 +48,7 @@ namespace MCPackServer.Services
                 $"WHERE a.{key} LIKE CONCAT('%', @{key}, '%') ";
             try
             {
-                var result = await conn.QueryAsync<AspNetUsers, UserInformation, AspNetUsers>(
+                var result = await conn.QueryAsync<AspNetUsers, PersonInformation, AspNetUsers>(
                 query, param: parameters, map: (user, userInfo) =>
                 {
                     return user;

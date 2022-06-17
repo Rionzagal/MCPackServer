@@ -20,7 +20,6 @@ namespace MCPackServer.Entities
             AspNetUserTokens = new HashSet<AspNetUserTokens>();
             Logs = new HashSet<Logs>();
             Requisitions = new HashSet<Requisitions>();
-            UserInformation = new HashSet<UserInformation>();
         }
 
         [Key]
@@ -57,7 +56,5 @@ namespace MCPackServer.Entities
         public virtual ICollection<Logs> Logs { get; set; }
         [InverseProperty("User")]
         public virtual ICollection<Requisitions> Requisitions { get; set; }
-        [InverseProperty("AspNetUser")]
-        public virtual ICollection<UserInformation> UserInformation { get; set; }
     }
 }

@@ -9,7 +9,7 @@
 
 <MudText Typo="Typo.h3" Align="Align.Center">Manejo y administración de usuarios</MudText>
 
-<MudTable T="UserInformationView" @ref="UsrersTable" Dense Hover FixedHeader Height="400px"
+<MudTable T="UserPersonalInformationView" @ref="UsrersTable" Dense Hover FixedHeader Height="400px"
           CustomHeader Striped ServerData="UsersServerReload" OnRowClick="OnSelectedRow" >
     <ToolBarContent>
         <MudText Typo="Typo.h6">Usuarios registrados</MudText>
@@ -31,10 +31,10 @@
     </ToolBarContent>
     <HeaderContent>
         <MudTHeadRow>
-            <MudTh><MudTableSortLabel SortLabel="UserId" T="UserInformationView">ID de usuario</MudTableSortLabel></MudTh>
-            <MudTh><MudTableSortLabel SortLabel="ShortName" T="UserInformationView">Nombre</MudTableSortLabel></MudTh>
-            <MudTh><MudTableSortLabel SortLabel="UserName" T="UserInformationView">Nombre de usuario</MudTableSortLabel></MudTh>
-            <MudTh><MudTableSortLabel SortLabel="Email" T="UserInformationView">Correo electrónico</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortLabel="UserId" T="UserPersonalInformationView">ID de usuario</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortLabel="ShortName" T="UserPersonalInformationView">Nombre</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortLabel="UserName" T="UserPersonalInformationView">Nombre de usuario</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortLabel="Email" T="UserPersonalInformationView">Correo electrónico</MudTableSortLabel></MudTh>
             <MudTh>Estado</MudTh>
         </MudTHeadRow>
         <MudTHeadRow>
@@ -133,20 +133,12 @@
                 <MudTabPanel Text="Información personal">
                     <MudGrid Class="m-3" Style="height:500px; overflow-y:scroll; width: inherit">
                         <MudItem xs="6" >
-                            <MudText Typo="Typo.subtitle2" Align="Align.Left">Primer nombre:</MudText>
-                            <MudTextField @bind-Value="@SelectedUserInfo.FirstName" ReadOnly />
+                            <MudText Typo="Typo.subtitle2" Align="Align.Left">Nombre corto:</MudText>
+                            <MudTextField @bind-Value="@SelectedUserInfo.ShortName" ReadOnly />
                         </MudItem>
                         <MudItem xs="6">
-                            <MudText Typo="Typo.subtitle2" Align="Align.Left">Segundo nombre:</MudText>
-                            <MudTextField @bind-Value="@SelectedUserInfo.MiddleName" ReadOnly />
-                        </MudItem>
-                        <MudItem xs="6">
-                            <MudText Typo="Typo.subtitle2" Align="Align.Left">Apellido paterno:</MudText>
-                            <MudTextField @bind-Value="@SelectedUserInfo.FatherSurname" ReadOnly />
-                        </MudItem>
-                        <MudItem xs="6">
-                            <MudText Typo="Typo.subtitle2" Align="Align.Left">Apellido materno:</MudText>
-                            <MudTextField @bind-Value="@SelectedUserInfo.MotherSurname" ReadOnly />
+                            <MudText Typo="Typo.subtitle2" Align="Align.Left">Nombre completo:</MudText>
+                            <MudTextField @bind-Value="@SelectedUserInfo.FullName" ReadOnly />
                         </MudItem>
                         <MudItem xs="6">
                             <MudText Typo="Typo.subtitle2" Align="Align.Left">Fecha de nacimiento:</MudText>

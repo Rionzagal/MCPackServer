@@ -27,8 +27,8 @@ namespace MCPackServer.Pages.UserManagementModule
         private IdentityUser CurrentUser = new();
         private IdentityUser EditUserModel = new();
 
-        private UserInformation CurrentUserInformation = new();
-        private UserInformation EditUserInfoModel = new();
+        private PersonInformation CurrentUserInformation = new();
+        private PersonInformation EditUserInfoModel = new();
 
         private string NewPasswordText = string.Empty;
         private string NewPasswordConfirm = string.Empty;
@@ -39,7 +39,7 @@ namespace MCPackServer.Pages.UserManagementModule
             try
             {
                 CurrentUser = await _userManager.FindByIdAsync(Id);
-                CurrentUserInformation = await _service.GetByKeyAsync<UserInformation>(Id, nameof(UserInformation.AspNetUserId));
+                CurrentUserInformation = await _service.GetByKeyAsync<PersonInformation>(Id, nameof(PersonInformation.AspNetUserId));
                 ResetAll();
             }
             catch (Exception ex)
@@ -64,7 +64,7 @@ namespace MCPackServer.Pages.UserManagementModule
 
         private void ResetUserInformation()
         {
-            var properties = typeof(UserInformation).GetProperties()
+            var properties = typeof(PersonInformation).GetProperties()
                 .Where(x => x.GetAccessors()[0].IsFinal || !x.GetAccessors()[0].IsVirtual)
                 .ToList();
             foreach (var property in properties)

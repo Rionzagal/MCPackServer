@@ -32,11 +32,11 @@ namespace MCPackServer.Pages.UserManagementModule
         #endregion
 
         #region MudBlazor Components
-        public MudTable<UserInformationView> UsrersTable = new();
-        public MudForm EditUserForm;
-        public MudForm ResetPasswordForm;
-        public MudDialog EditUserDialog;
-        public MudDialog ResetPasswordDialog;
+        public MudTable<UserPersonalInformationView> UsrersTable = new();
+        public MudForm EditUserForm = new();
+        public MudForm ResetPasswordForm = new();
+        public MudDialog EditUserDialog = new();
+        public MudDialog ResetPasswordDialog = new();
         private MudMessageBox DeleteMessage = new();
         #endregion
 
@@ -50,9 +50,9 @@ namespace MCPackServer.Pages.UserManagementModule
         #endregion
 
         #region Entities and Models
-        public AspNetUsers SelectedUser;
-        public UserInformation SelectedUserInfo;
-        public AspNetUsers NewUser;
+        public AspNetUsers SelectedUser = new();
+        public UserPersonalInformationView SelectedUserInfo = new();
+        public AspNetUsers NewUser = new();
         #endregion
 
         protected override async Task OnInitializedAsync()
@@ -71,7 +71,7 @@ namespace MCPackServer.Pages.UserManagementModule
             }
         }
 
-        private async Task<TableData<UserInformationView>> UsersServerReload(TableState state)
+        private async Task<TableData<UserPersonalInformationView>> UsersServerReload(TableState state)
         {
             string status = string.Empty;
             if ("Activo" == StatusFilter) status = "1";
@@ -82,30 +82,30 @@ namespace MCPackServer.Pages.UserManagementModule
                 Skip = state.Page * state.PageSize,
                 Where = new List<WhereFilter>()
                 {
-                    new WhereFilter() { Field = nameof(UserInformationView.Id), Value = IdFilter },
-                    new WhereFilter() { Field = nameof(UserInformationView.ShortName), Value = ShortNameFilter },
-                    new WhereFilter() { Field = nameof(UserInformationView.UserName), Value = UserNameFilter },
-                    new WhereFilter() { Field = nameof(UserInformationView.Email), Value = EmailFilter },
-                    new WhereFilter() { Field = nameof(UserInformationView.Gender), Value = GenderFilter },
-                    new WhereFilter() { Field = nameof(UserInformationView.Active), Value = status}
+                    new WhereFilter() { Field = nameof(UserPersonalInformationView.Id), Value = IdFilter },
+                    new WhereFilter() { Field = nameof(UserPersonalInformationView.ShortName), Value = ShortNameFilter },
+                    new WhereFilter() { Field = nameof(UserPersonalInformationView.UserName), Value = UserNameFilter },
+                    new WhereFilter() { Field = nameof(UserPersonalInformationView.Email), Value = EmailFilter },
+                    new WhereFilter() { Field = nameof(UserPersonalInformationView.Gender), Value = GenderFilter },
+                    new WhereFilter() { Field = nameof(UserPersonalInformationView.Active), Value = status}
                 }
             };
             string field = state.SortLabel ?? "Id";
             string order = state.SortDirection == SortDirection.Ascending ? "ASC" : "DESC";
-            var response = await _service.GetForGridAsync<UserInformationView>(request, field, order);
-            int? count = await _service.GetTotalCountAsync<UserInformationView>(request);
-            return new TableData<UserInformationView>()
+            var response = await _service.GetForGridAsync<UserPersonalInformationView>(request, field, order);
+            int? count = await _service.GetTotalCountAsync<UserPersonalInformationView>(request);
+            return new TableData<UserPersonalInformationView>()
             {
-                Items = response ?? new List<UserInformationView>(),
+                Items = response ?? new List<UserPersonalInformationView>(),
                 TotalItems = count ?? 0
             };
         }
 
-        private async Task OnSelectedRow(TableRowClickEventArgs<UserInformationView> args)
+        private async Task OnSelectedRow(TableRowClickEventArgs<UserPersonalInformationView> args)
         {
             var selectedId = args.Item.Id;
             SelectedUser = await _usersService.GetByKeyAsync<AspNetUsers>(selectedId);
-            SelectedUserInfo = await _service.GetByKeyAsync<UserInformation>(args.Item.Id, "AspNetUserId");
+            SelectedUserInfo = await _service.GetByKeyAsync<UserPersonalInformationView>(args.Item.Id, "AspNetUserId");
             VisibleUserInformation = true;
         }
 

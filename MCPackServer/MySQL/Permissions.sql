@@ -87,6 +87,7 @@ INSERT INTO mcpackdb.aspnetroleclaims
 		   ,('6E4134C5-FE58-478F-A6EE-DE4A1A87CC16','Permission','Permissions.RoleClaims.Edit')
 		   ,('6E4134C5-FE58-478F-A6EE-DE4A1A87CC16','Permission','Permissions.RoleClaims.Delete')
            ,('6E4134C5-FE58-478F-A6EE-DE4A1A87CC16','Permission','Permissions.History.View')
+		   ,('6E4134C5-FE58-478F-A6EE-DE4A1A87CC16','Permission','Permissions.Menu.History')
 ;
 -- ADMIN
 INSERT INTO mcpackdb.aspnetroleclaims
@@ -162,4 +163,5 @@ INSERT INTO mcpackdb.aspnetroleclaims
 		   ,('AABE1774-BA38-4EE6-89E6-0405E1F1A6A6','Permission','Permissions.RoleClaims.Edit')
 		   ,('AABE1774-BA38-4EE6-89E6-0405E1F1A6A6','Permission','Permissions.RoleClaims.Delete')
            ,('AABE1774-BA38-4EE6-89E6-0405E1F1A6A6','Permission','Permissions.History.View')
+           ,('AABE1774-BA38-4EE6-89E6-0405E1F1A6A6','Permission','Permissions.Menu.History')
 ;

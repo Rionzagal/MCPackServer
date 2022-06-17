@@ -8,11 +8,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace MCPackServer.Entities
 {
-    public partial class UserInformation
+    public partial class PersonInformation
     {
         [Key]
         public int Id { get; set; }
-        [Required]
         [StringLength(450)]
         public string AspNetUserId { get; set; }
         [Required]
@@ -29,9 +28,5 @@ namespace MCPackServer.Entities
         public DateTime? BirthDate { get; set; }
         [StringLength(50)]
         public string Gender { get; set; }
-
-        [ForeignKey(nameof(AspNetUserId))]
-        [InverseProperty(nameof(AspNetUsers.UserInformation))]
-        public virtual AspNetUsers AspNetUser { get; set; }
     }
 }
