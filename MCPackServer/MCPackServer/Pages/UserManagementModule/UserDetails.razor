@@ -1,0 +1,28 @@
+﻿@page "/Users/{Id}/Details"
+@page "/Profile"
+@attribute [Authorize]
+
+<div class="full-column">
+    <h1 style="margin-top: 2px;">
+        @CurrentUserPersonalInfoView.FullName
+        @if (!IsPersonalProfile && CanEditUser)
+        {
+            <a href="/Users/Edit/@Id">
+                <MudIcon Icon="@Icons.Material.Filled.Edit" Title="Editar" Color="Color.Primary" />  
+            </a>
+        }
+    </h1>
+</div>
+
+<style type="text/css">
+    h2 {
+        margin-top: 15px;
+    }
+    h3 {
+        margin-top: 15px;
+    }
+    a {
+        color: #337ab7;
+        display: inline-block;
+    }
+</style>
