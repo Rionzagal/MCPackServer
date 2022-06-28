@@ -127,7 +127,7 @@ namespace MCPackServer.Pages.SharedDialogs
         #region Validations
         private static IEnumerable<string> ValidateEmail(string input)
         {
-            if (!Regex.IsMatch(input, @"^[^@\s]+@[^@\s]+\.[^@\s]+$"))
+            if (!string.IsNullOrEmpty(input) && !Regex.IsMatch(input, @"^[^@\s]+@[^@\s]+\.[^@\s]+$"))
                 yield return "El campo no es válido.";
         }
         private static IEnumerable<string> ValidatePhone(string input)
