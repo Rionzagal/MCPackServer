@@ -127,11 +127,6 @@ namespace MCPackServer.Pages.SharedDialogs
         #region Validations
         private static IEnumerable<string> ValidateEmail(string input)
         {
-            if (string.IsNullOrEmpty(input))
-            {
-                yield return "El campo es obligatorio.";
-                yield break;
-            }
             if (!Regex.IsMatch(input, @"^[^@\s]+@[^@\s]+\.[^@\s]+$"))
                 yield return "El campo no es válido.";
         }

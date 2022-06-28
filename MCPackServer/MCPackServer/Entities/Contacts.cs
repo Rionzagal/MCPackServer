@@ -21,7 +21,6 @@ namespace MCPackServer.Entities
         [Required]
         [StringLength(50)]
         public string FullName { get; set; }
-        [Required]
         [StringLength(50)]
         public string EmailAddress { get; set; }
         [Required]

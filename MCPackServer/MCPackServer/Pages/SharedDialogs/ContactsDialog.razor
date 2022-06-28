@@ -7,7 +7,7 @@
     <DialogContent>
         @if (_processing)
         {
-            <MudProgressCircular Class="m-sm-n1" Size="Size.Large" Indeterminate="true" />
+            <MudProgressCircular Class="m-sm-n1" Size="Size.Large" Indeterminate />
             <MudText Class="m-sm-2">Esperando respuesta de servidor...</MudText>
         }
         else
@@ -23,21 +23,20 @@
                 }
                 <MudForm Model="Model" @ref="Form">
                     <div class="form-group">
-                        <MudTextField T="string" Label="Nombre completo" Required="true"
+                        <MudTextField T="string" Label="Nombre completo" Required
                                       RequiredError="Insertar nombre"
                                       Validation="@(new Func<string, IEnumerable<string>>(ValidateName))"
                                       @bind-Value="Model.FullName"
                                       ReadOnly="@Disabled"/>
                     </div>
                     <div class="form-group">
-                        <MudTextField T="string" Label="Correo electrónico" Required="true"
-                                      RequiredError="Insertar correo electrónico"
+                        <MudTextField T="string" Label="Correo electrónico"
                                       Validation="@(new Func<string, IEnumerable<string>>(ValidateEmail))"
                                       @bind-Value="Model.EmailAddress" 
                                       ReadOnly="@Disabled"/>
                     </div>
                     <div class="form-group">
-                        <MudTextField T="string" Label="Teléfono celular" Required="true"
+                        <MudTextField T="string" Label="Teléfono celular" Required
                                       RequiredError="Insertar teléfono celular"
                                       Validation="@(new Func<string, IEnumerable<string>>(ValidatePhone))"
                                       @bind-Value="Model.MobilePhone" 
