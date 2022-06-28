@@ -19,7 +19,7 @@ namespace MCPackServer.Pages.SharedDialogs
 
         #region Parameters
         [CascadingParameter]
-        public MudDialogInstance Dialog { get; set; }
+        public MudDialogInstance? Dialog { get; set; }
         [Parameter]
         public States State { get; set; }
         [Parameter]
@@ -67,25 +67,55 @@ namespace MCPackServer.Pages.SharedDialogs
                 TitleIcon = null;
                 Disabled = true;
                 ButtonColor = Color.Default;
-                Dialog.Cancel();
+                Dialog?.Cancel();
             }
         }
 
         private async Task Submit()
         {
             _processing = true;
-            string response = string.Empty;
             await Form.Validate();
             if (Form.IsValid)
             {
+                bool success = false;
                 if (States.Add == State)
-                    response = JsonConvert.SerializeObject(await _service.AddAsync(Model));
+                {
+                    var response = await _service.AddAsync(Model);
+                    if (response.IsSuccessful)
+                        Snackbar.Add("Contacto añadido con éxito.", Severity.Success);
+                    else
+                        foreach (var error in response.Errors)
+                        {
+                            Snackbar.Add(error, Severity.Error);
+                        }
+                    success = response.IsSuccessful;
+                }
                 else if (States.Edit == State)
-                    response = JsonConvert.SerializeObject(await _service.UpdateAsync(Model));
+                {
+                    var response = await _service.UpdateAsync(Model);
+                    if (response.IsSuccessful)
+                        Snackbar.Add("Contacto editado con éxito.", Severity.Success);
+                    else
+                        foreach (var error in response.Errors)
+                        {
+                            Snackbar.Add(error, Severity.Error);
+                        }
+                    success = response.IsSuccessful;
+                }
                 else if (States.Delete == State)
-                    response = JsonConvert.SerializeObject(await _service.RemoveAsync(Model));
+                {
+                    var response = await _service.RemoveAsync(Model);
+                    if (response.IsSuccessful)
+                        Snackbar.Add("Contacto eliminado con éxito.", Severity.Success);
+                    else
+                        foreach (var error in response.Errors)
+                        {
+                            Snackbar.Add(error, Severity.Error);
+                        }
+                    success = response.IsSuccessful;
+                }
                 _processing = false;
-                Dialog.Close(DialogResult.Ok(JsonConvert.DeserializeObject<ActionResponse<Contacts>>(response)));
+                Dialog?.Close(DialogResult.Ok(success ? Model.Id : 0));
             }
             else
             {

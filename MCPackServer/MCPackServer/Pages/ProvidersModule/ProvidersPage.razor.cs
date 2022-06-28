@@ -222,22 +222,22 @@ namespace MCPackServer.Pages.ProvidersModule
             var result = await dialog.Result;
             if (!result.Cancelled)
             {
-                ActionResponse<Contacts> response = (ActionResponse<Contacts>)result.Data;
-                if (response.IsSuccessful)
+                if (int.TryParse(result.Data.ToString(), out int response))
                 {
-                    Snackbar.Add("Contacto añadido con éxito.", Severity.Success);
-                    Contacts linkModel = response.Value ?? new();
-                    if (0 != linkModel.Id)
+                    if (0 != response)
                     {
-                        var linkResponse = await _providersService.LinkContact(SelectedProvider.Id, linkModel.Id);
+                        var linkResponse = await _providersService.LinkContact(SelectedProvider.Id, response);
                         if (linkResponse.IsSuccessful)
                             Snackbar.Add("Contacto enlazado con éxito.", Severity.Success);
                         else
-                            Snackbar.Add("Error al enlazar contacto.", Severity.Error);
+                            foreach (var error in linkResponse.Errors)
+                            {
+                                Snackbar.Add(error, Severity.Error);
+                            }
                     }
                 }
                 else
-                    Snackbar.Add("Error al añadir contacto.", Severity.Error);
+                    Snackbar.Add("Error al revisar respuesta de contacto.", Severity.Error);
                 await ContactsTable.ReloadServerData();
             }
         }
@@ -252,11 +252,6 @@ namespace MCPackServer.Pages.ProvidersModule
             var result = await dialog.Result;
             if (!result.Cancelled)
             {
-                ActionResponse<Contacts> response = (ActionResponse<Contacts>)result.Data;
-                if (response.IsSuccessful)
-                    Snackbar.Add("Contacto editado con éxito.", Severity.Success);
-                else
-                    Snackbar.Add("Error al editar el contacto seleccionado.", Severity.Error);
                 await ContactsTable.ReloadServerData();
             }
         }
@@ -271,14 +266,7 @@ namespace MCPackServer.Pages.ProvidersModule
             var result = await dialog.Result;
             if (!result.Cancelled)
             {
-                ActionResponse<Contacts> response = (ActionResponse<Contacts>)result.Data;
-                if (response.IsSuccessful)
-                {
-                    Snackbar.Add("Contacto eliminado con éxito.", Severity.Info);
-                    RemoveTab(selectedContact: contact);
-                }
-                else
-                    Snackbar.Add("Error al eliminar contacto seleccionado.", Severity.Error);
+                RemoveTab(selectedContact: contact);
                 await ContactsTable.ReloadServerData();
             }
         }
