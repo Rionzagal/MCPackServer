@@ -23,6 +23,11 @@
                 }
             <MudForm Model="Model" @ref="Form">
                 <MudGrid>
+                    <MudItem xs="12">
+                        <MudTextField T="string" @bind-Value="Model.OrderNumber" Required
+                            Variant="Variant.Outlined" Label="Número de orden" ReadOnly="@Disabled"
+                            Disabled="@(States.Edit == State)" Validation="new Func<string, IEnumerable<string>>(ValidateOrderNumber)" />
+                    </MudItem>
                     <MudItem xs="6">
                         <MudAutocomplete T="int?" Label="Número de requisición" Value="Model.RequisitionId" Clearable
                                          SearchFunc="(f) => RequisitionsServerReload(f)" ReadOnly="@Disabled"
@@ -100,7 +105,7 @@
     </DialogContent>
     <DialogActions>
         <MudButton Variant="Variant.Text" Class="mx-1"
-                   OnClick="() => Dialog.Cancel()" Disabled="_processing">
+                   OnClick="() => Dialog?.Cancel()" Disabled="_processing">
             Cerrar
         </MudButton>
         <MudButton Variant="Variant.Filled" Color="@ButtonColor" Class="mx-1"

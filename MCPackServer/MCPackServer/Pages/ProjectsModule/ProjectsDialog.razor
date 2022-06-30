@@ -26,8 +26,9 @@
                         <MudItem xs="4">
                             <MudText Typo="Typo.subtitle1" Align="Align.Start">Número de proyecto</MudText>
                             <MudTextField @bind-Value="Model.ProjectNumber" Required T="string" Placeholder="Número de proyecto"
-                                            ReadOnly="@(Disabled || States.Edit == State)" Variant="Variant.Outlined"
-                                            RequiredError="Este campo es obligatorio" Validation="new Func<string, string>(ProjectValidation)" />
+                                            ReadOnly="@Disabled" Disabled="@(States.Edit == State)" Variant="Variant.Outlined"
+                                            RequiredError="Este campo es obligatorio" 
+                                            Validation="new Func<string, IEnumerable<string>>(ProjectValidation)" />
                         </MudItem>
                         <MudItem xs="4">
                             <MudText Typo="Typo.subtitle1" Align="Align.Start">Tipo de proyecto</MudText>

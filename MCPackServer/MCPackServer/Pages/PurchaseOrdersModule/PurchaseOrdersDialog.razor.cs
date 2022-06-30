@@ -32,6 +32,7 @@ namespace MCPackServer.Pages.PurchaseOrdersModule
         private List<Providers> providers = new();
         private List<ProjectsView> projects = new();
         private List<Requisitions> requisitions = new();
+        private List<PurchaseOrders> existentOrders = new();
         private PurchaseOrders Model = new()
         {
             OrderNumber = "0001",
@@ -42,11 +43,8 @@ namespace MCPackServer.Pages.PurchaseOrdersModule
 
         protected override async Task OnInitializedAsync()
         {
-            string MostRecentOrderNumber = (await _service.GetForGridAsync<PurchaseOrders>(
-                new() { Take = 1 },
-                sortField: nameof(PurchaseOrders.IssuedDate),
-                order: "DESC"))?
-                .FirstOrDefault()?
+            existentOrders = (await _service.GetForGridAsync<PurchaseOrders>(new(), getAll:true)).ToList();
+            string MostRecentOrderNumber = existentOrders.OrderByDescending(o => o.Id).FirstOrDefault()?
                 .OrderNumber ?? "0";
             int ODdigits = (int)Math.Floor(Math.Log10(int.Parse(MostRecentOrderNumber) + 1) + 1);
             Model.OrderNumber = (int.Parse(MostRecentOrderNumber) + 1).ToString($"d{(ODdigits < 4 ? 4 : ODdigits)}");
@@ -79,6 +77,7 @@ namespace MCPackServer.Pages.PurchaseOrdersModule
             await ProjectsServerReload(string.Empty);
             await ProvidersServerReload(string.Empty);
             await RequisitionsServerReload(string.Empty);
+
         }
 
         private async Task Submit()
@@ -248,6 +247,27 @@ namespace MCPackServer.Pages.PurchaseOrdersModule
                     date = match.RequiredDate.Value;
             }
             return date;
+        }
+
+        private IEnumerable<string> ValidateOrderNumber(string value)
+        {
+            if (string.IsNullOrEmpty(value))
+            {
+                yield return "Este campo es requerido.";
+                yield break;
+            }
+            if (States.Add == State)
+            {
+                if (value.Any(ch => !char.IsDigit(ch)))
+                    yield return "Este campo solamente acepta caracteres numéricos";
+                if (int.TryParse(value, out int numValue))
+                {
+                    if (existentOrders.Select(o => int.Parse(o.OrderNumber)).Any(v => v == numValue))
+                        yield return "Ya existe una orden de compra con este valor numérico.";
+                    if (existentOrders.Any(o => o.OrderNumber == value))
+                        yield return "Ya existe una orden de compra con este valor de texto.";
+                }
+            }
         }
     }
 }
