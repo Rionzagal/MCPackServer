@@ -168,17 +168,20 @@ namespace MCPackServer.Pages.RequisitionsModule
 
         private IEnumerable<string> ValidateRequisitionsNumber(string number)
         {
-            if (string.IsNullOrEmpty(number) || string.IsNullOrWhiteSpace(number))
+            if (State == States.Add)
             {
-                yield return "Este campo es obligatorio.";
-                yield break;
+                if (string.IsNullOrEmpty(number) || string.IsNullOrWhiteSpace(number))
+                {
+                    yield return "Este campo es obligatorio.";
+                    yield break;
+                }
+                if (number.Any(ch => char.IsLetter(ch)))
+                    yield return "El campo no admite caracteres alfabéticos.";
+                if (number.Any(ch => !char.IsLetterOrDigit(ch)))
+                    yield return "El campo no admite caracteres especiales.";
+                if (ExistentRequisitions.Any(r => number.Equals(r.RequisitionNumber)))
+                    yield return "El valor insertado ya está en uso.";
             }
-            if (number.Any(ch => char.IsLetter(ch))) 
-                yield return "El campo no admite caracteres alfabéticos.";
-            if (number.Any(ch => !char.IsLetterOrDigit(ch))) 
-                yield return "El campo no admite caracteres especiales.";
-            if (ExistentRequisitions.Any(r => number.Equals(r.RequisitionNumber)))
-                yield return "El valor insertado ya está en uso.";
         }
     }
 }

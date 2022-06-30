@@ -25,7 +25,8 @@
                     <MudGrid>
                         <MudItem xs="12">
                             <MudText Typo="Typo.subtitle1">Número de requisición</MudText>
-                            <MudTextField @bind-Value="Model.RequisitionNumber" Required ReadOnly="@Disabled"
+                            <MudTextField @bind-Value="Model.RequisitionNumber" Required ReadOnly="@(Disabled)"
+                                          Disabled=@(States.Edit == State)
                                           Validation="new Func<string, IEnumerable<string>>(ValidateRequisitionsNumber)"
                                           Clearable Variant="Variant.Outlined" />
                         </MudItem>
