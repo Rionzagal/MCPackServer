@@ -206,22 +206,25 @@ namespace MCPackServer.Pages.ProjectsModule
 
         private IEnumerable<string>ProjectValidation(string input)
         {
-            if (string.IsNullOrEmpty(input))
+            if (States.Add == State)
             {
-                yield return "Este campo es requerido";
-                yield break;
+                if (string.IsNullOrEmpty(input))
+                {
+                    yield return "Este campo es requerido";
+                    yield break;
+                }
+                if (input.Any(ch => !char.IsNumber(ch)))
+                    yield return "Este campo solo acepta valores numéricos.";
+                if (ExistentProjects.Any(p => p.ProjectNumber == input))
+                    yield return "Ya existe un número de proyecto con este valor de texto.";
+                if (int.TryParse(input, out int numValue))
+                {
+                    if (ExistentProjects.Any(p => int.Parse(p.ProjectNumber) == numValue))
+                        yield return "Ya existe un proyecto con este valor numérico.";
+                }
+                else
+                    yield return "El valor de este campo debe de ser un número.";
             }
-            if (input.Any(ch => !char.IsNumber(ch)))
-                yield return "Este campo solo acepta valores numéricos.";
-            if (ExistentProjects.Any(p => p.ProjectNumber == input)) 
-                yield return "Ya existe un número de proyecto con este valor de texto.";
-            if (int.TryParse(input, out int numValue))
-            {
-                if (ExistentProjects.Any(p => int.Parse(p.ProjectNumber) == numValue))
-                    yield return "Ya existe un proyecto con este valor numérico.";
-            }
-            else
-                yield return "El valor de este campo debe de ser un número.";
         }
     }
 }
