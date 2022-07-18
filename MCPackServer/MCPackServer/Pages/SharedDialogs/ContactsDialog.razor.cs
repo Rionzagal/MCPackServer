@@ -27,15 +27,15 @@ namespace MCPackServer.Pages.SharedDialogs
         #endregion
 
         #region Dialog variables
-        private string Title;
-        private string TitleIcon;
+        private string Title = string.Empty;
+        private string TitleIcon = string.Empty;
         private bool Disabled;
         private Color ButtonColor;
         private bool _processing = false;
         #endregion
 
         #region API elements
-        private MudForm Form;
+        private MudForm Form = new();
         #endregion
 
         protected override async Task OnInitializedAsync()
@@ -63,8 +63,6 @@ namespace MCPackServer.Pages.SharedDialogs
             }
             else //should not get to this option
             {
-                Title = null;
-                TitleIcon = null;
                 Disabled = true;
                 ButtonColor = Color.Default;
                 Dialog?.Cancel();
@@ -128,19 +126,17 @@ namespace MCPackServer.Pages.SharedDialogs
         private static IEnumerable<string> ValidateEmail(string input)
         {
             if (!string.IsNullOrEmpty(input) && !Regex.IsMatch(input, @"^[^@\s]+@[^@\s]+\.[^@\s]+$"))
-                yield return "El campo no es válido.";
+                yield return "El campo no es válido. Favor de poner dominio.";
         }
         private static IEnumerable<string> ValidatePhone(string input)
         {
-            if (string.IsNullOrEmpty(input))
+            if (!string.IsNullOrEmpty(input))
             {
-                yield return "El campo es obligatorio.";
-                yield break;
+                if (Regex.IsMatch(input, "[a-zA-Z]+"))
+                    yield return "El campo no admite caracteres alfabéticos.";
+                if (input.Any(ch => !char.IsLetterOrDigit(ch)) && Regex.IsMatch(input, @"[^+\-\s]+"))
+                    yield return "El campo no admite caracteres especiales más que \'+\', \'-\' y espacios en blanco.";
             }
-            if (Regex.IsMatch(input, "[a-zA-Z]+"))
-                yield return "El campo no admite caracteres alfabéticos.";
-            if (input.Any(ch => !char.IsLetterOrDigit(ch)) && Regex.IsMatch(input, @"[^+\-\s]+"))
-                yield return "El campo no admite caracteres especiales más que \'+\', \'-\' y espacios en blanco.";
         }
         private static IEnumerable<string> ValidateName(string input)
         {

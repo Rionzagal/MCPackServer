@@ -23,41 +23,33 @@
                 }
                 <MudForm Model="Model" @ref="Form">
                     <div class="form-group">
-                        <MudTextField T="string" Label="Nombre completo" Required
-                                      RequiredError="Insertar nombre"
-                                      Validation="@(new Func<string, IEnumerable<string>>(ValidateName))"
-                                      @bind-Value="Model.FullName"
-                                      ReadOnly="@Disabled"/>
+                        <MudTextField T="string" Label="Nombre completo" Required RequiredError="Insertar nombre"
+                        Validation="@(new Func<string, IEnumerable<string>>(ValidateName))" @bind-Value="Model.FullName"
+                        ReadOnly="@Disabled" />
                     </div>
                     <div class="form-group">
                         <MudTextField T="string" Label="Correo electrónico"
-                                      Validation="@(new Func<string, IEnumerable<string>>(ValidateEmail))"
-                                      @bind-Value="Model.EmailAddress" 
-                                      ReadOnly="@Disabled"/>
+                        Validation="@(new Func<string, IEnumerable<string>>(ValidateEmail))"
+                        @bind-Value="Model.EmailAddress" ReadOnly="@Disabled" />
                     </div>
                     <div class="form-group">
-                        <MudTextField T="string" Label="Teléfono celular" Required
-                                      RequiredError="Insertar teléfono celular"
-                                      Validation="@(new Func<string, IEnumerable<string>>(ValidatePhone))"
-                                      @bind-Value="Model.MobilePhone" 
-                                      ReadOnly="@Disabled"/>
+                        <MudTextField T="string" Label="Teléfono celular"
+                        Validation="@(new Func<string, IEnumerable<string>>(ValidatePhone))"
+                        @bind-Value="Model.MobilePhone" ReadOnly="@Disabled" />
                     </div>
                     <div class="form-group">
-                        <MudTextField T="string" Label="Puesto"
-                                      @bind-Value="Model.Position"
-                                      ReadOnly="@Disabled"/>
+                        <MudTextField T="string" Label="Puesto" @bind-Value="Model.Position" ReadOnly="@Disabled" />
                     </div>
                 </MudForm>
             </MudContainer>
         }
     </DialogContent>
     <DialogActions>
-        <MudButton Variant="Variant.Text" Class="mx-1"
-                   OnClick="() => Dialog.Cancel()" Disabled="_processing">
+        <MudButton Variant="Variant.Text" Class="mx-1" OnClick="() => Dialog.Cancel()" Disabled="_processing">
             Cerrar
         </MudButton>
-        <MudButton Variant="Variant.Filled" Color="@ButtonColor" Class="mx-1"
-                   OnClick="async () => await Submit()" Disabled="_processing">
+        <MudButton Variant="Variant.Filled" Color="@ButtonColor" Class="mx-1" OnClick="async () => await Submit()"
+            Disabled="_processing">
             Confirmar
         </MudButton>
     </DialogActions>
