@@ -184,9 +184,9 @@
                                 </HeaderContent>
                                 <RowTemplate>
                                     <MudTd DataLabel="Nombre">@context.FullName</MudTd>
-                                    <MudTd DataLabel="Puesto">@context.Position</MudTd>
-                                    <MudTd DataLabel="Correo electrónico">@context.EmailAddress</MudTd>
-                                    <MudTd DataLabel="Teléfono celular">@context.MobilePhone</MudTd>
+                                    <MudTd DataLabel="Puesto">@(context.Position ?? "N/A")</MudTd>
+                                    <MudTd DataLabel="Correo electrónico">@(context.EmailAddress ?? "N/A")</MudTd>
+                                    <MudTd DataLabel="Teléfono celular">@(context.MobilePhone ?? "N/A")</MudTd>
                                 </RowTemplate>
                                 <NoRecordsContent>
                                     <MudText>No se encontraron contactos asociados al cliente.</MudText>
