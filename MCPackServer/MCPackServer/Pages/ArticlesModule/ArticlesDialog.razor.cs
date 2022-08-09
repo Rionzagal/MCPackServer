@@ -11,9 +11,9 @@ namespace MCPackServer.Pages.ArticlesModule
 
         #region Parameters
         [CascadingParameter]
-        #pragma warning disable CS8618 // Un campo que no acepta valores NULL debe contener un valor distinto de NULL al salir del constructor. Considere la posibilidad de declararlo como que admite un valor NULL.
+#pragma warning disable CS8618 // Un campo que no acepta valores NULL debe contener un valor distinto de NULL al salir del constructor. Considere la posibilidad de declararlo como que admite un valor NULL.
         public MudDialogInstance Dialog { get; set; }
-        #pragma warning restore CS8618 // Un campo que no acepta valores NULL debe contener un valor distinto de NULL al salir del constructor. Considere la posibilidad de declararlo como que admite un valor NULL.
+#pragma warning restore CS8618 // Un campo que no acepta valores NULL debe contener un valor distinto de NULL al salir del constructor. Considere la posibilidad de declararlo como que admite un valor NULL.
         [Parameter]
         public States State { get; set; }
         [Parameter]
@@ -134,21 +134,6 @@ namespace MCPackServer.Pages.ArticlesModule
                 Snackbar.Add("Operación no válida. Revise si hay algún error en la forma.", Severity.Warning);
                 _processing = false;
             }
-        }
-
-        private static IEnumerable<string> ValidateCode(string input)
-        {
-            if (string.IsNullOrEmpty(input))
-            {
-                yield return "Ingrese código de artículo.";
-                yield break;
-            }
-            if (8 < input.Length)
-                yield return "El código no debe contener más de 8 caracteres.";
-            if (Regex.IsMatch(input, "[a-z]"))
-                yield return "El código no debe contener letras minúsculas.";
-            if (input.Any(ch => !char.IsLetterOrDigit(ch)))
-                yield return "El código no debe contener caracteres especiales.";
         }
     }
 }

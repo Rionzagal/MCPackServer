@@ -13,7 +13,7 @@
         else
         {
             <MudContainer Style="max-height: 500px; overflow-y: scroll;">
-                @if (States.Delete == (States)State)
+                @if (States.Delete == State)
                 {
                     <div class="form-group">
                         <MudText Typo="Typo.subtitle1" Align="Align.Center">
@@ -92,11 +92,15 @@
                     </MudItem>
                     <MudItem xs="12">
                         <MudTextField Label="Número de factura" @bind-Value="Model.InvoiceNumber"
-                                      Variant="Variant.Outlined" ReadOnly="@Disabled" />
+                                      Variant="Variant.Outlined" ReadOnly="@Disabled" Immediate
+                            MaxLength="@(Model.GetMaxLengthForProperty(nameof(PurchaseOrders.InvoiceNumber)) ?? 5000)"
+                            Counter="Model.GetMaxLengthForProperty(nameof(PurchaseOrders.InvoiceNumber))" />
                     </MudItem>
                     <MudItem xs="12">
                         <MudTextField Label="Observaciones" @bind-Value="Model.Observations"
-                                      Variant="Variant.Outlined" Lines="5" ReadOnly="@Disabled" />
+                                      Variant="Variant.Outlined" Lines="5" ReadOnly="@Disabled" Immediate
+                            MaxLength="@(Model.GetMaxLengthForProperty(nameof(PurchaseOrders.Observations)) ?? 5000)"
+                            Counter="Model.GetMaxLengthForProperty(nameof(PurchaseOrders.Observations))" />
                     </MudItem>
                 </MudGrid>
             </MudForm>

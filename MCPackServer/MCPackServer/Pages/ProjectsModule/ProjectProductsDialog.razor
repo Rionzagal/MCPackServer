@@ -74,7 +74,9 @@
                     </div>
                     <div class="form-group">
                         <MudTextField T="string" @bind-Value="Model.Observations" Label="Observaciones"
-                                      ReadOnly="@Disabled" Lines="5" Variant="Variant.Outlined"/>
+                                      ReadOnly="@Disabled" Lines="5" Variant="Variant.Outlined" Immediate
+                            MaxLength="@(Model.GetMaxLengthForProperty(nameof(ProjectProducts.Observations)) ?? 5000)"
+                            Counter="Model.GetMaxLengthForProperty(nameof(ProjectProducts.Observations))" />
                     </div>
                 </MudForm>
             </MudContainer>

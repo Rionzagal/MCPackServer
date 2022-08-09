@@ -13,7 +13,7 @@
         else
         {
             <MudContainer Style="max-height: 500px; overflow-y: scroll;">
-                @if (States.Delete == (States)State)
+                @if (States.Delete == State)
                 {
                     <div class="form-group">
                         <MudText Typo="Typo.subtitle1" Align="Align.Center">
@@ -25,38 +25,49 @@
                     <MudGrid>
                         <MudItem xs="12">
                             <MudText Typo="Typo.subtitle1" Align="Align.Start">Nombre</MudText>
-                            <MudTextField T="string" Required RequiredError="Este campo es obligatorio"
-                                          @bind-Value="Model.Name" Variant="Variant.Outlined"
-                                          Placeholder="Nombre comercial" ReadOnly="@Disabled"/>
+                            <MudTextField T="string" Required RequiredError="Este campo es requerido" Immediate
+                            @bind-Value="Model.Name" Variant="Variant.Outlined" Placeholder="Nombre comercial"
+                            ReadOnly="@Disabled"
+                            MaxLength="@(Model.GetMaxLengthForProperty(nameof(PurchaseArticles.Name)) ?? 5000)"
+                            Counter="Model.GetMaxLengthForProperty(nameof(PurchaseArticles.Name))" />
                         </MudItem>
                         <MudItem xs="12">
                             <MudText Typo="Typo.subtitle1" Align="Align.Start">Código</MudText>
-                            <MudTextField T="string" 
-                                          Placeholder="@($"Código: {GroupCode}-{FamilyCode}-****")" 
-                                          Required RequiredError="Este campo es obligatorio" 
-                                          Validation="(new Func<string, IEnumerable<string>>(ValidateCode))"
-                                          @bind-Value="Model.Code" Variant="Variant.Outlined"
-                                          ReadOnly="@Disabled"/>
+                            <MudTextField T="string" Required RequiredError="Este campo es requerido" Immediate
+                            Placeholder="@($"Código: {GroupCode}-{FamilyCode}-****")" ReadOnly="@Disabled"
+                            @bind-Value="Model.Code" Variant="Variant.Outlined"
+                            Validation="(new Func<string, IEnumerable<string>>(Validations.ValidateAlphaNumericCode))"
+                            MaxLength="@(Model.GetMaxLengthForProperty(nameof(PurchaseArticles.Code)) ?? 5000)"
+                            Counter="Model.GetMaxLengthForProperty(nameof(PurchaseArticles.Code))" />
                         </MudItem>
                         <MudItem xs="12">
                             <MudText Typo="Typo.subtitle1" Align="Align.Start">Descripción</MudText>
-                            <MudTextField T="string" Placeholder="Descripción de artículo" Required RequiredError="Este campo es obligatorio"
-                                          @bind-Value="Model.Description" Variant="Variant.Outlined" ReadOnly="@Disabled"/>
+                            <MudTextField T="string" Placeholder="Descripción de artículo" Required
+                            RequiredError="Este campo es requerido" @bind-Value="Model.Description"
+                            Variant="Variant.Outlined" ReadOnly="@Disabled" Immediate
+                            MaxLength="@(Model.GetMaxLengthForProperty(nameof(PurchaseArticles.Description)) ?? 5000)"
+                            Counter="Model.GetMaxLengthForProperty(nameof(PurchaseArticles.Description))" />
                         </MudItem>
                         <MudItem xs="4">
                             <MudText Typo="Typo.subtitle1" Align="Align.Start">Modelo</MudText>
-                            <MudTextField T="string" Placeholder="Modelo" Variant="Variant.Outlined"
-                                          @bind-Value="Model.Model" ReadOnly="@Disabled"/>
+                            <MudTextField T="string" Placeholder="Modelo" Variant="Variant.Outlined" Immediate
+                            @bind-Value="Model.Model" ReadOnly="@Disabled"
+                            MaxLength="@(Model.GetMaxLengthForProperty(nameof(PurchaseArticles.Model)) ?? 5000)"
+                            Counter="Model.GetMaxLengthForProperty(nameof(PurchaseArticles.Model))" />
                         </MudItem>
                         <MudItem xs="4">
                             <MudText Typo="Typo.subtitle1" Align="Align.Start">Marca</MudText>
-                            <MudTextField T="string" Placeholder="Marca" @bind-Value="Model.TradeMark" 
-                                          Variant="Variant.Outlined" ReadOnly="@Disabled"/>
+                            <MudTextField T="string" Placeholder="Marca" @bind-Value="Model.TradeMark"
+                            Variant="Variant.Outlined" ReadOnly="@Disabled" Immediate
+                            MaxLength="@(Model.GetMaxLengthForProperty(nameof(PurchaseArticles.TradeMark)) ?? 5000)"
+                            Counter="Model.GetMaxLengthForProperty(nameof(PurchaseArticles.TradeMark))" />
                         </MudItem>
                         <MudItem xs="4">
                             <MudText Typo="Typo.subtitle1" Align="Align.Start">Unidad</MudText>
-                            <MudTextField T="string" Placeholder="Unidad" Required RequiredError="Este campo es obligatorio"
-                                          @bind-Value="Model.Unit" Variant="Variant.Outlined" ReadOnly="@Disabled"/>
+                            <MudTextField T="string" Placeholder="Unidad" Required RequiredError="Este campo es requerido"
+                            @bind-Value="Model.Unit" Variant="Variant.Outlined" ReadOnly="@Disabled" Immediate
+                            MaxLength="@(Model.GetMaxLengthForProperty(nameof(PurchaseArticles.Unit)) ?? 5000)"
+                            Counter="Model.GetMaxLengthForProperty(nameof(PurchaseArticles.Unit))" />
                         </MudItem>
                     </MudGrid>
                 </MudForm>
@@ -64,12 +75,11 @@
         }
     </DialogContent>
     <DialogActions>
-        <MudButton Variant="Variant.Text" Class="mx-1"
-                   OnClick="() => Dialog.Cancel()" Disabled="_processing">
+        <MudButton Variant="Variant.Text" Class="mx-1" OnClick="() => Dialog.Cancel()" Disabled="_processing">
             Cerrar
         </MudButton>
-        <MudButton Variant="Variant.Filled" Color="@ButtonColor" Class="mx-1"
-                   OnClick="async () => await Submit()" Disabled="_processing">
+        <MudButton Variant="Variant.Filled" Color="@ButtonColor" Class="mx-1" OnClick="async () => await Submit()"
+            Disabled="_processing">
             Confirmar
         </MudButton>
     </DialogActions>
