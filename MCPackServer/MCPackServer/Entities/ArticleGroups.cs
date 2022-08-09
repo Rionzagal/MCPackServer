@@ -21,7 +21,7 @@ namespace MCPackServer.Entities
         [StringLength(50)]
         public string Name { get; set; }
         [Required]
-        [StringLength(250)]
+        [StringLength(100)]
         public string Description { get; set; }
         [Required]
         [StringLength(20)]

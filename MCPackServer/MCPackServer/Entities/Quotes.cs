@@ -22,7 +22,7 @@ namespace MCPackServer.Entities
         public int ArticleId { get; set; }
         public int ProviderId { get; set; }
         public float Price { get; set; }
-        [StringLength(50)]
+        [StringLength(100)]
         public string SKU { get; set; }
         public DateTime DateUpdated { get; set; }
         [Required]

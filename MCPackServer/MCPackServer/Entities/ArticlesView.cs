@@ -16,27 +16,27 @@ namespace MCPackServer.Entities
         [StringLength(50)]
         public string Name { get; set; }
         [Required]
-        [StringLength(250)]
+        [StringLength(100)]
         public string Description { get; set; }
         [Required]
         [StringLength(20)]
         public string Unit { get; set; }
-        [StringLength(50)]
+        [StringLength(100)]
         public string TradeMark { get; set; }
-        [StringLength(50)]
+        [StringLength(100)]
         public string Model { get; set; }
         public int FamilyId { get; set; }
         [Required]
-        [StringLength(30)]
+        [StringLength(100)]
         public string FamilyName { get; set; }
         public int GroupId { get; set; }
         [Required]
         [StringLength(50)]
         public string GroupName { get; set; }
         [Required]
-        [StringLength(62)]
+        [StringLength(60)]
         public string Code { get; set; }
-        [StringLength(250)]
+        [StringLength(200)]
         public string Observations { get; set; }
     }
 }

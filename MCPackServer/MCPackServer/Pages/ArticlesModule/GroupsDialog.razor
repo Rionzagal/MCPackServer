@@ -13,7 +13,7 @@
         else
         {
             <MudContainer Style="max-height: 500px; overflow-y: scroll;">
-                @if (States.Delete == (States)State)
+                @if (States.Delete == State)
                 {
                     <div class="form-group">
                         <MudText Typo="Typo.subtitle1" Align="Align.Center">
@@ -23,39 +23,37 @@
                 }
                 <MudForm Model="Model" @ref="Form">
                     <div class="form-group">
-                        <MudTextField T="string" Label="Nombre" Required
-                                      RequiredError="Insertar nombre"
-                                      @bind-Value="Model.Name" 
-                                      ReadOnly="@Disabled"/>
+                        <MudTextField T="string" Label="Nombre" Required RequiredError="Insertar nombre"
+                        @bind-Value="Model.Name" ReadOnly="@Disabled" Immediate
+                        MaxLength="@(Model.GetMaxLengthForProperty(nameof(ArticleGroups.Name)) ?? 5000)"
+                        Counter="Model.GetMaxLengthForProperty(nameof(ArticleGroups.Name))" />
                     </div>
                     <div class="form-group">
-                        <MudTextField T="string" Label="Código" Required
-                                      RequiredError="Insertar código"
-                                      @bind-Value="Model.Code"
-                                      ReadOnly="@Disabled"/>
+                        <MudTextField T="string" Label="Código" Required RequiredError="Insertar código"
+                        @bind-Value="Model.Code" ReadOnly="@Disabled" Immediate
+                        MaxLength="@(Model.GetMaxLengthForProperty(nameof(ArticleGroups.Code)) ?? 5000)"
+                        Counter="Model.GetMaxLengthForProperty(nameof(ArticleGroups.Code))" />
                     </div>
                     <div class="form-group">
-                        <MudTextField T="string" Label="Descripción" Required
-                                      RequiredError="Insertar descripción"
-                                      @bind-Value="Model.Description" 
-                                      ReadOnly="@Disabled"/>
+                        <MudTextField T="string" Label="Descripción" Required RequiredError="Insertar descripción"
+                        @bind-Value="Model.Description" ReadOnly="@Disabled" Immediate
+                        MaxLength="@(Model.GetMaxLengthForProperty(nameof(ArticleGroups.Description)) ?? 5000)"
+                        Counter="Model.GetMaxLengthForProperty(nameof(ArticleGroups.Description))" />
                     </div>
                     <div class="form-group">
-                        <MudCheckBox Label="Tiene precio variable"
-                                     @bind-Checked="ModelHasVariablePrice"
-                                     ReadOnly="@Disabled" />
+                        <MudCheckBox Label="Tiene precio variable" @bind-Checked="ModelHasVariablePrice"
+                        ReadOnly="@Disabled" />
                     </div>
                 </MudForm>
             </MudContainer>
         }
     </DialogContent>
     <DialogActions>
-        <MudButton Variant="Variant.Text" Class="mx-1"
-                   OnClick="() => Dialog.Cancel()" Disabled="_processing">
+        <MudButton Variant="Variant.Text" Class="mx-1" OnClick="() => Dialog.Cancel()" Disabled="_processing">
             Cerrar
         </MudButton>
-        <MudButton Variant="Variant.Filled" Color="@ButtonColor" Class="mx-1"
-                   OnClick="async () => await Submit()" Disabled="_processing">
+        <MudButton Variant="Variant.Filled" Color="@ButtonColor" Class="mx-1" OnClick="async () => await Submit()"
+            Disabled="_processing">
             Confirmar
         </MudButton>
     </DialogActions>

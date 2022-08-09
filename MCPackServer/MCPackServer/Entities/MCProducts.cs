@@ -17,7 +17,7 @@ namespace MCPackServer.Entities
 
         [Key]
         public int Id { get; set; }
-        [StringLength(250)]
+        [StringLength(100)]
         public string Description { get; set; }
         public float SugestedPrice { get; set; }
         [Required]
@@ -30,9 +30,9 @@ namespace MCPackServer.Entities
         [StringLength(20)]
         public string Code { get; set; }
         [Required]
-        [StringLength(50)]
+        [StringLength(100)]
         public string Model { get; set; }
-        [StringLength(250)]
+        [StringLength(100)]
         public string Observations { get; set; }
 
         [InverseProperty("Product")]

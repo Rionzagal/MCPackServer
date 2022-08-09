@@ -29,60 +29,80 @@
                 <MudItem xs="6">
                     <MudText Typo="Typo.subtitle1" Align="Align.Start">Nombre comercial de cliente</MudText>
                     <MudTextField T="string" Placeholder="Nombre comercial de cliente" Required RequiredError="Este campo es obligatorio" 
-                                  @bind-Value="Model.MarketName" ReadOnly="@Disabled" Variant="Variant.Outlined" />
+                                  @bind-Value="Model.MarketName" ReadOnly="@Disabled" Variant="Variant.Outlined" Immediate
+                            MaxLength="@(Model.GetMaxLengthForProperty(nameof(Clients.MarketName)) ?? 5000)"
+                            Counter="Model.GetMaxLengthForProperty(nameof(Clients.MarketName))"/>
                 </MudItem>
                 <MudItem xs="6">
                     <MudText Typo="Typo.subtitle1" Align="Align.Start">Razón social de cliente</MudText>
                     <MudTextField T="string" Placeholder="Razón social de cliente" Required RequiredError="Este campo es obligatorio"
-                                  @bind-Value="Model.LegalName" ReadOnly="@Disabled" Variant="Variant.Outlined"/>
+                                  @bind-Value="Model.LegalName" ReadOnly="@Disabled" Variant="Variant.Outlined" Immediate
+                            MaxLength="@(Model.GetMaxLengthForProperty(nameof(Clients.LegalName)) ?? 5000)"
+                            Counter="Model.GetMaxLengthForProperty(nameof(Clients.LegalName))"/>
                 </MudItem>
                 <MudItem xs="6">
                     <MudText Typo="Typo.subtitle1" Align="Align.Start">Sitio web de cliente</MudText>
                     <MudTextField T="string" Placeholder="Sitio web de cliente" @bind-Value="Model.Website" 
-                                  ReadOnly="@Disabled" Variant="Variant.Outlined" />
+                                  ReadOnly="@Disabled" Variant="Variant.Outlined" Immediate InputType="InputType.Url"
+                            MaxLength="@(Model.GetMaxLengthForProperty(nameof(Clients.Website)) ?? 5000)"
+                            Counter="Model.GetMaxLengthForProperty(nameof(Clients.Website))"/>
                 </MudItem>
                 <MudItem xs="6">
                     <MudText Typo="Typo.subtitle1" Align="Align.Start">Número telefónico de cliente</MudText>
                     <MudTextField T="string" Placeholder="Número telefónico de cliente" Required RequiredError="Este campo es obligatorio"
-                                  Validation="@(new Func<string, IEnumerable<string>>(ValidatePhone))" InputType="InputType.Telephone"
-                                  @bind-Value="Model.PhoneNumber" ReadOnly="@Disabled" Variant="Variant.Outlined" />
+                                  Validation="@(new Func<string, IEnumerable<string>>(Validations.ValidatePhoneNumber))" InputType="InputType.Telephone"
+                                  @bind-Value="Model.PhoneNumber" ReadOnly="@Disabled" Variant="Variant.Outlined" Immediate
+                            MaxLength="@(Model.GetMaxLengthForProperty(nameof(Clients.PhoneNumber)) ?? 5000)" Mask="@(new PatternMask("00-0000-0000"))"
+                            Counter="Model.GetMaxLengthForProperty(nameof(Clients.PhoneNumber))"/>
                 </MudItem>
                 <MudItem xs="6">
                     <MudText Typo="Typo.subtitle1" Align="Align.Start">Domicilio fiscal de cliente</MudText>
                     <MudTextField T="string" Placeholder="Domicilio fiscal de cliente" Required RequiredError="Este campo es obligatorio"
-                                  @bind-Value="Model.FiscalAddress" ReadOnly="@Disabled" Variant="Variant.Outlined" />
+                                  @bind-Value="Model.FiscalAddress" ReadOnly="@Disabled" Variant="Variant.Outlined" Immediate
+                            MaxLength="@(Model.GetMaxLengthForProperty(nameof(Clients.FiscalAddress)) ?? 5000)"
+                            Counter="Model.GetMaxLengthForProperty(nameof(Clients.FiscalAddress))"/>
                 </MudItem>
                 <MudItem xs="6">
                     <MudText Typo="Typo.subtitle1" Align="Align.Start">Código postal</MudText>
                     <MudTextField T="string" Placeholder="Código postal" Required RequiredError="Este campo es obligatorio"
-                                  @bind-Value="Model.PostalCode" ReadOnly="@Disabled" Variant="Variant.Outlined" />
+                                  @bind-Value="Model.PostalCode" ReadOnly="@Disabled" Variant="Variant.Outlined" Immediate
+                            MaxLength="@(Model.GetMaxLengthForProperty(nameof(Clients.PostalCode)) ?? 5000)"
+                            Counter="Model.GetMaxLengthForProperty(nameof(Clients.PostalCode))"/>
                 </MudItem>
                 <MudItem xs="4">
                     <MudText Typo="Typo.subtitle1" Align="Align.Start">Ciudad</MudText>
                     <MudTextField T="string" Placeholder="Ciudad" Required RequiredError="Este campo es obligatorio"
                                   Validation="@(new Func<string, IEnumerable<string>>(ValidateName))" Variant="Variant.Outlined"
-                                  @bind-Value="Model.City" ReadOnly="@Disabled"/>
+                                  @bind-Value="Model.City" ReadOnly="@Disabled" Immediate
+                            MaxLength="@(Model.GetMaxLengthForProperty(nameof(Clients.City)) ?? 5000)"
+                            Counter="Model.GetMaxLengthForProperty(nameof(Clients.City))"/>
                 </MudItem>
                 <MudItem xs="4">
                     <MudText Typo="Typo.subtitle1" Align="Align.Start">Provincia/Estado</MudText>
                     <MudTextField T="string" Placeholder="Provincia/Estado" Required RequiredError="Este campo es obligatorio"
                                   Validation="@(new Func<string, IEnumerable<string>>(ValidateName))" Variant="Variant.Outlined"
-                                  @bind-Value="Model.Province" ReadOnly="@Disabled"/>
+                                  @bind-Value="Model.Province" ReadOnly="@Disabled" Immediate
+                            MaxLength="@(Model.GetMaxLengthForProperty(nameof(Clients.Province)) ?? 5000)"
+                            Counter="Model.GetMaxLengthForProperty(nameof(Clients.Province))"/>
                 </MudItem>
                 <MudItem xs="4">
                     <MudText Typo="Typo.subtitle1" Align="Align.Start">País</MudText>
                     <MudTextField T="string" Placeholder="País" Required RequiredError="Este campo es obligatorio"
                                   Validation="@(new Func<string, IEnumerable<string>>(ValidateName))" Variant="Variant.Outlined"
-                                  @bind-Value="Model.Country" ReadOnly="@Disabled"/>
+                                  @bind-Value="Model.Country" ReadOnly="@Disabled" Immediate
+                            MaxLength="@(Model.GetMaxLengthForProperty(nameof(Clients.Country)) ?? 5000)"
+                            Counter="Model.GetMaxLengthForProperty(nameof(Clients.Country))" />
                 </MudItem>
                 <MudItem xs="12">
                     <MudText Typo="Typo.subtitle1" Align="Align.Start">Condición de pago</MudText>
                     <MudTextField T="string" Placeholder="Condición de pago" Required RequiredError="Este campo es obligatorio"
-                                  @bind-Value="Model.PaymentCondition" ReadOnly="@Disabled" Variant="Variant.Outlined"/>
+                                  @bind-Value="Model.PaymentCondition" ReadOnly="@Disabled" Variant="Variant.Outlined" Immediate
+                            MaxLength="@(Model.GetMaxLengthForProperty(nameof(Clients.PaymentCondition)) ?? 5000)"
+                            Counter="Model.GetMaxLengthForProperty(nameof(Clients.PaymentCondition))"/>
                 </MudItem>
             </MudGrid>
         </MudForm>
-        @if (States.Delete == (States)State)
+        @if (States.Delete == State)
         {
             <div class="form-group">
                 <MudTable Items="ClientContacts" Dense Striped>

@@ -24,7 +24,7 @@ namespace MCPackServer.Entities
         [StringLength(50)]
         public string Type { get; set; }
         [Required]
-        [StringLength(250)]
+        [StringLength(200)]
         public string Description { get; set; }
         public float Discount { get; set; }
         public DateTime? AdmissionDate { get; set; }
@@ -32,7 +32,7 @@ namespace MCPackServer.Entities
         public DateTime? DeliveryDate { get; set; }
         public DateTime? RealDeliveryDate { get; set; }
         [Required]
-        [StringLength(250)]
+        [StringLength(100)]
         public string DeliveryTime { get; set; }
         [Required]
         [StringLength(5)]
@@ -41,14 +41,14 @@ namespace MCPackServer.Entities
         [StringLength(5)]
         public string PaymentCurrency { get; set; }
         [Required]
-        [StringLength(250)]
+        [StringLength(200)]
         public string PaymentConditions { get; set; }
         [Required]
         [StringLength(50)]
         public string SalesPerson { get; set; }
         public float Comision { get; set; }
         public bool HasTaxes { get; set; }
-        [StringLength(250)]
+        [StringLength(200)]
         public string Observations { get; set; }
         [Required]
         [StringLength(20)]

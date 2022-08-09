@@ -112,7 +112,7 @@ namespace MCPackServer.Pages.ProjectsModule
                 if (null != projects) ProjectValid = !projects.Any();
             }
             await Form.Validate();
-            if (Form.IsValid && ProjectValid)
+            if (Form.IsValid && ProjectValid || States.Delete == State)
             {
                 if (States.Add == State)
                 {
@@ -204,7 +204,7 @@ namespace MCPackServer.Pages.ProjectsModule
             return name;
         }
 
-        private IEnumerable<string>ProjectValidation(string input)
+        private IEnumerable<string> ProjectValidation(string input)
         {
             if (States.Add == State)
             {

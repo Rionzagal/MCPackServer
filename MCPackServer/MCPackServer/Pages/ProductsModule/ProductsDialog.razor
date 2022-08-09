@@ -13,7 +13,7 @@
         else
         {
     <MudContainer Style="max-height: 500px; overflow-y: scroll;">
-        @if (States.Delete == (States)State)
+        @if (States.Delete == State)
         {
             <div class="form-group">
                 <MudText Typo="Typo.subtitle1" Align="Align.Center">
@@ -25,28 +25,38 @@
         <MudGrid>
             <MudItem xs="12">
                 <MudText Typo="Typo.subtitle1" Align="Align.Start">Tipo de producto</MudText>
-                <MudTextField Placeholder="Tipo de producto" Required RequiredError="Este campo es obligatorio"
-                              @bind-Value="Model.Type" ReadOnly="@Disabled" Variant="Variant.Outlined" />
+                <MudTextField T="string" Placeholder="Tipo de producto" Required RequiredError="Este campo es obligatorio"
+                              @bind-Value="Model.Type" ReadOnly="@Disabled" Variant="Variant.Outlined" Immediate
+                            MaxLength="@(Model.GetMaxLengthForProperty(nameof(MCProducts.Type)) ?? 5000)"
+                            Counter="Model.GetMaxLengthForProperty(nameof(MCProducts.Type))" />
             </MudItem>
             <MudItem xs="12">
                 <MudText Typo="Typo.subtitle1" Align="Align.Start">Código</MudText>
-                <MudTextField Placeholder="Código" Required RequiredError="Este campo es obligatorio"
-                              @bind-Value="Model.Code" ReadOnly="@Disabled" Variant="Variant.Outlined" />
+                <MudTextField T="string" Placeholder="Código" Required RequiredError="Este campo es obligatorio"
+                              @bind-Value="Model.Code" ReadOnly="@Disabled" Variant="Variant.Outlined" Immediate
+                            MaxLength="@(Model.GetMaxLengthForProperty(nameof(MCProducts.Code)) ?? 5000)"
+                            Counter="Model.GetMaxLengthForProperty(nameof(MCProducts.Code))"/>
             </MudItem>
             <MudItem xs="12">
                 <MudText Typo="Typo.subtitle1" Align="Align.Start">Modelo</MudText>
-                <MudTextField Placeholder="Modelo" Required RequiredError="Este campo es obligatorio"
-                              @bind-Value="Model.Model" ReadOnly="@Disabled" Variant="Variant.Outlined" />
+                <MudTextField T="string" Placeholder="Modelo" Required RequiredError="Este campo es obligatorio"
+                              @bind-Value="Model.Model" ReadOnly="@Disabled" Variant="Variant.Outlined" Immediate
+                            MaxLength="@(Model.GetMaxLengthForProperty(nameof(MCProducts.Model)) ?? 5000)"
+                            Counter="Model.GetMaxLengthForProperty(nameof(MCProducts.Model))" />
             </MudItem>
             <MudItem xs="12">
                 <MudText Typo="Typo.subtitle1" Align="Align.Start">Descripción</MudText>
-                <MudTextField Placeholder="Descripción" @bind-Value="Model.Description"
-                              ReadOnly="@Disabled" Lines="3" Variant="Variant.Outlined"/>
+                <MudTextField T="string" Placeholder="Descripción" @bind-Value="Model.Description"
+                              ReadOnly="@Disabled" Lines="3" Variant="Variant.Outlined" Immediate
+                            MaxLength="@(Model.GetMaxLengthForProperty(nameof(MCProducts.Description)) ?? 5000)"
+                            Counter="Model.GetMaxLengthForProperty(nameof(MCProducts.Description))" />
             </MudItem>
             <MudItem xs="12">
                 <MudText Typo="Typo.subtitle1" Align="Align.Start">Observaciones</MudText>
-                <MudTextField Placeholder="Observaciones" @bind-Value="Model.Observations"
-                              ReadOnly="@Disabled" Lines="3" Variant="Variant.Outlined" />
+                <MudTextField T="string" Placeholder="Observaciones" @bind-Value="Model.Observations"
+                              ReadOnly="@Disabled" Lines="3" Variant="Variant.Outlined" Immediate
+                            MaxLength="@(Model.GetMaxLengthForProperty(nameof(MCProducts.Observations)) ?? 5000)"
+                            Counter="Model.GetMaxLengthForProperty(nameof(MCProducts.Observations))" />
             </MudItem>
             <MudItem xs="12">
                 <MudText Typo="Typo.subtitle1" Align="Align.Start">Precio sugerido</MudText>

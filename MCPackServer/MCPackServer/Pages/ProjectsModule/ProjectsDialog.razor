@@ -13,7 +13,7 @@
         else
         {
             <MudContainer Style="max-height: 500px; overflow-y: scroll;">
-                @if (States.Delete == (States)State)
+                @if (States.Delete == State)
                 {
                     <div class="form-group">
                         <MudText Typo="Typo.subtitle1" Align="Align.Center">
@@ -28,7 +28,9 @@
                             <MudTextField @bind-Value="Model.ProjectNumber" Required T="string" Placeholder="Número de proyecto"
                                             ReadOnly="@Disabled" Disabled="@(States.Edit == State)" Variant="Variant.Outlined"
                                             RequiredError="Este campo es obligatorio" 
-                                            Validation="new Func<string, IEnumerable<string>>(ProjectValidation)" />
+                                            Validation="(string f) => Validations.ValidateUniqueNumericCode(f, ExistentProjects.Select(p => p.ProjectNumber))" Immediate
+                            MaxLength="@(Model.GetMaxLengthForProperty(nameof(Projects.ProjectNumber)) ?? 5000)"
+                            Counter="Model.GetMaxLengthForProperty(nameof(Projects.ProjectNumber))" />
                         </MudItem>
                         <MudItem xs="4">
                             <MudText Typo="Typo.subtitle1" Align="Align.Start">Tipo de proyecto</MudText>
@@ -50,7 +52,9 @@
                             <MudText Typo="Typo.subtitle1" Align="Align.Start">Descripción</MudText>
                             <MudTextField T="string" @bind-Text="@Model.Description" Variant="Variant.Outlined"
                                           Required RequiredError="Este campo es obligatorio"
-                                          Placeholder="Descripción" Lines="5" ReadOnly="@Disabled" />
+                                          Placeholder="Descripción" Lines="5" ReadOnly="@Disabled" Immediate
+                            MaxLength="@(Model.GetMaxLengthForProperty(nameof(Projects.Description)) ?? 5000)"
+                            Counter="Model.GetMaxLengthForProperty(nameof(Projects.Description))" />
                         </MudItem>
                         <MudItem xs="6">
                             <MudText Typo="Typo.subtitle1" Align="Align.Start">Fecha de entrada</MudText>
@@ -78,7 +82,9 @@
                             <MudTextField T="string" @bind-Text="@Model.DeliveryTime"
                                           Placeholder="Tiempos de entrega" Lines="2"
                                           Required ReadOnly="@Disabled" Variant="Variant.Outlined"
-                                          RequiredError="Este campo es obligatorio" />
+                                          RequiredError="Este campo es obligatorio" Immediate
+                            MaxLength="@(Model.GetMaxLengthForProperty(nameof(Projects.DeliveryTime)) ?? 5000)"
+                            Counter="Model.GetMaxLengthForProperty(nameof(Projects.DeliveryTime))" />
                         </MudItem>
                         <MudItem xs="6">
                             <MudText Typo="Typo.subtitle1" Align="Align.Start">Moneda pactada</MudText>
@@ -101,13 +107,17 @@
                             <MudTextField T="string" @bind-Text="@Model.PaymentConditions"
                                           Placeholder="Condiciones de pago" Lines="5"
                                           Required ReadOnly="@Disabled" Variant="Variant.Outlined"
-                                          RequiredError="Este campo es obligatorio" />
+                                          RequiredError="Este campo es obligatorio" Immediate
+                            MaxLength="@(Model.GetMaxLengthForProperty(nameof(Projects.PaymentConditions)) ?? 5000)"
+                            Counter="Model.GetMaxLengthForProperty(nameof(Projects.PaymentConditions))" />
                         </MudItem>
                         <MudItem xs="4">
                             <MudText Typo="Typo.subtitle1" Align="Align.Start">Nombre de vendedor</MudText>
                             <MudTextField T="string" @bind-Text="@Model.SalesPerson" Variant="Variant.Outlined"
                                           Placeholder="Nombre de vendedor" ReadOnly="@Disabled"
-                                          Required RequiredError="Este campo es obligatorio" />
+                                          Required RequiredError="Este campo es obligatorio" Immediate
+                            MaxLength="@(Model.GetMaxLengthForProperty(nameof(Projects.SalesPerson)) ?? 5000)"
+                            Counter="Model.GetMaxLengthForProperty(nameof(Projects.SalesPerson))" />
                         </MudItem>
                         <MudItem xs="4">
                             <MudText Typo="Typo.subtitle1" Align="Align.Start">Comisión</MudText>
@@ -125,7 +135,9 @@
                             <MudText Typo="Typo.subtitle1" Align="Align.Start">Observaciones</MudText>
                             <MudTextField T="string" @bind-Text="@Model.Observations"
                                           Placeholder="Observaciones"  Variant="Variant.Outlined"
-                                          Lines="5" ReadOnly="@Disabled" />
+                                          Lines="5" ReadOnly="@Disabled" Immediate
+                            MaxLength="@(Model.GetMaxLengthForProperty(nameof(Projects.Observations)) ?? 5000)"
+                            Counter="Model.GetMaxLengthForProperty(nameof(Projects.Observations))" />
                         </MudItem>
                     </MudGrid>
                 </MudForm>

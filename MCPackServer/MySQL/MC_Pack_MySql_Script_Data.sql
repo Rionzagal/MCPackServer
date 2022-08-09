@@ -228,12 +228,6 @@ CREATE TABLE `aspnetroles` (
 -- Dumping data for table `aspnetroles`
 --
 
-LOCK TABLES `aspnetroles` WRITE;
-/*!40000 ALTER TABLE `aspnetroles` DISABLE KEYS */;
-INSERT INTO `aspnetroles` VALUES ('1db0ca6c-4053-4d29-b2d7-604c37b27b5f','Proyectos','PROYECTOS','663d8a53-3003-405c-a0e9-604ae8b4052a'),('35a25ec1-8631-4a65-98d6-7a6ecce83d32','Admvo','ADMVO','69100be9-7347-49c5-8e35-bccf1a8c0ff2'),('3b9abf42-31f2-4d3d-8bb7-f3764be31b31','Compras','COMPRAS','d866d593-0220-4934-8742-a8b45d84885b'),('6E4134C5-FE58-478F-A6EE-DE4A1A87CC16','Developer','DEVELOPER','de4ab0c6-a4b9-11ec-9d6a-40a8f0c78b90'),('921a17ad-d6e3-4082-84fc-0c43b4a86f8d','AuxCompras','AUXCOMPRAS','668a7bfa-d8e5-479c-87aa-c8569619d696'),('9a29c706-d755-421f-b15f-7a19b2e8fc20','Consultas','CONSULTAS','bb8feac1-28f1-4e93-b595-023f6ae37d11'),('AABE1774-BA38-4EE6-89E6-0405E1F1A6A6','Admin','ADMIN','de578703-a4b9-11ec-9d6a-40a8f0c78b90');
-/*!40000 ALTER TABLE `aspnetroles` ENABLE KEYS */;
-UNLOCK TABLES;
-
 --
 -- Table structure for table `aspnetuserclaims`
 --
