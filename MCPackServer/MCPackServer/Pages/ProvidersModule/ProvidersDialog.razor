@@ -30,32 +30,32 @@
                                   RequiredError="Insertar nombre comercial de proveedor"
                                   @bind-Value="Model.MarketName"
                                   ReadOnly="@Disabled" Immediate
-                            MaxLength="@(Model.GetMaxLengthForProperty(nameof(ArticleFamilies.Name)) ?? 5000)"
-                            Counter="Model.GetMaxLengthForProperty(nameof(ArticleFamilies.Name))" />
+                            MaxLength="@(Model.GetMaxLengthForProperty(nameof(Providers.MarketName)) ?? 5000)"
+                            Counter="Model.GetMaxLengthForProperty(nameof(Providers.MarketName))" />
                 </MudItem>
                 <MudItem xs="12">
                     <MudTextField T="string" Label="Razón social" Required
                                   RequiredError="Insertar razón social de proveedor"
                                   @bind-Value="Model.LegalName"
                                   ReadOnly="@Disabled" Immediate
-                            MaxLength="@(Model.GetMaxLengthForProperty(nameof(ArticleFamilies.Name)) ?? 5000)"
-                            Counter="Model.GetMaxLengthForProperty(nameof(ArticleFamilies.Name))"/>
+                            MaxLength="@(Model.GetMaxLengthForProperty(nameof(Providers.LegalName)) ?? 5000)"
+                            Counter="Model.GetMaxLengthForProperty(nameof(Providers.LegalName))"/>
                 </MudItem>
                 <MudItem xs="12">
                     <MudTextField T="string" Label="Domicilio fiscal" Required
                                   RequiredError="Insertar domicilio fiscal de proveedor"
                                   @bind-Value="Model.FiscalAddress"
                                   ReadOnly="@Disabled" Immediate
-                            MaxLength="@(Model.GetMaxLengthForProperty(nameof(ArticleFamilies.Name)) ?? 5000)"
-                            Counter="Model.GetMaxLengthForProperty(nameof(ArticleFamilies.Name))"/>
+                            MaxLength="@(Model.GetMaxLengthForProperty(nameof(Providers.FiscalAddress)) ?? 5000)"
+                            Counter="Model.GetMaxLengthForProperty(nameof(Providers.FiscalAddress))"/>
                 </MudItem>
                 <MudItem xs="6">
                     <MudTextField T="string" Label="Código postal" Required
                                   RequiredError="Insertar código postal de proveedor"
                                   @bind-Value="Model.PostalCode"
                                   ReadOnly="@Disabled" Immediate
-                            MaxLength="@(Model.GetMaxLengthForProperty(nameof(ArticleFamilies.Name)) ?? 5000)"
-                            Counter="Model.GetMaxLengthForProperty(nameof(ArticleFamilies.Name))"/>
+                            MaxLength="@(Model.GetMaxLengthForProperty(nameof(Providers.PostalCode)) ?? 5000)"
+                            Counter="Model.GetMaxLengthForProperty(nameof(Providers.PostalCode))"/>
                 </MudItem>
                 <MudItem xs="6">
                     <MudTextField T="string" Label="Ciudad" Required
@@ -63,8 +63,8 @@
                                   Validation="@(new Func<string, IEnumerable<string>>(ValidateName))"
                                   @bind-Value="Model.City"
                                   ReadOnly="@Disabled" Immediate
-                            MaxLength="@(Model.GetMaxLengthForProperty(nameof(ArticleFamilies.Name)) ?? 5000)"
-                            Counter="Model.GetMaxLengthForProperty(nameof(ArticleFamilies.Name))"/>
+                            MaxLength="@(Model.GetMaxLengthForProperty(nameof(Providers.City)) ?? 5000)"
+                            Counter="Model.GetMaxLengthForProperty(nameof(Providers.City))"/>
                 </MudItem>
                 <MudItem xs="6">
                     <MudTextField T="string" Label="Provincia/Estado" Required
@@ -72,8 +72,8 @@
                                   Validation="@(new Func<string, IEnumerable<string>>(ValidateName))"
                                   @bind-Value="Model.Province"
                                   ReadOnly="@Disabled" Immediate
-                            MaxLength="@(Model.GetMaxLengthForProperty(nameof(ArticleFamilies.Name)) ?? 5000)"
-                            Counter="Model.GetMaxLengthForProperty(nameof(ArticleFamilies.Name))"/>
+                            MaxLength="@(Model.GetMaxLengthForProperty(nameof(Providers.Province)) ?? 5000)"
+                            Counter="Model.GetMaxLengthForProperty(nameof(Providers.Province))"/>
                 </MudItem>
                 <MudItem xs="6">
                     <MudTextField T="string" Label="País" Required
@@ -81,48 +81,41 @@
                                   Validation="@(new Func<string, IEnumerable<string>>(ValidateName))"
                                   @bind-Value="Model.Country"
                                   ReadOnly="@Disabled" Immediate
-                            MaxLength="@(Model.GetMaxLengthForProperty(nameof(ArticleFamilies.Name)) ?? 5000)"
-                            Counter="Model.GetMaxLengthForProperty(nameof(ArticleFamilies.Name))"/>
+                            MaxLength="@(Model.GetMaxLengthForProperty(nameof(Providers.Country)) ?? 5000)"
+                            Counter="Model.GetMaxLengthForProperty(nameof(Providers.Country))"/>
                 </MudItem>
                 <MudItem xs="6">
                     <MudTextField T="string" Label="Sitio web" 
-                                  @bind-Value="Model.Website"
-                                  ReadOnly="@Disabled" Immediate
-                            MaxLength="@(Model.GetMaxLengthForProperty(nameof(ArticleFamilies.Name)) ?? 5000)"
-                            Counter="Model.GetMaxLengthForProperty(nameof(ArticleFamilies.Name))"/>
+                                  @bind-Value="Model.Website" Validation="new Func<string, IEnumerable<string>>(Validations.ValidateUrl)"
+                                  ReadOnly="@Disabled" Immediate InputType="InputType.Url"
+                            MaxLength="@(Model.GetMaxLengthForProperty(nameof(Providers.Website)) ?? 5000)"
+                            Counter="Model.GetMaxLengthForProperty(nameof(Providers.Website))"/>
                 </MudItem>
                 <MudItem xs="6">
                     <MudTextField T="string" Label="Número telefónico de cliente" Required
                                   RequiredError="Insertar número telefónico de cliente"
-                                  Validation="@(new Func<string, IEnumerable<string>>(ValidatePhone))"
-                                  InputType="InputType.Telephone"
-                                  @bind-Value="Model.PhoneNumber"
-                                  ReadOnly="@Disabled" Immediate
-                            MaxLength="@(Model.GetMaxLengthForProperty(nameof(ArticleFamilies.Name)) ?? 5000)"
-                            Counter="Model.GetMaxLengthForProperty(nameof(ArticleFamilies.Name))"/>
+                                  Validation="@(new Func<string, IEnumerable<string>>(Validations.ValidatePhoneNumber))"
+                                  InputType="InputType.Telephone" @bind-Value="Model.PhoneNumber"ReadOnly="@Disabled" Immediate
+                            MaxLength="@(Model.GetMaxLengthForProperty(nameof(Providers.PhoneNumber)) ?? 5000)"
+                            Counter="Model.GetMaxLengthForProperty(nameof(Providers.PhoneNumber))"/>
                 </MudItem>
                 <MudItem xs="12">
-                    <MudTextField T="string" Label="Tipo de pago" Required
-                                  RequiredError="Insertar tipo de pago"
-                                  @bind-Value="Model.TypeOfPayment"
-                                  ReadOnly="@Disabled" Immediate
-                            MaxLength="@(Model.GetMaxLengthForProperty(nameof(ArticleFamilies.Name)) ?? 5000)"
-                            Counter="Model.GetMaxLengthForProperty(nameof(ArticleFamilies.Name))"/>
+                    <MudTextField T="string" Label="Tipo de pago" Required RequiredError="Insertar tipo de pago"
+                                  @bind-Value="Model.TypeOfPayment" ReadOnly="@Disabled" Immediate
+                            MaxLength="@(Model.GetMaxLengthForProperty(nameof(Providers.TypeOfPayment)) ?? 5000)"
+                            Counter="Model.GetMaxLengthForProperty(nameof(Providers.TypeOfPayment))"/>
                 </MudItem>
                 <MudItem xs="12">
-                    <MudTextField T="string" Label="Condición de pago" Required
-                                  RequiredError="Insertar condición de pago"
-                                  @bind-Value="Model.PaymentCondition"
-                                  ReadOnly="@Disabled" Immediate
-                            MaxLength="@(Model.GetMaxLengthForProperty(nameof(ArticleFamilies.Name)) ?? 5000)"
-                            Counter="Model.GetMaxLengthForProperty(nameof(ArticleFamilies.Name))"/>
+                    <MudTextField T="string" Label="Condición de pago" Required RequiredError="Insertar condición de pago" 
+                                  @bind-Value="Model.PaymentCondition" ReadOnly="@Disabled" Immediate
+                            MaxLength="@(Model.GetMaxLengthForProperty(nameof(Providers.PaymentCondition)) ?? 5000)"
+                            Counter="Model.GetMaxLengthForProperty(nameof(Providers.PaymentCondition))"/>
                 </MudItem>
                 <MudItem xs="3">
-                    <MudTextField T="string" Label="Límite de crédito"
-                                  @bind-Value="Model.CreditLimit"
+                    <MudTextField T="string" Label="Límite de crédito" @bind-Value="Model.CreditLimit"
                                   ReadOnly="@Disabled" Immediate
-                            MaxLength="@(Model.GetMaxLengthForProperty(nameof(ArticleFamilies.Name)) ?? 5000)"
-                            Counter="Model.GetMaxLengthForProperty(nameof(ArticleFamilies.Name))"/>
+                            MaxLength="@(Model.GetMaxLengthForProperty(nameof(Providers.CreditLimit)) ?? 5000)"
+                            Counter="Model.GetMaxLengthForProperty(nameof(Providers.CreditLimit))"/>
                 </MudItem>
                 <MudItem xs="3">
                     <MudCheckBox @bind-Checked="Model.HasTaxes" Label="Aplica I.V.A" 
@@ -144,8 +137,8 @@
                     <MudTextField T="string" Label="Observaciones"
                                   @bind-Value="Model.Observations"
                                   ReadOnly="@Disabled" Immediate
-                            MaxLength="@(Model.GetMaxLengthForProperty(nameof(ArticleFamilies.Name)) ?? 5000)"
-                            Counter="Model.GetMaxLengthForProperty(nameof(ArticleFamilies.Name))"/>
+                            MaxLength="@(Model.GetMaxLengthForProperty(nameof(Providers.Observations)) ?? 5000)"
+                            Counter="Model.GetMaxLengthForProperty(nameof(Providers.Observations))"/>
                 </MudItem>
             </MudGrid>
         </MudForm>

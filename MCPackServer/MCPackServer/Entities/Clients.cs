@@ -20,22 +20,22 @@ namespace MCPackServer.Entities
         [Key]
         public int Id { get; set; }
         [Required]
-        [StringLength(50)]
+        [StringLength(100)]
         public string MarketName { get; set; }
         [Required]
-        [StringLength(50)]
+        [StringLength(100)]
         public string LegalName { get; set; }
         [Required]
-        [StringLength(100)]
+        [StringLength(200)]
         public string FiscalAddress { get; set; }
         [Required]
-        [StringLength(50)]
+        [StringLength(100)]
         public string City { get; set; }
         [Required]
-        [StringLength(50)]
+        [StringLength(100)]
         public string Province { get; set; }
         [Required]
-        [StringLength(50)]
+        [StringLength(100)]
         public string Country { get; set; }
         [Required]
         [StringLength(20)]
@@ -43,9 +43,9 @@ namespace MCPackServer.Entities
         [Required]
         [StringLength(20)]
         public string PhoneNumber { get; set; }
-        [StringLength(250)]
+        [StringLength(200)]
         public string PaymentCondition { get; set; }
-        [StringLength(50)]
+        [StringLength(100)]
         public string Website { get; set; }
 
         [InverseProperty("Client")]

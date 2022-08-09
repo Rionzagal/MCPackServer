@@ -32,7 +32,9 @@
                             Counter="Model.GetMaxLengthForProperty(nameof(PurchaseArticles.Name))" />
                         </MudItem>
                         <MudItem xs="12">
-                            <MudText Typo="Typo.subtitle1" Align="Align.Start">Código</MudText>
+                            <MudText Typo="Typo.subtitle1" Align="Align.Start">
+                                Código: @(ModelView?.Code ?? $"{GroupCode}-{FamilyCode}-*****")
+                            </MudText>
                             <MudTextField T="string" Required RequiredError="Este campo es requerido" Immediate
                             Placeholder="@($"Código: {GroupCode}-{FamilyCode}-****")" ReadOnly="@Disabled"
                             @bind-Value="Model.Code" Variant="Variant.Outlined"

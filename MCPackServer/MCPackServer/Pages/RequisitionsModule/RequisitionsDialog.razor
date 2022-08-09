@@ -29,8 +29,8 @@
                                           Disabled=@(States.Edit == State)
                                           Validation="(string f) => Validations.ValidateUniqueNumericCode(f, ExistentRequisitions.Select(r => r.RequisitionNumber))"
                                           Clearable Variant="Variant.Outlined" Immediate
-                            MaxLength="@(Model.GetMaxLengthForProperty(nameof(ArticleFamilies.Name)) ?? 5000)"
-                            Counter="Model.GetMaxLengthForProperty(nameof(ArticleFamilies.Name))" />
+                            MaxLength="@(Model.GetMaxLengthForProperty(nameof(Requisitions.RequisitionNumber)) ?? 5000)"
+                            Counter="Model.GetMaxLengthForProperty(nameof(Requisitions.RequisitionNumber))" />
                         </MudItem>
                         <MudItem xs="6">
                             <MudText Typo="Typo.subtitle1">Fecha de emisión</MudText>
@@ -44,11 +44,16 @@
                         </MudItem>
                         <MudItem xs="12">
                             <MudText Typo="Typo.subtitle1">Remitente</MudText>
-                            <MudAutocomplete T="string" @bind-Value="Model.UserId" Required ReadOnly="@Disabled"
-                                             RequiredError="Seleccione un usuario de emisión" 
+                            @if (States.Delete != State)
+                            {
+                                <MudAutocomplete T="string" @bind-Value="Model.UserId" Required RequiredError="Seleccione un usuario de emisión" 
                                              SearchFunc="(f) => UsersServerReload(f)" Variant="Variant.Outlined"
                                              ToStringFunc="new Func<string, string>(GetUserName)" />
-                            <MudText Typo="Typo.subtitle2">Remitente actual: @(GetUserName(Model.UserId))</MudText>
+                            }
+                            else
+                            {
+                                <MudTextField Value="@(ModelView?.UserName ?? "N/A")" ReadOnly />
+                            }
                         </MudItem>
                     </MudGrid>
                 </MudForm>

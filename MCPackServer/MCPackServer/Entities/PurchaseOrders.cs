@@ -34,7 +34,7 @@ namespace MCPackServer.Entities
         public DateTime? ReceptionDate { get; set; }
         [StringLength(50)]
         public string InvoiceNumber { get; set; }
-        [StringLength(250)]
+        [StringLength(200)]
         public string Observations { get; set; }
         [Required]
         [StringLength(20)]

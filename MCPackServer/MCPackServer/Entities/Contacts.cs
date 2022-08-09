@@ -19,7 +19,7 @@ namespace MCPackServer.Entities
         [Key]
         public int Id { get; set; }
         [Required]
-        [StringLength(50)]
+        [StringLength(100)]
         public string FullName { get; set; }
         [StringLength(50)]
         public string EmailAddress { get; set; }

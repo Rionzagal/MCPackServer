@@ -1,7 +1,4 @@
-CREATE 
-    ALGORITHM = UNDEFINED 
-    DEFINER = `root`@`localhost` 
-    SQL SECURITY DEFINER
+ALTER
 VIEW `mcpackdb`.`requisitionsview` AS
     SELECT 
         `requisition`.`Id` AS `Id`,
@@ -13,4 +10,4 @@ VIEW `mcpackdb`.`requisitionsview` AS
         `mcpackdb`.`user`.`ShortName` AS `UserShortName`
     FROM
         (`mcpackdb`.`requisitions` `requisition`
-        JOIN `mcpackdb`.`userinformationview` `user` ON ((`mcpackdb`.`user`.`Id` = `requisition`.`UserId`)))
+        JOIN `mcpackdb`.`userpersonalinformationview` `user` ON ((`mcpackdb`.`user`.`Id` = `requisition`.`UserId`)))

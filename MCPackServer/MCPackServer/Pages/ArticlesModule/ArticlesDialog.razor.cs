@@ -68,7 +68,6 @@ namespace MCPackServer.Pages.ArticlesModule
             if (null != ModelView)
             {
                 Model = await _service.GetByKeyAsync<PurchaseArticles>(ModelView.Id);
-                Model.Code = ModelView.Code;
                 FamilyCode = (await _service.GetByKeyAsync<ArticleFamilies>(ModelView.FamilyId)).Code;
                 GroupCode = (await _service.GetByKeyAsync<ArticleGroups>(ModelView.GroupId)).Code;
             }

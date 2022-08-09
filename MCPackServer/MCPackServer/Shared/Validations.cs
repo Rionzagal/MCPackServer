@@ -70,7 +70,7 @@ namespace MCPackServer.Shared
             }
         }
 
-        public static IEnumerable<string> ValidateUrl(string input, int maxLength)
+        public static IEnumerable<string> ValidateUrl(string input)
         {
             if (!string.IsNullOrEmpty(input))
             {
@@ -78,8 +78,6 @@ namespace MCPackServer.Shared
                     yield return "El campo no acepta espacios en blanco.";
                 if (!Uri.IsWellFormedUriString(input, UriKind.RelativeOrAbsolute))
                     yield return "La url introducida no está bien formada.";
-                if (maxLength < input.Length)
-                    yield return $"El campo tiene un máximo de {maxLength} caracteres.";
             }
         }
 

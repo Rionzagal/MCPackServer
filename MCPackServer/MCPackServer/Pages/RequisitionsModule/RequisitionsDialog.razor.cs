@@ -57,7 +57,7 @@ namespace MCPackServer.Pages.RequisitionsModule
                     Model.RequisitionNumber = (ExistentRequisitions.Max(r => int.Parse(r.RequisitionNumber)) + 1).ToString("d5");
                 Model.UserId = UserId ?? string.Empty;
             }
-
+            _ = await UsersServerReload(string.Empty);
             if (States.Add == State) //representing an Add dialog
             {
                 Title = "Añadir nueva requisición";
@@ -83,8 +83,6 @@ namespace MCPackServer.Pages.RequisitionsModule
             {
                 Dialog?.Cancel();
             }
-
-            _ = await UsersServerReload(string.Empty);
         }
 
         private async Task Submit()
