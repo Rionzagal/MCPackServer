@@ -47,6 +47,8 @@ namespace MCPackServer.Entities
         public string PaymentCondition { get; set; }
         [StringLength(100)]
         public string Website { get; set; }
+        [StringLength(20)]
+        public string RFC { get; set; }
 
         [InverseProperty("Client")]
         public virtual ICollection<ClientContacts> ClientContacts { get; set; }

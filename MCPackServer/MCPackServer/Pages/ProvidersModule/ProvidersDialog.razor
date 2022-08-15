@@ -33,13 +33,19 @@
                             MaxLength="@(Model.GetMaxLengthForProperty(nameof(Providers.MarketName)) ?? 5000)"
                             Counter="Model.GetMaxLengthForProperty(nameof(Providers.MarketName))" />
                 </MudItem>
-                <MudItem xs="12">
+                <MudItem xs="6">
                     <MudTextField T="string" Label="Razón social" Required
                                   RequiredError="Insertar razón social de proveedor"
                                   @bind-Value="Model.LegalName"
                                   ReadOnly="@Disabled" Immediate
                             MaxLength="@(Model.GetMaxLengthForProperty(nameof(Providers.LegalName)) ?? 5000)"
                             Counter="Model.GetMaxLengthForProperty(nameof(Providers.LegalName))"/>
+                </MudItem>
+                <MudItem xs="6">
+                    <MudText Typo="Typo.subtitle1" Align="Align.Start">RFC</MudText>
+                    <MudTextField T="string" Placeholder="RCF" @bind-Value="Model.RFC" ReadOnly="@Disabled" Variant="Variant.Outlined"
+                    Immediate Counter="Model.GetMaxLengthForProperty(nameof(Model.RFC))"
+                    MaxLength="@(Model.GetMaxLengthForProperty(nameof(Model.RFC)) ?? 5000)" />
                 </MudItem>
                 <MudItem xs="12">
                     <MudTextField T="string" Label="Domicilio fiscal" Required

@@ -40,6 +40,12 @@
                             MaxLength="@(Model.GetMaxLengthForProperty(nameof(Clients.LegalName)) ?? 5000)"
                             Counter="Model.GetMaxLengthForProperty(nameof(Clients.LegalName))"/>
                 </MudItem>
+                <MudItem xs="12">
+                    <MudText Typo="Typo.subtitle1" Align="Align.Start">RFC</MudText>
+                    <MudTextField T="string" Placeholder="RCF" @bind-Value="Model.RFC" ReadOnly="@Disabled" Variant="Variant.Outlined"
+                    Immediate Counter="Model.GetMaxLengthForProperty(nameof(Model.RFC))"
+                    MaxLength="@(Model.GetMaxLengthForProperty(nameof(Model.RFC)) ?? 5000)" />
+                </MudItem>
                 <MudItem xs="6">
                     <MudText Typo="Typo.subtitle1" Align="Align.Start">Sitio web de cliente</MudText>
                     <MudTextField T="string" Placeholder="Sitio web de cliente" @bind-Value="Model.Website" 

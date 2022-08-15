@@ -13,7 +13,7 @@
         else
         {
             <MudContainer Style="max-height: 500px; overflow-y: scroll;">
-                @if (States.Delete == (States)State)
+                @if (States.Delete == State)
                 {
                     <div class="form-group">
                         <MudText Typo="Typo.subtitle1" Align="Align.Center">
@@ -25,27 +25,31 @@
                     <div class="form-group">
                         <MudTextField T="string" Label="Nombre completo" Required RequiredError="Insertar nombre"
                         Validation="@(new Func<string, IEnumerable<string>>(ValidateName))" @bind-Value="Model.FullName"
-                        ReadOnly="@Disabled" />
+                        ReadOnly="@Disabled" Immediate Counter="Model.GetMaxLengthForProperty(nameof(Model.FullName))"
+                        MaxLength="@(Model.GetMaxLengthForProperty(nameof(Model.FullName)) ?? 5000)" />
                     </div>
                     <div class="form-group">
-                        <MudTextField T="string" Label="Correo electrónico"
-                        Validation="@(new Func<string, IEnumerable<string>>(ValidateEmail))"
+                        <MudTextField T="string" Label="Correo electrónico" Immediate InputType="InputType.Email"
+                        Counter="Model.GetMaxLengthForProperty(nameof(Model.EmailAddress))"
+                        MaxLength="@(Model.GetMaxLengthForProperty(nameof(Model.EmailAddress)) ?? 5000)"
+                        Validation="@(new Func<string, IEnumerable<string>>(Validations.ValidateEmail))"
                         @bind-Value="Model.EmailAddress" ReadOnly="@Disabled" />
                     </div>
                     <div class="form-group">
-                        <MudTextField T="string" Label="Teléfono celular"
-                        Validation="@(new Func<string, IEnumerable<string>>(ValidatePhone))"
-                        @bind-Value="Model.MobilePhone" ReadOnly="@Disabled" />
+                        <MudTextField T="string" Label="Teléfono celular" Immediate @bind-Value="Model.MobilePhone"
+                        ReadOnly="@Disabled" MaxLength="40" Counter="40" />
                     </div>
                     <div class="form-group">
-                        <MudTextField T="string" Label="Puesto" @bind-Value="Model.Position" ReadOnly="@Disabled" />
+                        <MudTextField T="string" Label="Puesto" @bind-Value="Model.Position" ReadOnly="@Disabled" Immediate
+                        Counter="Model.GetMaxLengthForProperty(nameof(Model.Position))"
+                        MaxLength="@(Model.GetMaxLengthForProperty(nameof(Model.Position)) ?? 5000)" />
                     </div>
                 </MudForm>
             </MudContainer>
         }
     </DialogContent>
     <DialogActions>
-        <MudButton Variant="Variant.Text" Class="mx-1" OnClick="() => Dialog.Cancel()" Disabled="_processing">
+        <MudButton Variant="Variant.Text" Class="mx-1" OnClick="() => Dialog?.Cancel()" Disabled="_processing">
             Cerrar
         </MudButton>
         <MudButton Variant="Variant.Filled" Color="@ButtonColor" Class="mx-1" OnClick="async () => await Submit()"

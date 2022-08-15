@@ -24,7 +24,7 @@ namespace MCPackServer.Entities
         [StringLength(50)]
         public string EmailAddress { get; set; }
         [Required]
-        [StringLength(20)]
+        [StringLength(40)]
         public string MobilePhone { get; set; }
         [StringLength(50)]
         public string Position { get; set; }

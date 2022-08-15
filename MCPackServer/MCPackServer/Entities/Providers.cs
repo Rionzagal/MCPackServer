@@ -46,6 +46,8 @@ namespace MCPackServer.Entities
         [Required]
         [StringLength(100)]
         public string Website { get; set; }
+        [StringLength(20)]
+        public string RFC { get; set; }
         [Required]
         [StringLength(100)]
         public string TypeOfPayment { get; set; }
