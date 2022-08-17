@@ -51,13 +51,13 @@
                 <MudText Typo="Typo.subtitle1">Precio unitario</MudText>
                 <MudNumericField @bind-Value="Model.SalePrice" Required RequiredError="Inserte precio unitario"
                                  T="float" Min="0f" Adornment="Adornment.Start" AdornmentText="$" Step="1f"
-                                 Format="N2" ReadOnly="@Disabled" />
+                                 Format="N2" ReadOnly="@Disabled" Culture="@CultureInfo.GetCultureInfo("en-US")" />
             </MudItem>
             <MudItem xs="6">
                 <MudText Typo="Typo.subtitle1">Cantidad</MudText>
                 <MudNumericField @bind-Value="Model.Quantity" Required RequiredError="Inserte cantidad"
                                  T="int" Min="1" Adornment="Adornment.End" AdornmentText="@(ModelView?.Unit ?? "UNIDAD")"
-                                 Step="1" ReadOnly="@Disabled" />
+                                 Step="1" ReadOnly="@Disabled" Culture="@CultureInfo.GetCultureInfo("en-US")" />
             </MudItem>
         </MudGrid>
     </MudForm>

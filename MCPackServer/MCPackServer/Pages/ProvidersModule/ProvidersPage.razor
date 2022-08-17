@@ -139,7 +139,8 @@
                         <div class="form-group">
                             <MudText Typo="Typo.subtitle2" Align="Align.Left">Descuento:</MudText>
                             <MudNumericField T="float" Value="@SelectedProvider.Discount"
-                                             AdornmentText="%" Adornment="Adornment.End" ReadOnly />
+                                             AdornmentText="%" Adornment="Adornment.End" ReadOnly
+                                             Culture="@CultureInfo.GetCultureInfo("en-US")" />
                         </div>
                         <div class="form-group">
                             <MudCheckBox @bind-Checked="@SelectedProvider.HomeDelivery"

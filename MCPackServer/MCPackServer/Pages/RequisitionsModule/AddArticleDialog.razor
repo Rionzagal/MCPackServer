@@ -57,7 +57,7 @@
                         </MudTd>
                         <MudTd DataLabel="Quantity">
                             <MudNumericField T="int" @bind-Value="@context.Quantity" Required
-                                             Min="1" Step="1" />
+                                             Min="1" Step="1" Culture="@CultureInfo.GetCultureInfo("en-US")" />
                         </MudTd>
                     </RowEditingTemplate>
                     <PagerContent>

@@ -46,7 +46,8 @@
                     <div class="form-group">
                         <MudNumericField T="float" Label="Precio unitario" Required RequiredError="Insertar precio sugerido"
                         @bind-Value="Model.Price" Min="0f" Format="N2" Adornment="Adornment.Start" HideSpinButtons
-                        AdornmentIcon="@Icons.Material.Filled.AttachMoney" ReadOnly="@Disabled" />
+                        AdornmentIcon="@Icons.Material.Filled.AttachMoney" ReadOnly="@Disabled"
+                        Culture="@CultureInfo.GetCultureInfo("en-US")" />
                     </div>
                     <div class="form-group">
                         <MudSelect T="string" Label="Moneda de cotización" @bind-Value="Model.Currency"

@@ -49,7 +49,7 @@
                             <MudText Typo="Typo.subtitle1">Cantidad</MudText>
                             <MudNumericField @bind-Value="Model.Quantity" Required RequiredError="Inserte cantidad"
                                              T="int" Min="1" Adornment="Adornment.End" Step="1" ReadOnly="@Disabled"
-                                             AdornmentText="@Model.Article.Unit" />
+                                             AdornmentText="@Model.Article.Unit" Culture="@CultureInfo.GetCultureInfo("en-US")" />
                         </MudItem>
                     </MudGrid>
                 </MudForm>

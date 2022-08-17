@@ -132,7 +132,7 @@
                                      RequiredError="Insertar descuento" @bind-Value="Model.Discount"
                                      Min="0f" Max="100f" Step="1" Format="N2"
                                      AdornmentText="%" Adornment="Adornment.End"
-                                     ReadOnly="@Disabled" />
+                                     ReadOnly="@Disabled" Culture="@CultureInfo.GetCultureInfo("en-US")" />
                 </MudItem>
                 <MudItem xs="3">
                     <MudCheckBox Label="Entrega a domicilio"
