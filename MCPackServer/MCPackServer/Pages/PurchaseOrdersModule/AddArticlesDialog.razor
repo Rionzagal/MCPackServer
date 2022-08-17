@@ -79,7 +79,8 @@
                 <MudTd DataLabel="Precio">@($"${context.Price.ToString("n2")} {Reference?.Currency}")</MudTd>
                 <MudTd DataLabel="Cantidad">
                     <MudNumericField T="int" @bind-Value="@context.Quantity" Required Min="1" 
-                        Adornment="Adornment.End" AdornmentText="@context.Unit" />
+                        Adornment="Adornment.End" AdornmentText="@context.Unit"
+                        Culture="@CultureInfo.GetCultureInfo("en-US")" />
                 </MudTd>
                 <MudTd DataLabel="Fecha de cotización">@context.DateUpdated.ToShortDateString()</MudTd>
                 <MudTd></MudTd>
@@ -104,7 +105,8 @@
                                     <MudItem xs="6">
                                         <MudText Typo="Typo.subtitle2">Nuevo precio de cotización</MudText>
                                         <MudNumericField @bind-Value="@context.Price" Format="N2" Required AdornmentText="$"
-                                                            Adornment="Adornment.Start" Step="1" />
+                                                            Adornment="Adornment.Start" Step="1"
+                                                            Culture="@CultureInfo.GetCultureInfo("en-US")" />
                                     </MudItem>
                                 </MudGrid>
                             </MudCardContent>
