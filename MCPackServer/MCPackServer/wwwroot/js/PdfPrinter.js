@@ -8,3 +8,17 @@ function Print() {
     Window.document.close();
     Window.print();
 }
+
+function saveAsPDF(elementId, filename) {
+    debugger;
+    var elementContent = document.getElementById(elementId).innerHTML;
+    var options = {
+        margin: 10,
+        filename: filename,
+        html2canvas: { scale: 1 },
+        image: { type: 'png', quality: 1 },
+        jsPDF: { unit: 'mm', format: 'letter', orientation: 'p' }
+    };
+
+    html2pdf(elementContent, options);
+}
