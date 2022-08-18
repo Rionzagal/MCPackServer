@@ -30,8 +30,11 @@ namespace MCPackServer.Pages.PurchaseOrdersModule
         private List<string> MaterialNumbers = new();
         private int NumberOfPages = 1;
         private List<int> ArticlesPerPage = new();
+
+        private bool _loading = true;
         protected override async Task OnInitializedAsync()
         {
+            _loading = true;
             if (string.IsNullOrEmpty(Id))
                 Return();
             else
@@ -62,14 +65,17 @@ namespace MCPackServer.Pages.PurchaseOrdersModule
                     Tax = OrderProvider.HasTaxes ? (Subtotal - Discount) * 0.16f : 0;
                     Total = Subtotal - Discount + Tax;
                     NumberOfPages = 1 + OrderArticles.Count / 10;
+                    ArticlesPerPage = new();
                     for (int i = 0; i < NumberOfPages; i++)
                     {
-                        var ArticlesInPage = OrderArticles.Count < 10 * (i + 1) ? OrderArticles.Count % 10 : 10;
-                        ArticlesPerPage.Append(ArticlesInPage);
+                        int ArticlesInPage = OrderArticles.Count < 10 * (i + 1) ? OrderArticles.Count % 10 : 10;
+                        ArticlesPerPage.Add(ArticlesInPage);
                     }
+                    Console.WriteLine(ArticlesPerPage);
                 }
                 #endregion
             }
+            _loading = false;
         }
 
         private void Return()
@@ -80,7 +86,9 @@ namespace MCPackServer.Pages.PurchaseOrdersModule
         private async Task Print()
         {
             if (null != _runtime)
-                await _runtime.InvokeVoidAsync("saveAsPDF", "DocumentBody", "test.pdf");
+            {
+                await _runtime.InvokeVoidAsync("ExportAsPDF", "page", "test.pdf");
+            }
             else
                 return;
         }
