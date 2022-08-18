@@ -87,9 +87,31 @@ namespace MCPackServer.Pages.ProjectsModule
                 TotalItems = count ?? 0
             };
         }
-        private void OnSelectedProject(TableRowClickEventArgs<ProjectsView> args)
+        private async Task OnSelectedProject(TableRowClickEventArgs<ProjectsView> args)
         {
+            subtotal = tax = discount = total = 0f;
             SelectedProject = args.Item;
+            // Check the price values
+            DataManagerRequest request = new()
+            {
+                Skip = 0,
+                Where = new List<WhereFilter>()
+                {
+                    new WhereFilter { Field = nameof(ProjectProducts.ProjectId), Value = SelectedProject.Id.ToString() }
+                }
+            };
+            var items = await _service.GetForGridAsync<ProjectProductsView>(request, "ProductId", "ASC", getAll: true);
+            if (null != items)
+            {
+                subtotal = 0f;
+                foreach (var product in items)
+                {
+                    subtotal += product.SalePrice * product.Quantity;
+                }
+                discount = SelectedProject.Discount * subtotal;
+                tax = SelectedProject.HasTaxes ? (subtotal - discount) * 0.16f : 0f;
+                total = subtotal - discount + tax;
+            }
             VisibleProjectInformation = true;
         }
         #endregion
@@ -163,17 +185,6 @@ namespace MCPackServer.Pages.ProjectsModule
             string order = state.SortDirection == SortDirection.Ascending ? "ASC" : "DESC";
             var items = await _service.GetForGridAsync<ProjectProductsView>(request, field, order);
             int? count = await _service.GetTotalCountAsync<ProjectProductsView>(request, nameof(ProjectProductsView.ProductId));
-            if (null != items)
-            {
-                subtotal = 0f;
-                foreach (var product in items)
-                {
-                    subtotal += product.SalePrice * product.Quantity;
-                }
-                discount = SelectedProject.Discount * subtotal;
-                tax = SelectedProject.HasTaxes ? (subtotal - discount) * 0.16f : 0f;
-                total = subtotal - discount + tax;
-            }
             return new TableData<ProjectProductsView>()
             {
                 Items = items,

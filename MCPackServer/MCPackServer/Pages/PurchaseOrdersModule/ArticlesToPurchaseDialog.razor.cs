@@ -22,7 +22,7 @@ namespace MCPackServer.Pages.PurchaseOrdersModule
         [Parameter]
         public States State { get; set; }
         [Parameter]
-        public ArticlesToPurchaseView? ModelView { get; set; } = new();
+        public ArticlesToPurchaseView? ModelView { get; set; }
         #endregion
 
         #region Dialog variables
@@ -48,7 +48,7 @@ namespace MCPackServer.Pages.PurchaseOrdersModule
             else
             {
                 Reference = await _service.GetByKeyAsync<PurchaseOrdersView>
-                    (Model.PurchaseOrderId, nameof(PurchaseOrdersView.Id));
+                    (ModelView.PurchaseOrderId, nameof(PurchaseOrdersView.Id));
                 DataManagerRequest request = new()
                 {
                     Take = 1,
@@ -68,21 +68,21 @@ namespace MCPackServer.Pages.PurchaseOrdersModule
         {
             if (States.Add == State) //representing an Add dialog
             {
-                Title = "Añadir nuevo proyecto";
+                Title = "Añadir nuevo artículo a OC";
                 TitleIcon = Icons.Material.Filled.Create;
                 Disabled = false;
                 ButtonColor = Color.Success;
             }
             else if (States.Edit == State) //representing an Edit dialog
             {
-                Title = "Editar proyecto seleccionado";
+                Title = "Editar artículo de OC seleccionado";
                 TitleIcon = Icons.Material.Filled.Edit;
                 Disabled = false;
                 ButtonColor = Color.Primary;
             }
             else if (States.Delete == State) //representing a Delete dialog
             {
-                Title = "Eliminar proyecto seleccionado";
+                Title = "Eliminar artículo de OC seleccionado";
                 TitleIcon = Icons.Material.Filled.Delete;
                 Disabled = true;
                 ButtonColor = Color.Error;

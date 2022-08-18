@@ -158,19 +158,23 @@
                         </MudItem>
                         <MudItem xs="3">
                             <MudText Typo="Typo.subtitle1">Descuento</MudText>
-                            <MudTextField Value="@($"$ {discount.ToString("n2")} {SelectedOrder.Currency}")" ReadOnly />
+                            <MudTextField @bind-Value="discount" AdornmentText="@(SelectedOrder.Currency + " $")"
+                            Adornment="Adornment.Start" ReadOnly Format="N2" />
                         </MudItem>
                         <MudItem xs="3">
                             <MudText Typo="Typo.subtitle1">Subtotal</MudText>
-                            <MudTextField Value="@($"$ {subtotal.ToString("n2")} {SelectedOrder.Currency}")" ReadOnly />
+                            <MudTextField @bind-Value="subtotal" AdornmentText="@(SelectedOrder.Currency + " $")"
+                            Adornment="Adornment.Start" ReadOnly Format="N2" />
                         </MudItem>
                         <MudItem xs="3">
-                            <MudText Typo="Typo.subtitle1">IVA</MudText>
-                            <MudTextField Value="@($"$ {tax.ToString("n2")} {SelectedOrder.Currency}")" ReadOnly />
+                            <MudText Typo="Typo.subtitle1">I.V.A.</MudText>
+                            <MudTextField @bind-Value="tax" AdornmentText="@(SelectedOrder.Currency + " $")"
+                            Adornment="Adornment.Start" ReadOnly Format="N2" />
                         </MudItem>
                         <MudItem xs="3">
                             <MudText Typo="Typo.subtitle1">Total</MudText>
-                            <MudTextField Value="@($"$ {(total).ToString("n2")} {SelectedOrder.Currency}")" ReadOnly />
+                            <MudTextField @bind-Value="total" AdornmentText="@(SelectedOrder.Currency + " $")"
+                            Adornment="Adornment.Start" ReadOnly Format="N2" />
                         </MudItem>
                         <MudItem xs="12">
                             <MudText Typo="Typo.subtitle1">Observaciones</MudText>

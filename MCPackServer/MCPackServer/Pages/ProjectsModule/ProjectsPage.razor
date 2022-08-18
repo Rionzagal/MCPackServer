@@ -124,7 +124,7 @@
             <ChildContent>
                 <MudTabPanel Text="Información general" ID="@Guid.NewGuid()" Tag="@Guid.NewGuid()">
                     <MudGrid Class="m-3" Style="height:500px; overflow-y:scroll; width: inherit">
-                        <MudItem xs="12">
+                        <MudItem xs="4">
                             <MudText Typo="Typo.subtitle1">No. de proyecto</MudText>
                             <MudTextField Value="SelectedProject.ProjectNumber" ReadOnly Variant="Variant.Outlined" />
                         </MudItem>
@@ -138,9 +138,19 @@
                             <MudTextField Value="SelectedProject.Type" ReadOnly Variant="Variant.Outlined" />
                         </MudItem>
                         <MudItem xs="4">
+                            <MudText Typo="Typo.subtitle1">Subtotal</MudText>
+                            <MudTextField @bind-Value="subtotal" AdornmentText="@(SelectedProject.AgreedCurrency + " $")"
+                            Adornment="Adornment.Start" ReadOnly Variant="Variant.Outlined" Format="N2"/>
+                        </MudItem>
+                        <MudItem xs="4">
+                            <MudText Typo="Typo.subtitle1">Descuento</MudText>
+                            <MudTextField @bind-Value="discount" AdornmentText="@(SelectedProject.AgreedCurrency + " $")"
+                            Adornment="Adornment.Start" ReadOnly Variant="Variant.Outlined" Format="N2"/>
+                        </MudItem>
+                        <MudItem xs="4">
                             <MudText Typo="Typo.subtitle1">Precio total</MudText>
-                            <MudTextField Value="@($"${total.ToString("n2")} {SelectedProject.AgreedCurrency}")" ReadOnly 
-                            Variant="Variant.Outlined" />
+                            <MudTextField @bind-Value="total" AdornmentText="@(SelectedProject.AgreedCurrency + " $")"
+                            Adornment="Adornment.Start" ReadOnly Variant="Variant.Outlined" Format="N2" />
                         </MudItem>
                         <MudItem xs="12">
                             <MudText Typo="Typo.subtitle1">Descripción</MudText>
@@ -174,17 +184,22 @@
                             <MudText Typo="Typo.subtitle1">Condición de pago</MudText>
                             <MudTextField Value="@SelectedProject.PaymentConditions" ReadOnly Variant="Variant.Outlined" />
                         </MudItem>
-                        <MudItem xs="4">
+                        <MudItem xs="3">
                             <MudText Typo="Typo.subtitle1">Moneda de cotización</MudText>
                             <MudTextField Value="@SelectedProject.AgreedCurrency" ReadOnly Variant="Variant.Outlined" />
                         </MudItem>
-                        <MudItem xs="4">
+                        <MudItem xs="3">
                             <MudText Typo="Typo.subtitle1">Moneda acordada</MudText>
                             <MudTextField Value="@SelectedProject.PaymentCurrency" ReadOnly Variant="Variant.Outlined" />
                         </MudItem>
-                        <MudItem xs="4">
+                        <MudItem xs="3">
                             <MudText Typo="Typo.subtitle1">Aplica I.V.A.</MudText>
                             <MudCheckBox Checked="@SelectedProject.HasTaxes" ReadOnly Variant="Variant.Outlined" />
+                        </MudItem>
+                        <MudItem xs="3">
+                            <MudText Typo="Typo.subtitle1">Valor de I.V.A.</MudText>
+                            <MudTextField @bind-Value="total" AdornmentText="@(SelectedProject.AgreedCurrency + " $")"
+                            Adornment="Adornment.Start" ReadOnly Variant="Variant.Outlined" Format="N2" />
                         </MudItem>
                         <MudItem xs="6">
                             <MudText Typo="Typo.subtitle1">Vendedor</MudText>

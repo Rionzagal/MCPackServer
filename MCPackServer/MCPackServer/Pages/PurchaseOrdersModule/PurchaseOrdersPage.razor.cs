@@ -89,7 +89,7 @@ namespace MCPackServer.Pages.PurchaseOrdersModule
         {
             List<WhereFilter> filters = new()
             {
-                
+
             };
             DataManagerRequest request = new()
             {
@@ -107,10 +107,31 @@ namespace MCPackServer.Pages.PurchaseOrdersModule
                 TotalItems = count ?? 0
             };
         }
-        private void OnSelectedPurchaseOrder(TableRowClickEventArgs<PurchaseOrdersView> args)
+        private async void OnSelectedPurchaseOrder(TableRowClickEventArgs<PurchaseOrdersView> args)
         {
+            subtotal = discount = tax = total = 0;
             SelectedOrder = args.Item;
             VisibleOrderInformation = true;
+            // Check the price values 
+            DataManagerRequest request = new()
+            {
+                Skip = 0,
+                Where = new List<WhereFilter>()
+                {
+                    new WhereFilter { Field = nameof(ArticlesToPurchaseView.PurchaseOrderId), Value = SelectedOrder.Id != 0 ? SelectedOrder.Id.ToString() : string.Empty }
+                }
+            };
+            var items = await _service.GetForGridAsync<ArticlesToPurchaseView>(request, "Quantity", "ASC", getAll: true);
+            if (null != items)
+            {
+                foreach (var item in items)
+                {
+                    subtotal += item.SalePrice * item.Quantity;
+                }
+                discount = subtotal * (SelectedOrder.Discount / 100);
+                tax = SelectedOrder.HasTaxes ? (subtotal - discount) * 0.16f : 0f;
+                total = subtotal + tax - discount;
+            }
         }
         #endregion
         #region CRUD Methods
@@ -163,7 +184,7 @@ namespace MCPackServer.Pages.PurchaseOrdersModule
         }
         private async Task MarkOrderAsReceived(int? orderId)
         {
-            Parameters = new() 
+            Parameters = new()
             {
                 ["Id"] = orderId
             };
@@ -196,10 +217,6 @@ namespace MCPackServer.Pages.PurchaseOrdersModule
             string order = state.SortDirection == SortDirection.Ascending ? "ASC" : "DESC";
             var items = await _service.GetForGridAsync<ArticlesToPurchaseView>(request, field, order);
             int? count = await _service.GetTotalCountAsync<ArticlesToPurchaseView>(request, nameof(ArticlesToPurchaseView.QuoteId));
-            subtotal = 0;
-            discount = subtotal * (SelectedOrder.Discount / 100);
-            tax = SelectedOrder.HasTaxes ? (subtotal - discount) * 0.16f : 0f;
-            total = subtotal + tax - discount;
             return new TableData<ArticlesToPurchaseView>
             {
                 Items = items ?? new List<ArticlesToPurchaseView>(),
