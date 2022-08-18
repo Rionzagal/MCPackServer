@@ -30,6 +30,7 @@ namespace MCPackServer.Pages.PurchaseOrdersModule
         private List<string> MaterialNumbers = new();
         private int NumberOfPages = 1;
         private List<int> ArticlesPerPage = new();
+        private string UserFullName = string.Empty;
 
         private bool _loading = true;
         protected override async Task OnInitializedAsync()
@@ -43,6 +44,22 @@ namespace MCPackServer.Pages.PurchaseOrdersModule
                 OrderProvider = await _service.GetByKeyAsync<Providers>(Order.ProviderId, nameof(Providers.Id));
                 OrderProject = await _service.GetByKeyAsync<Projects>(Order.ProjectId, nameof(Projects.Id));
                 ProjectClient = await _service.GetByKeyAsync<Clients>(OrderProject.ClientId, nameof(Clients.Id));
+
+                try
+                {
+                    string userName = "compras@mc-pack.com";
+                    if (!string.IsNullOrEmpty(userName))
+                    {
+                        var userInfo = await _service.GetByKeyAsync<UserPersonalInformationView>
+                            (userName, nameof(UserPersonalInformationView.UserName));
+                        UserFullName = userInfo?.FullName ?? "A quien corresponda.";
+                    }
+                }
+                catch (System.Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                    UserFullName = "Compras";
+                }
 
                 #region Get the list of materials of the purchase order
                 DataManagerRequest request = new()
@@ -71,7 +88,6 @@ namespace MCPackServer.Pages.PurchaseOrdersModule
                         int ArticlesInPage = OrderArticles.Count < 10 * (i + 1) ? OrderArticles.Count % 10 : 10;
                         ArticlesPerPage.Add(ArticlesInPage);
                     }
-                    Console.WriteLine(ArticlesPerPage);
                 }
                 #endregion
             }
@@ -85,12 +101,20 @@ namespace MCPackServer.Pages.PurchaseOrdersModule
 
         private async Task Print()
         {
+            _loading = true;
             if (null != _runtime)
             {
-                await _runtime.InvokeVoidAsync("ExportAsPDF", "page", "test.pdf");
+                var day = DateTime.Now.Day;
+                var month = DateTime.Now.Month;
+                var hour = DateTime.Now.Hour;
+                var minute = DateTime.Now.Minute;
+                string genDate = $"{day}{month}_{hour}h{minute}";
+                string filename = $"OC{Order.OrderNumber}_{genDate}.pdf";
+                await _runtime.InvokeVoidAsync("makePDF", "page", filename);
             }
             else
                 return;
+            _loading = false;
         }
     }
 }
