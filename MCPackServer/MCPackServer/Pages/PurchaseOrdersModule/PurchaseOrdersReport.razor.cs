@@ -26,6 +26,7 @@ namespace MCPackServer.Pages.PurchaseOrdersModule
         private Projects OrderProject = new();
         private Clients ProjectClient = new();
         private List<ArticlesToPurchaseView> OrderArticles = new();
+        private List<ArticlesView> ArticlesInfo = new();
         private double Subtotal, Tax, Discount, Total = 0f;
         private List<string> MaterialNumbers = new();
         private int NumberOfPages = 1;
@@ -88,6 +89,8 @@ namespace MCPackServer.Pages.PurchaseOrdersModule
                         int ArticlesInPage = OrderArticles.Count < 10 * (i + 1) ? OrderArticles.Count % 10 : 10;
                         ArticlesPerPage.Add(ArticlesInPage);
                     }
+                    foreach (var item in OrderArticles)
+                        ArticlesInfo.Add(await _service.GetByKeyAsync<ArticlesView>(item.ArticleCode, nameof(ArticlesView.Code)));
                 }
                 #endregion
             }
