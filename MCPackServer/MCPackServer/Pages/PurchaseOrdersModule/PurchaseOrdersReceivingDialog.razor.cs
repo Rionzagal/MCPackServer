@@ -93,7 +93,7 @@ namespace MCPackServer.Pages.PurchaseOrdersModule
                             FailedArticleResponses[i].Errors.ToString(), Severity.Error);
                     }
                 }
-                Model.Status = ArticleModels.Any(x => x.ReceptionDate.HasValue) ? "RECEPCIÓN PARCIAL" : "RECIBIDA";
+                Model.Status = ArticleModels.Any(x => !x.ReceptionDate.HasValue) ? "RECEPCIÓN PARCIAL" : "RECIBIDA";
                 var response = await _service.UpdateAsync(Model);
                 if (response.IsSuccessful)
                     Snackbar.Add($"La orden de compra ha sido cambiada a estado de: {Model.Status}", Severity.Success);
@@ -119,13 +119,12 @@ namespace MCPackServer.Pages.PurchaseOrdersModule
             };
             DataManagerRequest request = new()
             {
-                Take = state.PageSize,
-                Skip = state.Page * state.PageSize,
+                Skip = 0,
                 Where = filters
             };
             string field = state.SortLabel ?? nameof(ArticlesToPurchase.QuoteId);
             string order = state.SortDirection == SortDirection.Ascending ? "ASC" : "DESC";
-            var items = (await _service.GetForGridAsync<ArticlesToPurchaseView>(request, field, order)).ToList()
+            var items = (await _service.GetForGridAsync<ArticlesToPurchaseView>(request, field, order, getAll: true)).ToList()
                 ?? new List<ArticlesToPurchaseView>();
             int? count = await _service.GetTotalCountAsync<ArticlesToPurchaseView>(request, nameof(ArticlesToPurchaseView.QuoteId));
             if (items.Any())

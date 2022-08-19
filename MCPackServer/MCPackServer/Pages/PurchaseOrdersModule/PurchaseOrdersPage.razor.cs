@@ -192,8 +192,12 @@ namespace MCPackServer.Pages.PurchaseOrdersModule
             var result = await dialog.Result;
             if (!result.Cancelled)
             {
+                VisibleOrderInformation = false;
+                SelectedOrder = new();
                 await OrdersTable.ReloadServerData();
-                SelectedOrder = await _service.GetByKeyAsync<PurchaseOrdersView>(SelectedOrder.Id);
+                if (orderId.HasValue)
+                    SelectedOrder = await _service.GetByKeyAsync<PurchaseOrdersView>(orderId);
+                VisibleOrderInformation = true;
             }
         }
         #endregion

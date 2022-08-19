@@ -67,9 +67,6 @@
                             <MudTd DataLabel="Precio unitario">@($"${context.SalePrice.ToString("n2")} {Model.Currency}")</MudTd>
                             <MudTd DataLabel="Cantidad">@($"{context.Quantity} {context.Unit}")</MudTd>
                         </RowTemplate>
-                        <PagerContent>
-                            <MudTablePager PageSizeOptions="new int[]{ 10, 20, 30, 50 }"/>
-                        </PagerContent>
                     </MudTable>
                 </MudItem>
             </MudGrid>
