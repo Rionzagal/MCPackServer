@@ -33,8 +33,8 @@ namespace MCPackServer.Pages.ProjectsModule
 
         #region Search filters
         private int? ClientIdFilter = null;
-        private string NumberFilter = string.Empty;
-        private string TypeFilter = string.Empty;
+        private string? NumberFilter;
+        private string? TypeFilter;
         private int? ProductIdFilter = null;
         #endregion
 
@@ -67,9 +67,27 @@ namespace MCPackServer.Pages.ProjectsModule
         {
             List<WhereFilter> filters = new()
             {
-                new WhereFilter { Field = nameof(ProjectsView.ClientId), Value = ClientIdFilter?.ToString() ?? string.Empty },
-                new WhereFilter { Field = nameof(ProjectsView.ProjectNumber), Value = NumberFilter ?? string.Empty },
-                new WhereFilter { Field = nameof(ProjectsView.Type), Value = TypeFilter ?? string.Empty }
+                new WhereFilter
+                {
+                    Field = nameof(ProjectsView.ClientId),
+                    Value = ClientIdFilter,
+                    Operator = Operators.Equal,
+                    Condition = Conditions.And
+                },
+                new WhereFilter
+                {
+                    Field = nameof(ProjectsView.ProjectNumber),
+                    Value = NumberFilter,
+                    Operator = Operators.StartsWith,
+                    Condition = Conditions.And
+                },
+                new WhereFilter
+                {
+                    Field = nameof(ProjectsView.Type),
+                    Value = TypeFilter,
+                    Operator = Operators.Equal,
+                    Condition = Conditions.And
+                }
             };
             DataManagerRequest request = new()
             {
@@ -94,10 +112,14 @@ namespace MCPackServer.Pages.ProjectsModule
             // Check the price values
             DataManagerRequest request = new()
             {
-                Skip = 0,
                 Where = new List<WhereFilter>()
                 {
-                    new WhereFilter { Field = nameof(ProjectProducts.ProjectId), Value = SelectedProject.Id.ToString() }
+                    new WhereFilter
+                    {
+                        Field = nameof(ProjectProducts.ProjectId),
+                        Value = SelectedProject.Id,
+                        Operator = Operators.Equal
+                    }
                 }
             };
             var items = await _service.GetForGridAsync<ProjectProductsView>(request, "ProductId", "ASC", getAll: true);
@@ -173,7 +195,12 @@ namespace MCPackServer.Pages.ProjectsModule
         {
             List<WhereFilter> filters = new()
             {
-                new WhereFilter { Field = nameof(ProjectProducts.ProjectId), Value = SelectedProject.Id.ToString() }
+                new WhereFilter
+                {
+                    Field = nameof(ProjectProducts.ProjectId),
+                    Value = SelectedProject.Id,
+                    Operator = Operators.Equal
+                }
             };
             DataManagerRequest request = new()
             {
@@ -183,12 +210,11 @@ namespace MCPackServer.Pages.ProjectsModule
             };
             string field = state.SortLabel ?? nameof(ProjectProductsView.ProductId);
             string order = state.SortDirection == SortDirection.Ascending ? "ASC" : "DESC";
-            var items = await _service.GetForGridAsync<ProjectProductsView>(request, field, order);
-            int? count = await _service.GetTotalCountAsync<ProjectProductsView>(request, nameof(ProjectProductsView.ProductId));
             return new TableData<ProjectProductsView>()
             {
-                Items = items,
-                TotalItems = count ?? 0
+                Items = await _service.GetForGridAsync<ProjectProductsView>(request, field, order),
+                TotalItems = await _service.GetTotalCountAsync<ProjectProductsView>(request, nameof(ProjectProductsView.ProductId))
+                    ?? 0
             };
         }
 
@@ -250,16 +276,25 @@ namespace MCPackServer.Pages.ProjectsModule
         #endregion
         #endregion
 
-        private async Task<IEnumerable<int?>> ClientsServerReload(string filter = "")
+        /// <summary>
+        /// Return a list of integers representing the IDs of each Client record in the database.
+        /// </summary>
+        /// <param name="filter">The filter to use when searching for clients by their market name.</param>
+        private async Task<IEnumerable<int?>> ClientsServerReload(string? filter = null)
         {
             List<int?> result = new();
-            List<WhereFilter> filters = new()
-            {
-                new WhereFilter { Field = "MarketName", Value = filter }
-            };
             DataManagerRequest dm = new()
             {
-                Where = filters,
+                Select = new List<string> { nameof(Clients.Id), nameof(Clients.MarketName) },
+                Where = new List<WhereFilter>()
+                {
+                    new WhereFilter
+                    {
+                        Field = nameof(Clients.MarketName),
+                        Value = filter,
+                        Operator = Operators.StartsWith
+                    }
+                }
             };
             var response = await _service.GetForGridAsync<Clients>(dm);
             if (null != response && response.Any())
