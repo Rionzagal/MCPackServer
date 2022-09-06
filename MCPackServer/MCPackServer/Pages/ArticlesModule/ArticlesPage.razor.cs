@@ -25,36 +25,36 @@ namespace MCPackServer.Pages.ArticlesModule
 
         #region MudBlazor Components
         #region Dialogs
-        DialogParameters Parameters;
+        DialogParameters Parameters = new();
         #endregion
         #region MudBlazor Tables
         private MudTable<ArticlesView> ArticleTable = new();
         private MudTable<QuotesView> QuoteTable = new();
         #endregion
         #region Tabs and properties
-        private MudTabs ArticleInformationTabs;
+        private MudTabs ArticleInformationTabs = new();
         private int? _selectedQuoteId = null;
         #endregion
         #region Expansion panels
-        private MudExpansionPanel ArticlesPanel;
-        private MudExpansionPanel FamiliesPanel;
-        private MudExpansionPanel GroupsPanel;
+        private MudExpansionPanel ArticlesPanel = new();
+        private MudExpansionPanel FamiliesPanel = new();
+        private MudExpansionPanel GroupsPanel = new();
         #endregion
         #region Mud autocomplete components
-        private MudAutocomplete<ArticleGroups> GroupsAutocomplete;
-        private MudAutocomplete<ArticleFamilies> FamiliesAutocomplete;
-        private MudAutocomplete<int> ProvidersFilterAutocomplete;
-        private MudAutocomplete<int> QuoteProvidersAutocomplete;
+        private MudAutocomplete<ArticleGroups> GroupsAutocomplete = new();
+        private MudAutocomplete<ArticleFamilies> FamiliesAutocomplete = new();
+        private MudAutocomplete<int> ProvidersFilterAutocomplete = new();
+        private MudAutocomplete<int> QuoteProvidersAutocomplete = new();
         #endregion
         #endregion
 
         #region API elements
         #region Datamanager Requests
-        private DataManagerRequest ArticlesDm, FamiliesDm, GroupsDm, QuotesDm;
+        private DataManagerRequest ArticlesDm = new(), FamiliesDm = new(), GroupsDm = new(), QuotesDm = new();
         #endregion
         #region Search Filters
-        private string NameFilter, TradeMarkFilter, CodeFilter;
-        private string CurrencyFilter;
+        private string NameFilter = string.Empty, TradeMarkFilter = string.Empty, CodeFilter = string.Empty;
+        private string CurrencyFilter = string.Empty;
         private int ProviderFilter;
         #endregion
         #endregion
@@ -122,28 +122,50 @@ namespace MCPackServer.Pages.ArticlesModule
         #region ArticleTable methods
         private async Task<TableData<ArticlesView>> ArticleServerReload(TableState state)
         {
-            if (0 == SelectedFamily.Id) VisibleArticleInformation = false;
-            List<WhereFilter> filters = new()
-            {
-                new WhereFilter { Field = "Name", Value = NameFilter },
-                new WhereFilter { Field = "TradeMark", Value = TradeMarkFilter },
-                new WhereFilter { Field = "Code", Value = CodeFilter },
-                new WhereFilter { Field = "FamilyId", Value = SelectedFamily.Id.ToString() }
-            };
+            if (0 == SelectedFamily.Id)
+                VisibleArticleInformation = false;
             DataManagerRequest request = new()
             {
                 Take = state.PageSize,
                 Skip = state.PageSize * state.Page,
-                Where = filters
+                Where = new List<WhereFilter>()
+                {
+                    new WhereFilter
+                    {
+                        Field = "Name",
+                        Value = NameFilter,
+                        Condition = Conditions.And,
+                        Operator = Operators.StartsWith
+                    },
+                    new WhereFilter
+                    {
+                        Field = "TradeMark",
+                        Value = TradeMarkFilter,
+                        Operator = Operators.StartsWith,
+                        Condition = Conditions.And
+                    },
+                    new WhereFilter
+                    {
+                        Field = "Code",
+                        Value = CodeFilter,
+                        Operator = Operators.StartsWith,
+                        Condition = Conditions.And
+                    },
+                    new WhereFilter
+                    {
+                        Field = "FamilyId",
+                        Value = SelectedFamily.Id,
+                        Operator = Operators.Equal,
+                        Condition = Conditions.And
+                    }
+                }
             };
             string field = state.SortLabel ?? "Id";
             string order = state.SortDirection == SortDirection.Ascending ? "ASC" : "DESC";
-            var items = await _service.GetForGridAsync<ArticlesView>(request, field, order);
-            int? count = await _service.GetTotalCountAsync<ArticlesView>(request);
             return new TableData<ArticlesView>
             {
-                Items = items,
-                TotalItems = count ?? 0
+                Items = await _service.GetForGridAsync<ArticlesView>(request, field, order),
+                TotalItems = await _service.GetTotalCountAsync<ArticlesView>(request) ?? 0
             };
         }
         private void OnSelectedArticleRow(TableRowClickEventArgs<ArticlesView> args)
@@ -212,16 +234,21 @@ namespace MCPackServer.Pages.ArticlesModule
             SelectedFamily = new();
             FamiliesList = new();
             ArticlesPanel.Collapse();
-            List<WhereFilter> filters = new()
-            {
-                new WhereFilter { Field = "Name", Value = filter }
-            };
             DataManagerRequest request = new()
             {
-                Where = filters
+                Where = new List<WhereFilter>()
+                {
+                    new WhereFilter
+                    {
+                        Field = "Name",
+                        Value = filter,
+                        Operator = Operators.StartsWith
+                    }
+                }
             };
             var items = await _service.GetForGridAsync<ArticleGroups>(request);
-            if (null != items) GroupsList = items.ToList();
+            if (null != items)
+                GroupsList = items.ToList();
             return GroupsList;
         }
         private async Task CreateGroup()
@@ -281,17 +308,28 @@ namespace MCPackServer.Pages.ArticlesModule
         {
             SelectedArticle = new();
             ArticlesPanel.Collapse();
-            List<WhereFilter> filters = new()
-            {
-                new WhereFilter { Field = "Name", Value = filter },
-                new WhereFilter { Field = "GroupId", Value = SelectedGroup.Id.ToString() }
-            };
             DataManagerRequest request = new()
             {
-                Where = filters
+                Where = new List<WhereFilter>()
+                {
+                    new WhereFilter
+                    {
+                        Field = "Name",
+                        Value = filter,
+                        Operator = Operators.StartsWith,
+                        Condition = Conditions.And
+                    },
+                    new WhereFilter
+                    {
+                        Field = "GroupId",
+                        Value = SelectedGroup.Id,
+                        Operator = Operators.Equal,
+                        Condition = Conditions.And
+                    }
+                }
             };
             var items = await _service.GetForGridAsync<ArticleFamilies>(request);
-            if (null != items) 
+            if (null != items)
                 FamiliesList = items.ToList();
             return FamiliesList;
         }
@@ -349,17 +387,31 @@ namespace MCPackServer.Pages.ArticlesModule
         #region QuoteTable related methods
         private async Task<TableData<QuotesView>> QuotesServerReload(TableState state)
         {
-            List<WhereFilter> filters = new()
-            {
-                new WhereFilter { Field = "ArticleId", Value = SelectedArticle.Id.ToString() },
-                new WhereFilter { Field = "Currency", Value = CurrencyFilter },
-                new WhereFilter { Field = "ProviderId", Value = 0 != ProviderFilter ? ProviderFilter.ToString() : string.Empty },
-            };
             DataManagerRequest request = new()
             {
                 Take = state.PageSize,
                 Skip = state.PageSize * state.Page,
-                Where = filters
+                Where = new List<WhereFilter>()
+                {
+                    new WhereFilter
+                    {
+                        Field = "ArticleId",
+                        Value = SelectedArticle.Id,
+                        Operator = Operators.Equal
+                    },
+                    new WhereFilter
+                    {
+                        Field = "Currency",
+                        Value = CurrencyFilter,
+                        Operator = Operators.Equal
+                    },
+                    new WhereFilter
+                    {
+                        Field = "ProviderId",
+                        Value = 0 != ProviderFilter ? ProviderFilter : null,
+                        Operator = Operators.Equal
+                    },
+                }
             };
             string field = state.SortLabel ?? "Id";
             string order = state.SortDirection == SortDirection.Ascending ? "ASC" : "DESC";
@@ -440,20 +492,24 @@ namespace MCPackServer.Pages.ArticlesModule
         private async Task<IEnumerable<int>> ProvidersServerReload(string filter, bool NewQuote)
         {
             List<int> result = new();
-            List<WhereFilter> filters = new()
-            {
-                new WhereFilter { Field = "MarketName", Value = filter }
-            };
             DataManagerRequest request = new()
             {
-                Where = filters
+                Where = new List<WhereFilter>()
+                {
+                    new WhereFilter
+                    {
+                        Field = "MarketName",
+                        Value = filter,
+                        Operator = Operators.StartsWith
+                    }
+                }
             };
             var items = NewQuote ? await _providersService.GetForGridAsync<Providers>(request)
                 : await _providersService.GetByQuote(SelectedArticle.Id, request);
             if (null != items)
             {
                 ProvidersList = items.ToList();
-                ProvidersList.ForEach(p => result.Add(p.Id));
+                result = ProvidersList.Select(p => p.Id).ToList();
             }
             return result;
         }
@@ -461,14 +517,16 @@ namespace MCPackServer.Pages.ArticlesModule
         private static string GroupName(ArticleGroups input)
         {
             string result = string.Empty;
-            if (null != input) result = input.Name;
+            if (null != input)
+                result = input.Name;
             return result;
         }
 
         private static string FamilyName(ArticleFamilies input)
         {
             string result = string.Empty;
-            if (null != input) result = input.Name;
+            if (null != input)
+                result = input.Name;
             return result;
         }
 
@@ -478,7 +536,8 @@ namespace MCPackServer.Pages.ArticlesModule
             if (0 != Id)
             {
                 var match = ProvidersList.SingleOrDefault(p => Id == p.Id);
-                if (null != match) providerName = match.MarketName;
+                if (null != match)
+                    providerName = match.MarketName;
             }
             return providerName;
         }
