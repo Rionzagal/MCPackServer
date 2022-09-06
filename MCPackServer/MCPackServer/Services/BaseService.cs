@@ -33,6 +33,15 @@ namespace MCPackServer.Services
             get { return new MySqlConnection(_config.GetConnectionString("MySqlConnection")); }
         }
 
+        /// <summary>
+        /// It takes a list of WhereFilter objects and returns a string that can be used in a SQL query
+        /// </summary>
+        /// <param name="input">List of WhereFilter objects</param>
+        /// <param
+        /// name="DynamicParameters">https://github.com/StackExchange/Dapper/blob/master/Dapper/DynamicParameters.cs</param>
+        /// <returns>
+        /// A string that is the where clause of a SQL query.
+        /// </returns>
         protected string AddWhereClauseToQuery(List<WhereFilter>? input, DynamicParameters parameters)
         {
             string clause = string.Empty;
@@ -79,6 +88,13 @@ namespace MCPackServer.Services
             return clause;
         }
 
+        /// <summary>
+        /// It takes a list of `WhereFilter` objects, and returns a list of `KeyValuePair` objects
+        /// </summary>
+        /// <param name="input">List of WhereFilter objects</param>
+        /// <returns>
+        /// A list of KeyValuePair<string, string>
+        /// </returns>
         protected List<KeyValuePair<string, string>> CheckFilters(List<WhereFilter>? input)
         {
             List<KeyValuePair<string, string>> filters = new();
@@ -104,6 +120,10 @@ namespace MCPackServer.Services
             return filters;
         }
 
+        /// <summary>
+        /// It logs the response of an action to the database
+        /// </summary>
+        /// <param name="response">The response object that is returned from the controller.</param>
         protected async Task LogResponse<T>(ActionResponse<T> response)
         {
             try
@@ -143,6 +163,19 @@ namespace MCPackServer.Services
             }
         }
 
+        /// <summary>
+        /// It takes a DataManagerRequest object, which contains a Where clause, a Skip value, a Take
+        /// value, and a Select clause, and returns a list of objects of type T
+        /// </summary>
+        /// <param name="DataManagerRequest">This is a class that contains the following
+        /// properties:</param>
+        /// <param name="sortField">The field to sort by</param>
+        /// <param name="order">"ASC" or "DESC"</param>
+        /// <param name="getAll">if true, it will return all records, otherwise it will return the
+        /// records based on the skip and take parameters.</param>
+        /// <returns>
+        /// A list of objects of type T.
+        /// </returns>
         public virtual async Task<IEnumerable<T>> GetForGridAsync<T>(DataManagerRequest request, string sortField = "Id", string order = "", bool getAll = false) where T : class
         {
             using IDbConnection conn = Connection;
@@ -158,6 +191,16 @@ namespace MCPackServer.Services
             return await conn.QueryAsync<T>(query, parameters);
         }
 
+        /// <summary>
+        /// It takes a DataManagerRequest object, which contains a Where clause, and returns the total
+        /// number of records that match the Where clause
+        /// </summary>
+        /// <param name="DataManagerRequest">This is the request object that is sent from the client. It
+        /// contains the filter, sort, and paging information.</param>
+        /// <param name="countField">The field to count.</param>
+        /// <returns>
+        /// The total number of records in the table.
+        /// </returns>
         public virtual async Task<int?> GetTotalCountAsync<T>(DataManagerRequest request, string countField = "Id") where T : class
         {
             using IDbConnection conn = Connection;
@@ -168,6 +211,15 @@ namespace MCPackServer.Services
             return await conn.ExecuteScalarAsync<int?>(query, parameters);
         }
 
+        /// <summary>
+        /// This function takes in a generic type, a value, and a key, and returns a single instance of
+        /// the generic type from the database
+        /// </summary>
+        /// <param name="value">The value of the key you're searching for.</param>
+        /// <param name="key">The name of the column to search by.</param>
+        /// <returns>
+        /// The method returns a single instance of the type T.
+        /// </returns>
         public virtual async Task<T> GetByKeyAsync<T>(object value, string key = "Id") where T : class
         {
             using IDbConnection conn = Connection;
@@ -177,10 +229,18 @@ namespace MCPackServer.Services
             string tableName = instance.GetType().Name;
             DynamicParameters parameters = new();
             parameters.Add(key, value);
-            string query = $"SELECT * FROM {tableName} WHERE {key} LIKE CONCAT('%', @{key}, '%') ";
+            string query = $"SELECT * FROM {tableName} WHERE {key} = @{key} ";
             return await conn.QuerySingleAsync<T>(query, parameters);
         }
 
+        /// <summary>
+        /// It adds an entity to the database and returns an ActionResponse object with the entity and
+        /// the action that was performed
+        /// </summary>
+        /// <param name="T">The entity type</param>
+        /// <returns>
+        /// An ActionResponse<T> object.
+        /// </returns>
         public async Task<ActionResponse<T>> AddAsync<T>(T entity)
         {
             ActionResponse<T> response = new(entity, Actions.Insert);
@@ -204,6 +264,13 @@ namespace MCPackServer.Services
             return response;
         }
 
+        /// <summary>
+        /// This function updates an entity in the database
+        /// </summary>
+        /// <param name="T">The entity type</param>
+        /// <returns>
+        /// An ActionResponse<T> object.
+        /// </returns>
         public virtual async Task<ActionResponse<T>> UpdateAsync<T>(T entity)
         {
             ActionResponse<T> response = new(entity, Actions.Update);
@@ -228,6 +295,13 @@ namespace MCPackServer.Services
             return response;
         }
 
+        /// <summary>
+        /// This function removes an entity from the database
+        /// </summary>
+        /// <param name="T">The type of entity to be removed.</param>
+        /// <returns>
+        /// An ActionResponse<T> object.
+        /// </returns>
         public virtual async Task<ActionResponse<T>> RemoveAsync<T>(T entity)
         {
             using IDbConnection conn = Connection;
@@ -277,6 +351,14 @@ namespace MCPackServer.Services
             return response;
         }
 
+        /// <summary>
+        /// It returns a string based on the input operator
+        /// </summary>
+        /// <param name="Operators">Contains, StartsWith, EndsWith, Equal, NotEqual, GreaterThan,
+        /// IGreaterThan, LesserThan, ILesserThan</param>
+        /// <returns>
+        /// The operator that will be used in the query.
+        /// </returns>
         protected string GetStartOperator(Operators input)
         {
             return input switch
@@ -294,6 +376,13 @@ namespace MCPackServer.Services
             };
         }
 
+        /// <summary>
+        /// It returns the end operator for the input operator
+        /// </summary>
+        /// <param name="Operators">enum</param>
+        /// <returns>
+        /// The string value of the operator.
+        /// </returns>
         protected string GetEndOperator(Operators input)
         {
             return input switch
@@ -311,6 +400,15 @@ namespace MCPackServer.Services
             };
         }
 
+        /// <summary>
+        /// It takes a generic type and an optional list of strings and returns a string of comma
+        /// separated column names
+        /// </summary>
+        /// <param name="select">A list of strings that represent the properties of the class you want
+        /// to select.</param>
+        /// <returns>
+        /// The column names for the select statement.
+        /// </returns>
         protected static string GetColumnNamesForSelect<T>(IEnumerable<string>? select = null)
         {
             string columnNames = string.Empty;
