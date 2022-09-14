@@ -56,7 +56,7 @@ namespace MCPackServer.Pages.RequisitionsModule
             {
                 Where = new List<WhereFilter>()
                 {
-                    new WhereFilter { Field = nameof(RequisitionArticles.RequisitionId), Value = Reference?.Id.ToString() ?? "" }
+                    new WhereFilter { Field = nameof(RequisitionArticles.RequisitionId), Value = Reference?.Id, Operator = Operators.Equal }
                 }
             };
             OrderArticles = (await _service.GetForGridAsync<RequisitionArticlesView>
@@ -65,9 +65,9 @@ namespace MCPackServer.Pages.RequisitionsModule
 
             #region Get groups and families
             DataManagerRequest familiesRequest = new();
-            Families = (await _service.GetForGridAsync<ArticleFamilies>(familiesRequest, getAll: true)).ToList() 
+            Families = (await _service.GetForGridAsync<ArticleFamilies>(familiesRequest, getAll: true)).ToList()
                 ?? new List<ArticleFamilies>();
-            Groups = (await _service.GetForGridAsync<ArticleGroups>(new(), getAll: true)).ToList() 
+            Groups = (await _service.GetForGridAsync<ArticleGroups>(new(), getAll: true)).ToList()
                 ?? new List<ArticleGroups>();
             #endregion
 
@@ -164,7 +164,7 @@ namespace MCPackServer.Pages.RequisitionsModule
             List<int> result = new();
             List<WhereFilter> filters = new()
             {
-                new WhereFilter { Field = nameof(Projects.ProjectNumber), Value = filter }
+                new WhereFilter { Field = nameof(Projects.ProjectNumber), Value = filter, Operator = Operators.StartsWith }
             };
             DataManagerRequest dm = new()
             {
@@ -203,13 +203,13 @@ namespace MCPackServer.Pages.RequisitionsModule
                 Skip = state.Page * state.PageSize,
                 Where = new List<WhereFilter>
                 {
-                    new WhereFilter { Field = nameof(ArticlesView.FamilyId), Value = FamilyFilter?.ToString() ?? "" },
-                    new WhereFilter { Field = "Name", Value = NameFilter }
+                    new WhereFilter { Field = nameof(ArticlesView.FamilyId), Value = FamilyFilter, Operator = Operators.Equal },
+                    new WhereFilter { Field = "Name", Value = NameFilter, Operator = Operators.StartsWith }
                 }
             };
             string field = state.SortLabel ?? "Id";
             string order = state.SortDirection == SortDirection.Ascending ? "ASC" : "DESC";
-            
+
             var articles = (await _service.GetForGridAsync<ArticlesView>(request, field, order)).ToList();
             int TotalCount = await _service.GetTotalCountAsync<ArticlesView>(request) ?? 0;
             if (null != articles)
@@ -243,7 +243,7 @@ namespace MCPackServer.Pages.RequisitionsModule
                         (requestedArticles.Single(x => item.ArticleId == x.ArticleId));
                 }
             }
-            return new TableData<RequisitionArticlesView>() 
+            return new TableData<RequisitionArticlesView>()
             { Items = requestedArticles, TotalItems = TotalCount };
         }
     }

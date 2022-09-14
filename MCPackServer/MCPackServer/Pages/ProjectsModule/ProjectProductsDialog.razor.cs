@@ -68,7 +68,7 @@ namespace MCPackServer.Pages.ProjectsModule
                 Disabled = true;
                 ButtonColor = Color.Error;
             }
-            else 
+            else
                 Dialog?.Cancel();
             if (null != ModelView)
             {
@@ -87,8 +87,18 @@ namespace MCPackServer.Pages.ProjectsModule
                     Skip = 0,
                     Where = new List<WhereFilter>
                     {
-                        new WhereFilter { Field = nameof(Entities.ProjectProducts.ProjectId), Value = ModelView.ProjectId.ToString() },
-                        new WhereFilter { Field = nameof(Entities.ProjectProducts.ProductId), Value = ModelView.ProductId.ToString() }
+                        new WhereFilter
+                        {
+                            Field = nameof(Entities.ProjectProducts.ProjectId),
+                            Value = ModelView.ProjectId,
+                            Operator = Operators.Equal
+                        },
+                        new WhereFilter
+                        {
+                            Field = nameof(Entities.ProjectProducts.ProductId),
+                            Value = ModelView.ProductId,
+                            Operator = Operators.Equal
+                        }
                     }
                 };
                 Model = (await _service.GetForGridAsync<ProjectProducts>(dm, "ProductId")).First();
@@ -159,7 +169,8 @@ namespace MCPackServer.Pages.ProjectsModule
                 new WhereFilter
                 {
                     Field = UseCode ? "Code" : "Description",
-                    Value = filter
+                    Value = filter,
+                    Operator = Operators.StartsWith
                 }
             };
             DataManagerRequest dm = new()
@@ -170,7 +181,7 @@ namespace MCPackServer.Pages.ProjectsModule
             if (null != response)
             {
                 ProductsList = response.ToList();
-                ProductsList.ForEach(product => result.Add(product.Id));
+                result = ProductsList.Select(p => p.Id).ToList();
             }
             return result;
         }
@@ -181,11 +192,16 @@ namespace MCPackServer.Pages.ProjectsModule
             {
                 Where = new List<WhereFilter>()
                 {
-                    new WhereFilter { Field = "ProjectId", Value = Model.ProjectId.ToString() }
+                    new WhereFilter
+                    {
+                        Field = "ProjectId",
+                        Value = Model.ProjectId,
+                        Operator = Operators.Equal
+                    }
                 }
             };
             var response = await _service.GetForGridAsync<ProjectProductsView>(dm, "ProductId");
-            if (null != response) 
+            if (null != response)
                 projectProducts = response.ToList();
         }
 
@@ -195,7 +211,8 @@ namespace MCPackServer.Pages.ProjectsModule
             if (0 != Id)
             {
                 var match = ProductsList.FirstOrDefault(p => Id == p.Id);
-                if (null != match) result = match.Code;
+                if (null != match)
+                    result = match.Code;
             }
             return result;
         }
@@ -206,7 +223,8 @@ namespace MCPackServer.Pages.ProjectsModule
             if (0 != Id)
             {
                 var match = ProductsList.FirstOrDefault(p => Id == p.Id);
-                if (null != match) result = match.Description;
+                if (null != match)
+                    result = match.Description;
             }
             return result;
         }

@@ -58,12 +58,12 @@ namespace MCPackServer.Pages.ClientsModule
 
         #region API Elements
         #region Search strings
-        private string MarketNameFilter = string.Empty;
-        private string LegalNameFilter = string.Empty;
-        private string CityFilter = string.Empty;
-        private string ProvinceFilter = string.Empty;
-        private string PhoneNumberFilter = string.Empty;
-        private string WebsiteFilter = string.Empty;
+        private string? MarketNameFilter = null;
+        private string? LegalNameFilter = null;
+        private string? CityFilter = null;
+        private string? ProvinceFilter = null;
+        private string? PhoneNumberFilter = null;
+        private string? WebsiteFilter = null;
         #endregion
         #endregion
 
@@ -105,7 +105,7 @@ namespace MCPackServer.Pages.ClientsModule
         }
         protected override void OnAfterRender(bool firstRender)
         {
-            if (_selectedContactId.HasValue)
+            if (_selectedContactId.HasValue && ClientInformationTabs != null)
             {
                 ClientInformationTabs.ActivatePanel(_selectedContactId);
                 _selectedContactId = null;
@@ -118,29 +118,62 @@ namespace MCPackServer.Pages.ClientsModule
         private async Task<TableData<Clients>> ClientsServerReload(TableState state)
         {
             VisibleClientInformation = false;
-            List<WhereFilter> filters = new()
-            {
-                new WhereFilter { Field = "MarketName", Value = MarketNameFilter },
-                new WhereFilter { Field = "LegalName", Value = LegalNameFilter },
-                new WhereFilter { Field = "City", Value = CityFilter },
-                new WhereFilter { Field = "Province", Value = ProvinceFilter },
-                new WhereFilter { Field = "PhoneNumber", Value = PhoneNumberFilter},
-                new WhereFilter { Field = "Website", Value = WebsiteFilter }
-            };
             DataManagerRequest request = new()
             {
                 Take = state.PageSize,
                 Skip = state.PageSize * state.Page,
-                Where = filters
+                Where = new List<WhereFilter>()
+                {
+                    new WhereFilter
+                    {
+                        Field = "MarketName",
+                        Value = MarketNameFilter,
+                        Operator = Operators.StartsWith,
+                        Condition = Conditions.And
+                    },
+                    new WhereFilter
+                    {
+                        Field = "LegalName",
+                        Value = LegalNameFilter,
+                        Operator = Operators.StartsWith,
+                        Condition = Conditions.And
+                    },
+                    new WhereFilter
+                    {
+                        Field = "City",
+                        Value = CityFilter,
+                        Operator = Operators.StartsWith,
+                        Condition = Conditions.And
+                    },
+                    new WhereFilter
+                    {
+                        Field = "Province",
+                        Value = ProvinceFilter,
+                        Operator = Operators.StartsWith,
+                        Condition = Conditions.And
+                    },
+                    new WhereFilter
+                    {
+                        Field = "PhoneNumber",
+                        Value = PhoneNumberFilter,
+                        Operator = Operators.StartsWith,
+                        Condition = Conditions.And
+                    },
+                    new WhereFilter
+                    {
+                        Field = "Website",
+                        Value = WebsiteFilter,
+                        Operator = Operators.StartsWith,
+                        Condition = Conditions.And
+                    }
+                }
             };
             string field = state.SortLabel ?? "Id";
             string order = state.SortDirection == SortDirection.Ascending ? "ASC" : "DESC";
-            var items = await _service.GetForGridAsync<Clients>(request, field, order);
-            int? count = await _service.GetTotalCountAsync<Clients>(request);
             return new TableData<Clients>()
             {
-                Items = items,
-                TotalItems = count ?? 0
+                Items = await _service.GetForGridAsync<Clients>(request, field, order),
+                TotalItems = await _service.GetTotalCountAsync<Clients>(request) ?? 0
             };
         }
         private void OnSelectedClientRow(TableRowClickEventArgs<Clients> args)
@@ -151,7 +184,7 @@ namespace MCPackServer.Pages.ClientsModule
         private async Task FilterClients() => await ClientsTable.ReloadServerData();
         private void DeleteClientFilters() =>
             MarketNameFilter = LegalNameFilter = CityFilter = ProvinceFilter
-            = PhoneNumberFilter = WebsiteFilter = string.Empty;
+            = PhoneNumberFilter = WebsiteFilter = null;
         #endregion
         #region Clients server methods
         private async Task AddClient()
@@ -197,7 +230,7 @@ namespace MCPackServer.Pages.ClientsModule
                     foreach (var error in Response.Errors)
                     {
                         Snackbar.Add(error, Severity.Error);
-                    } 
+                    }
                 }
                 await ClientsTable.ReloadServerData();
             }
@@ -244,12 +277,10 @@ namespace MCPackServer.Pages.ClientsModule
             };
             string field = state.SortLabel ?? "Id";
             string order = state.SortDirection == SortDirection.Ascending ? "ASC" : "DESC";
-            var items = await _clientsService.GetContacts(SelectedClient.Id, request, field, order);
-            int? count = await _clientsService.CountContacts(SelectedClient.Id, request);
             return new TableData<Contacts>()
             {
-                Items = items,
-                TotalItems = count ?? 0
+                Items = await _clientsService.GetContacts(SelectedClient.Id, request, field, order),
+                TotalItems = await _clientsService.CountContacts(SelectedClient.Id, request) ?? 0
             };
         }
         private void OnSelectedContactRow(TableRowClickEventArgs<Contacts> args)

@@ -93,14 +93,14 @@ namespace MCPackServer.Pages.RequisitionsModule
                 Skip = state.PageSize * state.Page,
                 Where = new()
                 {
-                    new WhereFilter { Field = nameof(RequisitionsView.RequisitionNumber), Value = NumberFilter },
-                    new WhereFilter { Field = nameof(RequisitionsView.UserId), Value = UserIdFilter }
+                    new WhereFilter { Field = nameof(RequisitionsView.RequisitionNumber), Value = NumberFilter, Operator = Operators.StartsWith },
+                    new WhereFilter { Field = nameof(RequisitionsView.UserId), Value = UserIdFilter, Operator = Operators.Equal }
                 }
             };
             string field = state.SortLabel ?? "Id";
             string order = state.SortDirection == SortDirection.Ascending ? "ASC" : "DESC";
             var items = await _service.GetForGridAsync<RequisitionsView>(request, field, order);
-            if (null != items) 
+            if (null != items)
                 RequisitionsTableItems = items.ToList();
             int? count = await _service.GetTotalCountAsync<RequisitionsView>(request);
             return new TableData<RequisitionsView>
@@ -179,7 +179,7 @@ namespace MCPackServer.Pages.RequisitionsModule
                 Skip = state.PageSize * state.Page,
                 Where = new List<WhereFilter>()
                 {
-                    new WhereFilter { Field = "RequisitionId", Value = SelectedRequisition.Id.ToString() }
+                    new WhereFilter { Field = "RequisitionId", Value = SelectedRequisition.Id, Operator = Operators.Equal }
                 }
             };
             string field = state.SortLabel ?? nameof(RequisitionArticlesView.ArticleId);
@@ -187,7 +187,7 @@ namespace MCPackServer.Pages.RequisitionsModule
             var items = await _service.GetForGridAsync<RequisitionArticlesView>(request, field, order);
             int count = await _service.GetTotalCountAsync<RequisitionArticlesView>(request, nameof(RequisitionArticles.ArticleId))
                 ?? 0;
-            if (null != items) 
+            if (null != items)
                 Articles = items.ToList();
             return new TableData<RequisitionArticlesView>
             {
@@ -259,7 +259,7 @@ namespace MCPackServer.Pages.RequisitionsModule
             {
                 Where = new()
                 {
-                    new WhereFilter { Field = nameof(AspNetUsers.UserName), Value = filter }
+                    new WhereFilter { Field = nameof(AspNetUsers.UserName), Value = filter, Operator = Operators.StartsWith }
                 }
             };
             var items = await _service.GetForGridAsync<UserPersonalInformationView>(dm);

@@ -87,15 +87,10 @@ namespace MCPackServer.Pages.PurchaseOrdersModule
         #region OrdersTable methods
         private async Task<TableData<PurchaseOrdersView>> PurchaseOrdersServerReload(TableState state)
         {
-            List<WhereFilter> filters = new()
-            {
-
-            };
             DataManagerRequest request = new()
             {
                 Take = state.PageSize,
-                Skip = state.PageSize * state.Page,
-                Where = filters
+                Skip = state.PageSize * state.Page
             };
             string field = state.SortLabel ?? "IssuedDate";
             string order = state.SortDirection == SortDirection.Ascending ? "ASC" : "DESC";
@@ -118,7 +113,12 @@ namespace MCPackServer.Pages.PurchaseOrdersModule
                 Skip = 0,
                 Where = new List<WhereFilter>()
                 {
-                    new WhereFilter { Field = nameof(ArticlesToPurchaseView.PurchaseOrderId), Value = SelectedOrder.Id != 0 ? SelectedOrder.Id.ToString() : string.Empty }
+                    new WhereFilter
+                    {
+                        Field = nameof(ArticlesToPurchaseView.PurchaseOrderId),
+                        Value = SelectedOrder.Id != 0 ? SelectedOrder.Id : null,
+                        Operator = Operators.Equal
+                    }
                 }
             };
             var items = await _service.GetForGridAsync<ArticlesToPurchaseView>(request, "Quantity", "ASC", getAll: true);
@@ -209,7 +209,12 @@ namespace MCPackServer.Pages.PurchaseOrdersModule
         {
             List<WhereFilter> filters = new()
             {
-                new WhereFilter { Field = nameof(ArticlesToPurchaseView.PurchaseOrderId), Value = SelectedOrder.Id != 0 ? SelectedOrder.Id.ToString() : string.Empty }
+                new WhereFilter
+                {
+                    Field = nameof(ArticlesToPurchaseView.PurchaseOrderId),
+                    Value = SelectedOrder.Id != 0 ? SelectedOrder.Id : null,
+                    Operator = Operators.Equal
+                }
             };
             DataManagerRequest request = new()
             {

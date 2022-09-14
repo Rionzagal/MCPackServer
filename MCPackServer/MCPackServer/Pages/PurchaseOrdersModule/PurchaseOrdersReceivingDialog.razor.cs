@@ -43,7 +43,7 @@ namespace MCPackServer.Pages.PurchaseOrdersModule
                 {
                     Where = new List<WhereFilter>()
                     {
-                        new WhereFilter { Field = nameof(ArticlesToPurchase.PurchaseOrderId), Value = Id?.ToString() ?? "" }
+                        new WhereFilter { Field = nameof(ArticlesToPurchase.PurchaseOrderId), Value = Id, Operator = Operators.Equal }
                     }
                 };
                 ArticleModels = (await _service.GetForGridAsync<ArticlesToPurchase>(
@@ -115,7 +115,7 @@ namespace MCPackServer.Pages.PurchaseOrdersModule
         {
             List<WhereFilter> filters = new()
             {
-                new WhereFilter{ Field = nameof(ArticlesToPurchase.PurchaseOrderId), Value = Id?.ToString() ?? string.Empty }
+                new WhereFilter{ Field = nameof(ArticlesToPurchase.PurchaseOrderId), Value = Id, Operator = Operators.Equal }
             };
             DataManagerRequest request = new()
             {

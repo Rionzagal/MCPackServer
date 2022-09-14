@@ -12,9 +12,9 @@ namespace MCPackServer.Pages.ArticlesModule
 
         #region Parameters
         [CascadingParameter]
-        #pragma warning disable CS8618 // Un campo que no acepta valores NULL debe contener un valor distinto de NULL al salir del constructor. Considere la posibilidad de declararlo como que admite un valor NULL.
+#pragma warning disable CS8618 // Un campo que no acepta valores NULL debe contener un valor distinto de NULL al salir del constructor. Considere la posibilidad de declararlo como que admite un valor NULL.
         public MudDialogInstance Dialog { get; set; }
-        #pragma warning restore CS8618 // Un campo que no acepta valores NULL debe contener un valor distinto de NULL al salir del constructor. Considere la posibilidad de declararlo como que admite un valor NULL.
+#pragma warning restore CS8618 // Un campo que no acepta valores NULL debe contener un valor distinto de NULL al salir del constructor. Considere la posibilidad de declararlo como que admite un valor NULL.
         [Parameter]
         public States State { get; set; }
         [Parameter]
@@ -130,19 +130,23 @@ namespace MCPackServer.Pages.ArticlesModule
         private async Task<IEnumerable<int>> ProvidersServerReload(string filter)
         {
             List<int> result = new();
-            List<WhereFilter> filters = new()
-            {
-                new WhereFilter { Field = "MarketName", Value = filter }
-            };
             DataManagerRequest request = new()
             {
-                Where = filters
+                Where = new List<WhereFilter>()
+                {
+                    new WhereFilter
+                    {
+                        Field = "MarketName",
+                        Value = filter,
+                        Operator = Operators.StartsWith
+                    }
+                }
             };
             var items = await _service.GetForGridAsync<Providers>(request);
             if (null != items)
             {
                 Providers = items.ToList();
-                Providers.ForEach(p => result.Add(p.Id));
+                result = items.Select(p => p.Id).ToList();
             }
             return result;
         }
@@ -153,7 +157,8 @@ namespace MCPackServer.Pages.ArticlesModule
             if (0 != Id)
             {
                 var match = Providers.FirstOrDefault(p => Id == p.Id);
-                if (null != match) name = match.MarketName;
+                if (null != match)
+                    name = match.MarketName;
             }
             return name;
         }

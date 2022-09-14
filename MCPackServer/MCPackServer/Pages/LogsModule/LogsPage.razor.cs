@@ -18,21 +18,17 @@ namespace MCPackServer.Pages.LogsModule
         #region Logs related methods
         private async Task<TableData<Logs>> LogsServerReload(TableState state)
         {
-            List<WhereFilter> filters = new();
             DataManagerRequest request = new()
             {
                 Take = state.PageSize,
-                Skip = state.PageSize * state.Page,
-                Where = filters
+                Skip = state.PageSize * state.Page
             };
             string field = state.SortLabel ?? nameof(Logs.TimeOfAction);
             string order = state.SortDirection == SortDirection.Ascending ? "ASC" : "DESC";
-            var items = await _service.GetForGridAsync<Logs>(request, field, order);
-            int? count = await _service.GetTotalCountAsync<Logs>(request);
             return new TableData<Logs>()
             {
-                Items = items,
-                TotalItems = count ?? 0
+                Items = await _service.GetForGridAsync<Logs>(request, field, order),
+                TotalItems = await _service.GetTotalCountAsync<Logs>(request) ?? 0
             };
         }
         private void OnSelectedLog(TableRowClickEventArgs<Logs> args)

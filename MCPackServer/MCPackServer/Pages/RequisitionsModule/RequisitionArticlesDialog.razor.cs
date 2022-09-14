@@ -50,9 +50,9 @@ namespace MCPackServer.Pages.RequisitionsModule
                 {
                     Where = new List<WhereFilter>
                     {
-                        new WhereFilter { Field = nameof(RequisitionArticles.ArticleId), Value = ModelView.ArticleId.ToString() },
-                        new WhereFilter { Field = nameof(RequisitionArticles.RequisitionId), Value = Reference.Id.ToString() },
-                        new WhereFilter { Field = nameof(RequisitionArticles.ProjectId), Value = ModelView.ProjectId.ToString() }
+                        new WhereFilter { Field = nameof(RequisitionArticles.ArticleId), Value = ModelView.ArticleId, Operator = Operators.Equal },
+                        new WhereFilter { Field = nameof(RequisitionArticles.RequisitionId), Value = Reference.Id, Operator = Operators.Equal },
+                        new WhereFilter { Field = nameof(RequisitionArticles.ProjectId), Value = ModelView.ProjectId, Operator = Operators.Equal }
                     }
                 };
                 Model = (await _service.GetForGridAsync<RequisitionArticles>
@@ -88,7 +88,7 @@ namespace MCPackServer.Pages.RequisitionsModule
             {
                 Where = new()
                 {
-                    new WhereFilter { Field = nameof(Projects.ProjectNumber), Value = filter }
+                    new WhereFilter { Field = nameof(Projects.ProjectNumber), Value = filter, Operator = Operators.StartsWith }
                 }
             };
             var items = await _service.GetForGridAsync<Projects>(request);

@@ -48,6 +48,7 @@ namespace MCPackServer.Pages.PurchaseOrdersModule
 
                 try
                 {
+                    // TODO: Revisar una manera en la que se pueda leer un nombre de usuario guardado desde configuraciones de ADMIN.
                     string userName = "compras@mc-pack.com";
                     if (!string.IsNullOrEmpty(userName))
                     {
@@ -67,7 +68,7 @@ namespace MCPackServer.Pages.PurchaseOrdersModule
                 {
                     Where = new List<WhereFilter>
                     {
-                        new WhereFilter { Field = nameof(ArticlesToPurchase.PurchaseOrderId), Value = Id }
+                        new WhereFilter { Field = nameof(ArticlesToPurchase.PurchaseOrderId), Value = Id, Operator = Operators.Equal }
                     }
                 };
                 var response = await _service.GetForGridAsync<ArticlesToPurchaseView>(request, "Quantity", getAll: true);

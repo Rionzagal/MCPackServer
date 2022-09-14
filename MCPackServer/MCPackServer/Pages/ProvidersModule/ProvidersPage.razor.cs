@@ -42,10 +42,6 @@ namespace MCPackServer.Pages.ProvidersModule
         private string ProvinceFilter = string.Empty;
         private string PhoneNumberFilter = string.Empty;
         private string WebsiteFilter = string.Empty;
-        private string FullNameFilter = string.Empty;
-        private string EmailAddressFilter = string.Empty;
-        private string PositionFilter = string.Empty;
-        private string MobilePhoneFilter = string.Empty;
         #endregion
         #endregion
 
@@ -101,12 +97,48 @@ namespace MCPackServer.Pages.ProvidersModule
             VisibleProviderInformation = false;
             List<WhereFilter> filters = new()
             {
-                new WhereFilter { Field = "MarketName", Value = MarketNameFilter },
-                new WhereFilter { Field = "LegalName", Value = LegalNameFilter },
-                new WhereFilter { Field = "City", Value = CityFilter },
-                new WhereFilter { Field = "Province", Value = ProvinceFilter },
-                new WhereFilter { Field = "PhoneNumber", Value = PhoneNumberFilter },
-                new WhereFilter { Field = "Website", Value = WebsiteFilter }
+                new WhereFilter
+                {
+                    Field = "MarketName",
+                    Value = MarketNameFilter,
+                    Operator = Operators.StartsWith,
+                    Condition = Conditions.And
+                },
+                new WhereFilter
+                {
+                    Field = "LegalName",
+                    Value = LegalNameFilter,
+                    Operator = Operators.StartsWith,
+                    Condition = Conditions.And
+                },
+                new WhereFilter
+                {
+                    Field = "City",
+                    Value = CityFilter,
+                    Operator = Operators.StartsWith,
+                    Condition = Conditions.And
+                },
+                new WhereFilter
+                {
+                    Field = "Province",
+                    Value = ProvinceFilter,
+                    Operator = Operators.StartsWith,
+                    Condition = Conditions.And
+                },
+                new WhereFilter
+                {
+                    Field = "PhoneNumber",
+                    Value = PhoneNumberFilter,
+                    Operator = Operators.StartsWith,
+                    Condition = Conditions.And
+                },
+                new WhereFilter
+                {
+                    Field = "Website",
+                    Value = WebsiteFilter,
+                    Operator = Operators.StartsWith,
+                    Condition = Conditions.And
+                }
             };
             DataManagerRequest request = new()
             {
@@ -188,7 +220,7 @@ namespace MCPackServer.Pages.ProvidersModule
         #region Contacts table methods
         private async Task<TableData<Contacts>> ContactsServerReload(TableState state)
         {
-            DataManagerRequest request= new()
+            DataManagerRequest request = new()
             {
                 Take = state.PageSize,
                 Skip = state.PageSize * state.Page
@@ -206,7 +238,8 @@ namespace MCPackServer.Pages.ProvidersModule
         private async Task OnSelectedContactRow(TableRowClickEventArgs<Contacts> args)
         {
             var selectedId = args.Item.Id;
-            if (!SelectedContacts.Any(c => selectedId == c.Id)) SelectedContacts.Add(args.Item);
+            if (!SelectedContacts.Any(c => selectedId == c.Id))
+                SelectedContacts.Add(args.Item);
             _selectedContactId = selectedId;
         }
         #endregion
@@ -276,43 +309,6 @@ namespace MCPackServer.Pages.ProvidersModule
             int? Id = (null != tabPanel) ? (int)tabPanel.Tag : null;
             var contact = selectedContact ?? SelectedContacts.FirstOrDefault(q => (int)tabPanel.Tag == q.Id);
             if (null != contact) SelectedContacts.Remove(contact);
-        }
-        #endregion
-
-        #region Validations
-        private static IEnumerable<string> ValidateEmail(string input)
-        {
-            if (string.IsNullOrEmpty(input))
-            {
-                yield return "El campo es obligatorio.";
-                yield break;
-            }
-            if (!Regex.IsMatch(input, @"^[^@\s]+@[^@\s]+\.[^@\s]+$"))
-                yield return "El campo no es válido.";
-        }
-        private static IEnumerable<string> ValidatePhone(string input)
-        {
-            if (string.IsNullOrEmpty(input))
-            {
-                yield return "El campo es obligatorio.";
-                yield break;
-            }
-            if (Regex.IsMatch(input, "[a-zA-Z]+"))
-                yield return "El campo no admite caracteres alfabéticos.";
-            if (input.Any(ch => !char.IsLetterOrDigit(ch)) && Regex.IsMatch(input, @"[^+\-\s]+"))
-                yield return "El campo no admite caracteres especiales más que \'+\', \'-\' y espacios en blanco.";
-        }
-        private static IEnumerable<string> ValidateName(string input)
-        {
-            if (string.IsNullOrEmpty(input))
-            {
-                yield return "El campo es obligatorio.";
-                yield break;
-            }
-            if (Regex.IsMatch(input, "[0-9]"))
-                yield return "El campo no admite caracteres numéricos.";
-            if (input.Any(ch => !char.IsLetterOrDigit(ch) && ' ' != ch))
-                yield return "El campo no admite caracteres especiales más que espacios en blanco.";
         }
         #endregion
     }

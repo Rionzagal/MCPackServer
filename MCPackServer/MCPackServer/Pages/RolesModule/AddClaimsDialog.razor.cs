@@ -115,7 +115,7 @@ namespace MCPackServer.Pages.RolesModule
             foreach (var item in SelectedPermissions)
             {
                 var response = await _service.AddAsync(item);
-                if (response.IsSuccessful)
+                if (response.IsSuccessful && response.Value != null)
                 {
                     resultElements.Add(response.Value);
                 }

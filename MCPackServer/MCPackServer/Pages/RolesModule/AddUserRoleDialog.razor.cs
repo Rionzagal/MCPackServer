@@ -73,7 +73,7 @@ namespace MCPackServer.Pages.RolesModule
             {
                 AspNetUserRoles UserRole = new() { UserId = item.Id, RoleId = Reference.Id };
                 var response = await _service.AddAsync(UserRole);
-                if (response.IsSuccessful)
+                if (response.IsSuccessful && response.Value != null)
                 {
                     resultElements.Add(response.Value);
                 }

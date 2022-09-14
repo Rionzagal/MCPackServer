@@ -54,8 +54,18 @@ namespace MCPackServer.Pages.PurchaseOrdersModule
                     Take = 1,
                     Where = new List<WhereFilter>()
                     {
-                        new WhereFilter { Field = nameof(ArticlesToPurchase.PurchaseOrderId), Value = Reference.Id.ToString() },
-                        new WhereFilter { Field = nameof(ArticlesToPurchase.QuoteId), Value = ModelView.QuoteId.ToString() }
+                        new WhereFilter
+                        {
+                            Field = nameof(ArticlesToPurchase.PurchaseOrderId),
+                            Value = Reference.Id,
+                            Operator = Operators.Equal
+                        },
+                        new WhereFilter
+                        {
+                            Field = nameof(ArticlesToPurchase.QuoteId),
+                            Value = ModelView.QuoteId,
+                            Operator = Operators.Equal
+                        }
                     }
                 };
                 Model = (await _service.GetForGridAsync<ArticlesToPurchase>(request, nameof(ArticlesToPurchase.QuoteId)))

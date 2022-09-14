@@ -18,21 +18,17 @@ namespace MCPackServer.Pages.HistoryModule
         #region Logs related methods
         private async Task<TableData<HistoryView>> LogsServerReload(TableState state)
         {
-            List<WhereFilter> filters = new();
             DataManagerRequest request = new()
             {
                 Take = state.PageSize,
                 Skip = state.PageSize * state.Page,
-                Where = filters
             };
             string field = state.SortLabel ?? nameof(HistoryView.TimeOfAction);
             string order = state.SortDirection == SortDirection.Ascending ? "ASC" : "DESC";
-            var items = await _service.GetForGridAsync<HistoryView>(request, field, order);
-            int? count = await _service.GetTotalCountAsync<HistoryView>(request);
             return new TableData<HistoryView>()
             {
-                Items = items,
-                TotalItems = count ?? 0
+                Items = await _service.GetForGridAsync<HistoryView>(request, field, order),
+                TotalItems = await _service.GetTotalCountAsync<HistoryView>(request) ?? 0
             };
         }
         private void OnSelectedLog(TableRowClickEventArgs<HistoryView> args)

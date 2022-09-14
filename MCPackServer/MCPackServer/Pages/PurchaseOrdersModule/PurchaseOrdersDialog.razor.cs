@@ -43,7 +43,7 @@ namespace MCPackServer.Pages.PurchaseOrdersModule
 
         protected override async Task OnInitializedAsync()
         {
-            existentOrders = (await _service.GetForGridAsync<PurchaseOrders>(new(), getAll:true)).ToList();
+            existentOrders = (await _service.GetForGridAsync<PurchaseOrders>(new(), getAll: true)).ToList();
             string MostRecentOrderNumber = existentOrders.OrderByDescending(o => o.Id).FirstOrDefault()?
                 .OrderNumber ?? "0";
             int ODdigits = (int)Math.Floor(Math.Log10(int.Parse(MostRecentOrderNumber) + 1) + 1);
@@ -138,14 +138,19 @@ namespace MCPackServer.Pages.PurchaseOrdersModule
                 RequiresCounts = false,
                 Where = new List<WhereFilter>
                 {
-                    new WhereFilter { Field = nameof(Providers.LegalName), Value = filter }
+                    new WhereFilter
+                    {
+                        Field = nameof(Providers.LegalName),
+                        Value = filter,
+                        Operator = Operators.StartsWith
+                    }
                 }
             };
             var response = await _service.GetForGridAsync<Providers>(dm, getAll: true);
             if (null != response)
             {
                 providers = response.ToList();
-                providers.ForEach(provider => result.Add(provider.Id));
+                result = response.Select(x => x.Id).ToList();
             }
             return result;
         }
@@ -181,14 +186,19 @@ namespace MCPackServer.Pages.PurchaseOrdersModule
             {
                 Where = new List<WhereFilter>()
                 {
-                    new WhereFilter(){ Field = nameof(Projects.ProjectNumber), Value = filter }
+                    new WhereFilter
+                    {
+                        Field = nameof(Projects.ProjectNumber),
+                        Value = filter,
+                        Operator = Operators.StartsWith
+                    }
                 }
             };
             var response = await _service.GetForGridAsync<ProjectsView>(ProjectsDm, getAll: true);
             if (null != response)
             {
                 projects = response.ToList();
-                projects.ForEach(project => result.Add(project.Id));
+                result = response.Select(x => x.Id).ToList();
             }
             return result;
         }
@@ -213,14 +223,19 @@ namespace MCPackServer.Pages.PurchaseOrdersModule
                 Take = 0,
                 Where = new List<WhereFilter>
                 {
-                    new WhereFilter { Field = nameof(Requisitions.RequisitionNumber), Value = filter }
+                    new WhereFilter
+                    {
+                        Field = nameof(Requisitions.RequisitionNumber),
+                        Value = filter,
+                        Operator = Operators.StartsWith
+                    }
                 }
             };
             var response = await _service.GetForGridAsync<Requisitions>(dm, getAll: true);
             if (null != response)
             {
                 requisitions = response.ToList();
-                requisitions.ForEach(requisition => result.Add(requisition.Id));
+                result = response.Select(x => (int?)x.Id).ToList();
             }
             return result;
         }

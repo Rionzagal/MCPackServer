@@ -104,12 +104,25 @@ namespace MCPackServer.Pages.ProjectsModule
                 {
                     Where = new List<WhereFilter>()
                     {
-                        new WhereFilter { Field = nameof(Projects.ClientId), Value = Model.ClientId.ToString() },
-                        new WhereFilter { Field = nameof(Projects.Type), Value = "Refacciones" }
+                        new WhereFilter
+                        {
+                            Field = nameof(Projects.ClientId),
+                            Value = Model.ClientId,
+                            Operator = Operators.Equal,
+                            Condition = Conditions.And
+                        },
+                        new WhereFilter
+                        {
+                            Field = nameof(Projects.Type),
+                            Value = "Refacciones",
+                            Operator = Operators.Equal,
+                            Condition = Conditions.And
+                        }
                     }
                 };
                 var projects = await _service.GetForGridAsync<Projects>(request);
-                if (null != projects) ProjectValid = !projects.Any();
+                if (null != projects)
+                    ProjectValid = !projects.Any();
             }
             await Form.Validate();
             if (Form.IsValid && ProjectValid || States.Delete == State)
@@ -178,7 +191,12 @@ namespace MCPackServer.Pages.ProjectsModule
             List<int> result = new();
             List<WhereFilter> filters = new()
             {
-                new WhereFilter { Field = "MarketName", Value = filter }
+                new WhereFilter
+                {
+                    Field = "MarketName",
+                    Value = filter,
+                    Operator = Operators.StartsWith
+                }
             };
             DataManagerRequest Dm = new()
             {
@@ -188,7 +206,7 @@ namespace MCPackServer.Pages.ProjectsModule
             if (null != response)
             {
                 ClientsList = response.ToList();
-                ClientsList.ForEach(c => result.Add(c.Id));
+                result = response.Select(c => c.Id).ToList();
             }
             return result;
         }
@@ -199,32 +217,10 @@ namespace MCPackServer.Pages.ProjectsModule
             if (0 != Id)
             {
                 var match = ClientsList.FirstOrDefault(c => c.Id == Id);
-                if (null != match) name = match.MarketName;
+                if (null != match)
+                    name = match.MarketName;
             }
             return name;
-        }
-
-        private IEnumerable<string> ProjectValidation(string input)
-        {
-            if (States.Add == State)
-            {
-                if (string.IsNullOrEmpty(input))
-                {
-                    yield return "Este campo es requerido";
-                    yield break;
-                }
-                if (input.Any(ch => !char.IsNumber(ch)))
-                    yield return "Este campo solo acepta valores numéricos.";
-                if (ExistentProjects.Any(p => p.ProjectNumber == input))
-                    yield return "Ya existe un número de proyecto con este valor de texto.";
-                if (int.TryParse(input, out int numValue))
-                {
-                    if (ExistentProjects.Any(p => int.Parse(p.ProjectNumber) == numValue))
-                        yield return "Ya existe un proyecto con este valor numérico.";
-                }
-                else
-                    yield return "El valor de este campo debe de ser un número.";
-            }
         }
     }
 }

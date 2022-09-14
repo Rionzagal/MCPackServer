@@ -70,16 +70,44 @@ namespace MCPackServer.Pages.ProductsModule
             {
                 Take = state.PageSize,
                 Skip = state.PageSize * state.Page,
-                Where = filters
+                Where = new List<WhereFilter>()
+                {
+                    new WhereFilter
+                    {
+                        Field = "Type",
+                        Value = TypeFilter,
+                        Operator = Operators.StartsWith,
+                        Condition = Conditions.And
+                    },
+                    new WhereFilter
+                    {
+                        Field = "Code",
+                        Value = CodeFilter,
+                        Operator = Operators.StartsWith,
+                        Condition = Conditions.And
+                    },
+                    new WhereFilter
+                    {
+                        Field = "Description",
+                        Value = DescriptionFilter,
+                        Operator = Operators.StartsWith,
+                        Condition = Conditions.And
+                    },
+                    new WhereFilter
+                    {
+                        Field = "Currency",
+                        Value = CurrencyFilter,
+                        Operator = Operators.StartsWith,
+                        Condition = Conditions.And
+                    }
+                }
             };
             string field = state.SortLabel ?? "Id";
             string order = state.SortDirection == SortDirection.Ascending ? "ASC" : "DESC";
-            var items = await _service.GetForGridAsync<MCProducts>(request, field, order);
-            int? count = await _service.GetTotalCountAsync<MCProducts>(request);
             return new TableData<MCProducts>
             {
-                Items = items,
-                TotalItems = count ?? 0
+                Items = await _service.GetForGridAsync<MCProducts>(request, field, order),
+                TotalItems = await _service.GetTotalCountAsync<MCProducts>(request) ?? 0
             };
         }
         private void OnSelectedProductRow(TableRowClickEventArgs<MCProducts> args)

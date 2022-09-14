@@ -94,7 +94,7 @@ namespace MCPackServer.Pages.PurchaseOrdersModule
         #endregion
 
         private MudTable<OrderArticles> ArticlesTable = new();
-        
+
 
         protected override async Task OnInitializedAsync()
         {
@@ -108,7 +108,12 @@ namespace MCPackServer.Pages.PurchaseOrdersModule
                 {
                     Where = new()
                     {
-                        new WhereFilter { Field = nameof(ArticlesToPurchase.PurchaseOrderId), Value = OrderId?.ToString() ?? "" }
+                        new WhereFilter
+                        {
+                            Field = nameof(ArticlesToPurchase.PurchaseOrderId),
+                            Value = OrderId,
+                            Operator = Operators.Equal
+                        }
                     }
                 };
                 OrderedArticles = (await _service.GetForGridAsync<ArticlesToPurchase>(OrderArticlesRequest,
@@ -122,12 +127,14 @@ namespace MCPackServer.Pages.PurchaseOrdersModule
                             new WhereFilter
                             {
                                 Field = nameof(RequisitionArticles.RequisitionId),
-                                Value = Reference.RequisitionId?.ToString() ?? ""
+                                Value = Reference.RequisitionId,
+                                Operator = Operators.Equal
                             },
                             new WhereFilter
                             {
                                 Field = nameof(RequisitionArticles.ProjectId),
-                                Value = Reference.ProjectId.ToString()
+                                Value = Reference.ProjectId,
+                                Operator = Operators.Equal
                             }
                         }
                     };
@@ -142,11 +149,27 @@ namespace MCPackServer.Pages.PurchaseOrdersModule
                                 Take = 1,
                                 Where = new List<WhereFilter>()
                                 {
-                                    new WhereFilter { Field = nameof(QuotesView.ArticleId), Value = article.ArticleId.ToString() },
-                                    new WhereFilter { Field = nameof(QuotesView.ProviderId), Value = Reference.ProviderId.ToString() },
-                                    new WhereFilter { Field = nameof(QuotesView.Currency), Value = Reference.Currency }
+                                    new WhereFilter
+                                    {
+                                        Field = nameof(QuotesView.ArticleId),
+                                        Value = article.ArticleId,
+                                        Operator = Operators.Equal
+                                    },
+                                    new WhereFilter
+                                    {
+                                        Field = nameof(QuotesView.ProviderId),
+                                        Value = Reference.ProviderId,
+                                        Operator = Operators.Equal
+                                    },
+                                    new WhereFilter
+                                    {
+                                        Field = nameof(QuotesView.Currency),
+                                        Value = Reference.Currency,
+                                        Operator = Operators.Equal
+                                    }
                                 }
-                            })).FirstOrDefault(); // Search for a quote that matches the requested article and the provider
+                            }))
+                            .FirstOrDefault(); // Search for a quote that matches the requested article and the provider
                         if (QuotedArticle != null) // If it is found, add that quote as an ordered article and select it
                             SelectedArticles.Add(new(QuotedArticle, Snackbar, _service)
                             {
@@ -203,8 +226,18 @@ namespace MCPackServer.Pages.PurchaseOrdersModule
                 Skip = state.Page * state.PageSize,
                 Where = new List<WhereFilter>()
                 {
-                    new WhereFilter { Field = "ProviderId", Value = Reference?.ProviderId.ToString() ?? "" },
-                    new WhereFilter { Field = "Currency", Value = Reference?.Currency ?? "" }
+                    new WhereFilter
+                    {
+                        Field = "ProviderId",
+                        Value = Reference.ProviderId,
+                        Operator = Operators.Equal
+                    },
+                    new WhereFilter
+                    {
+                        Field = "Currency",
+                        Value = Reference.Currency,
+                        Operator = Operators.Equal
+                    }
                 }
             };
             string sortField = state.SortLabel ?? nameof(QuotesView.DateUpdated);

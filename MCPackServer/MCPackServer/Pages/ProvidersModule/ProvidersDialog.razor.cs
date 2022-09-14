@@ -10,8 +10,6 @@ namespace MCPackServer.Pages.ProvidersModule
 {
     public partial class ProvidersDialog
     {
-        [Inject]
-        public IJSRuntime _runtime { get; set; }
         public enum States { Add, Edit, Delete }
 
         #region Parameters
@@ -36,7 +34,7 @@ namespace MCPackServer.Pages.ProvidersModule
         private List<Contacts> ProviderContacts = new();
         #endregion
 
-        protected override async Task OnInitializedAsync()
+        protected override void OnInitialized()
         {
             if (States.Add == State) //representing an Add dialog
             {
@@ -142,28 +140,6 @@ namespace MCPackServer.Pages.ProvidersModule
         }
 
         #region Validations
-        private  IEnumerable<string> ValidateEmail(string input)
-        {
-            if (string.IsNullOrEmpty(input))
-            {
-                yield return "El campo es obligatorio.";
-                yield break;
-            }
-            if (!Regex.IsMatch(input, @"^[^@\s]+@[^@\s]+\.[^@\s]+$"))
-                yield return "El campo no es válido.";
-        }
-        private static IEnumerable<string> ValidatePhone(string input)
-        {
-            if (string.IsNullOrEmpty(input))
-            {
-                yield return "El campo es obligatorio.";
-                yield break;
-            }
-            if (Regex.IsMatch(input, "[a-zA-Z]+"))
-                yield return "El campo no admite caracteres alfabéticos.";
-            if (input.Any(ch => !char.IsLetterOrDigit(ch)) && Regex.IsMatch(input, @"[^+\-\s]+"))
-                yield return "El campo no admite caracteres especiales más que \'+\', \'-\' y espacios en blanco.";
-        }
         private static IEnumerable<string> ValidateName(string input)
         {
             if (string.IsNullOrEmpty(input))
@@ -177,7 +153,5 @@ namespace MCPackServer.Pages.ProvidersModule
                 yield return "El campo no admite caracteres especiales más que espacios en blanco.";
         }
         #endregion
-
-        //async private void Enter() => await _runtime.InvokeVoidAsync("EnterToTab");
     }
 }
