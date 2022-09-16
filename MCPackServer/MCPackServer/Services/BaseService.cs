@@ -45,7 +45,12 @@ namespace MCPackServer.Services
         protected string AddWhereClauseToQuery(List<WhereFilter>? input, DynamicParameters parameters)
         {
             string clause = string.Empty;
-            if (null != input && input.Any(x => null != x.Value))
+            if (null != input && input.Any(x =>
+                {
+                    if (null != x.Value && typeof(string) == x.Value.GetType() && string.IsNullOrEmpty((string)x.Value))
+                        x.Value = null;
+                    return null != x.Value;
+                }))
             {
                 clause = "WHERE ";
                 List<WhereFilter> validFilters = input.Where(x =>
