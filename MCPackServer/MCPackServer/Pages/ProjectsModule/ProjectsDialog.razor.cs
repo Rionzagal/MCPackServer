@@ -100,29 +100,32 @@ namespace MCPackServer.Pages.ProjectsModule
             if (States.Add == State)
             {
                 Model.Code = $"{Model.Id}C{Model.ClientId:4d}T{Model.Type.FirstOrDefault()}";
-                DataManagerRequest request = new()
+                if ("Refacciones" == Model.Type)
                 {
-                    Where = new List<WhereFilter>()
+                    DataManagerRequest request = new()
                     {
-                        new WhereFilter
+                        Where = new List<WhereFilter>()
                         {
-                            Field = nameof(Projects.ClientId),
-                            Value = Model.ClientId,
-                            Operator = Operators.Equal,
-                            Condition = Conditions.And
-                        },
-                        new WhereFilter
-                        {
-                            Field = nameof(Projects.Type),
-                            Value = "Refacciones",
-                            Operator = Operators.Equal,
-                            Condition = Conditions.And
+                            new WhereFilter
+                            {
+                                Field = nameof(Projects.ClientId),
+                                Value = Model.ClientId,
+                                Operator = Operators.Equal,
+                                Condition = Conditions.And
+                            },
+                            new WhereFilter
+                            {
+                                Field = nameof(Projects.Type),
+                                Value = "Refacciones",
+                                Operator = Operators.Equal,
+                                Condition = Conditions.And
+                            }
                         }
-                    }
-                };
-                var projects = await _service.GetForGridAsync<Projects>(request);
-                if (null != projects)
-                    ProjectValid = !projects.Any();
+                    };
+                    var projects = await _service.GetForGridAsync<Projects>(request);
+                    if (null != projects)
+                        ProjectValid = !projects.Any();
+                }
             }
             await Form.Validate();
             if (Form.IsValid && ProjectValid || States.Delete == State)

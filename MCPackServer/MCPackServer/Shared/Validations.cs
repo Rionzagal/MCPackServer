@@ -17,8 +17,8 @@ namespace MCPackServer.Shared
             {
                 if (input.Any(ch => char.IsLetter(ch)))
                     yield return "El campo no admite caracteres alfabéticos.";
-                if (input.Any(ch => !char.IsLetterOrDigit(ch)))
-                    yield return "El campo no admite caracteres especiales.";
+                // if (input.Any(ch => !char.IsLetterOrDigit(ch)))
+                //     yield return "El campo no admite caracteres especiales.";
             }
         }
 
