@@ -64,12 +64,12 @@ namespace MCPackServer.Services
                 {
                     if (null != item.Value)
                     {
-                        if (typeof(bool) == item.Value.GetType())
+                        if (typeof(bool) == item.Value.GetType()) // When the filter is of type bool
                         {
                             parameters.Add(item.Field, (bool)item.Value ? "1" : "0");
                             clause += $"{item.Field} = @{item.Field} ";
                         }
-                        else if (Operators.Between == item.Operator)
+                        else if (Operators.Between == item.Operator) // When the operator is set to Between
                         {
                             if (item.MinValue != null && item.MaxValue != null)
                             {
@@ -80,7 +80,7 @@ namespace MCPackServer.Services
                             else
                                 throw new Exception("MinValue and MaxValue properties must be not null if the Operator is BETWEEN in WhereFilter object.");
                         }
-                        else
+                        else // When the operator is set to anything else
                         {
                             parameters.Add(item.Field, item.Value);
                             clause += $"{item.Field} {GetStartOperator(item.Operator)} @{item.Field} {GetEndOperator(item.Operator)} ";
