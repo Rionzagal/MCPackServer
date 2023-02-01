@@ -1,11 +1,15 @@
 ﻿using MCPackServer.Entities;
 using MCPackServer.Models;
+using Microsoft.AspNetCore.Components;
 using MudBlazor;
 
 namespace MCPackServer.Pages.ProjectsModule
 {
     public partial class ProjectsPage
     {
+        [Inject]
+        public NavigationManager? navigationManager { get; set; }
+
         #region Permissions and Flags
         #region Permissions
         private bool CanCreateProjects = true;
@@ -324,5 +328,19 @@ namespace MCPackServer.Pages.ProjectsModule
             }
             return name;
         }
+
+        private string ProjectStatus(ProjectsView context)
+        {
+            string status = "Retrasado";
+            if (context.RealDeliveryDate.HasValue)
+                status = "Entregado";
+            else if (context.CommitmentDate > DateTime.Today)
+                status = "A tiempo";
+            else if (context.DeliveryDate > DateTime.Today)
+                status = "Pronto vencimiento";
+            return status;
+        }
+
+        private void GoToProjectDetails() => navigationManager?.NavigateTo($"Projects/{SelectedProject.ProjectNumber}");
     }
 }

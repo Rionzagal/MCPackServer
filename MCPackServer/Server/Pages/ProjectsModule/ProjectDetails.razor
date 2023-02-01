@@ -1,0 +1,182 @@
+@page "/Projects/{Number}"
+@attribute [Authorize (policy: @Constants.Permissions.Projects.View)]
+
+
+
+<MudText Typo="Typo.h3" Align="Align.Center">PROYECTO @Number</MudText>
+
+@* TODO: Mostrar el estado general del proyecto *@
+
+@* TODO: Mostrar la información general del proyecto *@
+
+@* TODO: Mostrar la información del cliente del proyecto *@
+<div class="m-3">
+    <MudText Typo="Typo.h4" Align="Align.Start">INFORMACIÓN DE CLIENTE</MudText>
+    <MudGrid Class="m-3">
+        <MudItem xs="6">
+            <MudText Typo="Typo.subtitle2" Align="Align.Start">Nombre comercial</MudText>
+            <MudTextField Variant="Variant.Outlined" Value="ProjectClient.MarketName" ReadOnly />
+        </MudItem>
+        <MudItem xs="6">
+            <MudText Typo="Typo.subtitle2" Align="Align.Start">Razón social</MudText>
+            <MudTextField Variant="Variant.Outlined" Value="ProjectClient.LegalName" ReadOnly />
+        </MudItem>
+        <MudItem xs="12">
+            <MudText Typo="Typo.subtitle2" Align="Align.Start">RFC</MudText>
+            <MudTextField Variant="Variant.Outlined" Value="ProjectClient.RFC" ReadOnly />
+        </MudItem>
+        <MudItem xs="12">
+            <MudText Typo="Typo.subtitle2" Align="Align.Start">Sitio Web</MudText>
+            <MudTextField Variant="Variant.Outlined" Value="ProjectClient.Website" ReadOnly />
+        </MudItem>
+        <MudItem xs="12">
+            <MudText Typo="Typo.subtitle2" Align="Align.Start">Condición de pago</MudText>
+            <MudTextField Variant="Variant.Outlined" Value="ProjectClient.PaymentCondition" ReadOnly />
+        </MudItem>
+        <MudItem xs="12">
+            <MudText Typo="Typo.subtitle1" Align="Align.Start">Número de teléfono</MudText>
+            <MudTextField Variant="Variant.Outlined" Value="ProjectClient.PhoneNumber" ReadOnly />
+        </MudItem>
+        <MudItem xs="6">
+            <MudText Typo="Typo.subtitle1" Align="Align.Start">Domicilio fiscal</MudText>
+            <MudTextField Variant="Variant.Outlined" Value="ProjectClient.FiscalAddress" ReadOnly />
+        </MudItem>
+        <MudItem xs="6">
+            <MudText Typo="Typo.subtitle1" Align="Align.Start">Código postal</MudText>
+            <MudTextField Variant="Variant.Outlined" Value="ProjectClient.PostalCode" ReadOnly />
+        </MudItem>
+        <MudItem xs="4">
+            <MudText Typo="Typo.subtitle1" Align="Align.Start">Ciudad</MudText>
+            <MudTextField Variant="Variant.Outlined" Value="ProjectClient.City" ReadOnly />
+        </MudItem>
+        <MudItem xs="4">
+            <MudText Typo="Typo.subtitle1" Align="Align.Start">Provincia/Estado</MudText>
+            <MudTextField Variant="Variant.Outlined" Value="ProjectClient.Province" ReadOnly />
+        </MudItem>
+        <MudItem xs="4">
+            <MudText Typo="Typo.subtitle1" Align="Align.Start">País</MudText>
+            <MudTextField Variant="Variant.Outlined" Value="ProjectClient.Country" ReadOnly />
+        </MudItem>
+    </MudGrid>
+</div>
+@* TODO: Mostrar la información de los productos que lleva el proyecto *@
+
+<div class="m-3">
+    <MudText Typo="Typo.h4" Align="Align.Start">PRODUCTOS DE PROYECTO</MudText>
+    <MudTable @ref="ProductsTable" T="ProjectProductsView" Dense Hover FixedHeader
+                CustomHeader Striped OnRowClick="OnSelectedProduct" ServerData="ProductsServerReload" >
+        <ColGroup>
+            <col style="width: 15%" />
+            <col style="width: 50%" />
+            <col style="width: 15%" />
+            <col style="width: 15%" />
+            <col />
+        </ColGroup>
+        <ToolBarContent>
+            <MudText Typo="Typo.h6">Productos del proyecto</MudText>
+            <MudSpacer />
+            <MudButton Variant="Variant.Outlined" Class="ml-1"
+                        OnClick="async () => await ProductsTable.ReloadServerData()">
+                <MudIcon Icon="@Icons.Material.Filled.Search" /> Buscar
+            </MudButton>
+        </ToolBarContent>
+        <HeaderContent>
+            <MudTHeadRow>
+                <MudTh><MudTableSortLabel SortLabel="ProductId" T="ProjectProductsView">Productos</MudTableSortLabel></MudTh>
+                <MudTh>Descripción</MudTh>
+                <MudTh><MudTableSortLabel SortLabel="Quantity" T="ProjectProductsView">Cantidad</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel SortLabel="SalePrice" T="ProjectProductsView">Precio de venta</MudTableSortLabel></MudTh>
+            </MudTHeadRow>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd DataLabel="Código">@context.ProductCode</MudTd>
+            <MudTd DataLabel="Descripción">@context.ProductDescription</MudTd>
+            <MudTd DataLabel="Cantidad">@context.Quantity</MudTd>
+            <MudTd DataLabel="Precio de venta">@($"$ {context.SalePrice.ToString("n2")} {CurrentProject.AgreedCurrency}")</MudTd>
+        </RowTemplate>
+        <ChildRowContent>
+            @if (SelectedProducts.Any(x => x.ProductId == context.ProductId))
+            {
+                <MudTr>
+                    <td colspan="5">
+                        <MudCard Class="m-3" Elevation="0">
+                            <MudCardHeader>
+                                <CardHeaderContent>
+                                    <MudText Typo="Typo.subtitle1">Modelo: @context.ProductModel</MudText>
+                                </CardHeaderContent>
+                                <CardHeaderActions>
+                                    <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="@(() => SelectedProducts.Remove(context))">Cerrar</MudButton>
+                                </CardHeaderActions>
+                            </MudCardHeader>
+                            <MudCardContent class="pa-0">
+                                <MudGrid>
+                                    <MudItem xs="6">
+                                        <MudText Typo="Typo.subtitle2">Tipo de producto</MudText>
+                                        <MudTextField Value="context.ProductType" Variant="Variant.Outlined" ReadOnly="true" />
+                                    </MudItem>
+                                    <MudItem xs="6">
+                                        <MudText Typo="Typo.subtitle2">Precio por unidad</MudText>
+                                        <MudTextField Value="context.SalePrice" Variant="Variant.Outlined" ReadOnly="true" />
+                                    </MudItem>
+                                    <MudItem xs="12">
+                                        <MudText Typo="Typo.subtitle2">Observaciones</MudText>
+                                        <MudTextField Value="context.Observations" Variant="Variant.Outlined" ReadOnly="true" />
+                                    </MudItem>
+                                </MudGrid>
+                            </MudCardContent>
+                        </MudCard>
+                    </td>
+                </MudTr>
+            }
+        </ChildRowContent>
+        <NoRecordsContent>
+            <MudText>Sin productos encontrados para el proyecto</MudText>
+        </NoRecordsContent>
+        <LoadingContent>
+            <MudText>Cargando productos...</MudText>
+        </LoadingContent>
+        <PagerContent>
+            <MudTablePager />
+        </PagerContent>
+    </MudTable>
+</div>
+
+@* TODO: Mostrar la información de las órdenes de compra asociadas con el proyecto *@
+
+<div class="m-3">
+    <MudText Typo="Typo.h4" Align="Align.Start">ÓRDENES DE COMPRA</MudText>
+    <MudTable @ref="POTable" T="PurchaseOrdersView" Striped Hover Dense FixedHeader
+        CustomHeader ServerData="POServerReload" >
+        <ToolBarContent>
+            <MudText Typo="Typo.h6">Órdenes de compra</MudText>
+            <MudSpacer />
+            <MudButton Variant="Variant.Outlined" Class="ml-1"
+                        OnClick="async () => await POTable.ReloadServerData()">
+                <MudIcon Icon="@Icons.Material.Filled.Search" /> Buscar
+            </MudButton>
+        </ToolBarContent>
+        <HeaderContent>
+            <MudTHeadRow>
+                <MudTh><MudTableSortLabel T="PurchaseOrdersView" SortLabel="@nameof(PurchaseOrdersView.OrderNumber)">Número de Orden</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel T="PurchaseOrdersView" SortLabel="@nameof(PurchaseOrdersView.ProviderLegalName)">Proveedor</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel T="PurchaseOrdersView" SortLabel="@nameof(PurchaseOrdersView.IssuedDate)">Fecha de emisión</MudTableSortLabel></MudTh>
+                <MudTh><MudTableSortLabel T="PurchaseOrdersView" SortLabel="@nameof(PurchaseOrdersView.Status)">Estado</MudTableSortLabel></MudTh>
+            </MudTHeadRow>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd DataLabel="Número de Orden">@context.OrderNumber</MudTd>
+            <MudTd DataLabel="Proveedor">@context.ProviderLegalName</MudTd>
+            <MudTd DataLabel="Fecha">@(context.IssuedDate?.ToShortDateString() ?? "N/A")</MudTd>
+            <MudTd DataLabel="Estado">@context.Status</MudTd>
+        </RowTemplate>
+        <NoRecordsContent>
+            <MudText>Este proyecto no está asociado a ninguna orden de compra...</MudText>
+        </NoRecordsContent>
+        <LoadingContent>
+            <MudText>Cargando...</MudText>
+        </LoadingContent>
+        <PagerContent>
+            <MudTablePager />
+        </PagerContent>
+    </MudTable>
+</div>

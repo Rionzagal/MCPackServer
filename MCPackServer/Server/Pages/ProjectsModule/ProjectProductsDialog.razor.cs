@@ -107,6 +107,10 @@ namespace MCPackServer.Pages.ProjectsModule
                 Model.ProjectId = ProjectId.Value;
         }
 
+        /// <summary>
+        /// It validates the form, if it's valid, it sends the data to the server, and if the server
+        /// responds with success, it shows a snackbar with a message
+        /// </summary>
         private async Task Submit()
         {
             _processing = true;
@@ -161,6 +165,15 @@ namespace MCPackServer.Pages.ProjectsModule
             }
         }
 
+        /// <summary>
+        /// It takes a string and a boolean, and returns a list of integers.
+        /// </summary>
+        /// <param name="filter">the text that the user has typed in the textbox</param>
+        /// <param name="UseCode">If true, the search will be done on the Code field, if false, the
+        /// search will be done on the Description field.</param>
+        /// <returns>
+        /// A list of integers.
+        /// </returns>
         private async Task<IEnumerable<int>> ProductsServerReload(string filter, bool UseCode = false)
         {
             List<int> result = new();
@@ -186,6 +199,9 @@ namespace MCPackServer.Pages.ProjectsModule
             return result;
         }
 
+        /// <summary>
+        /// It gets a list of products for a project
+        /// </summary>
         private async Task GetProjectProducts()
         {
             DataManagerRequest dm = new()
@@ -205,6 +221,14 @@ namespace MCPackServer.Pages.ProjectsModule
                 projectProducts = response.ToList();
         }
 
+        /// <summary>
+        /// If the Id is not zero, then find the first product in the list that matches the Id and
+        /// return the Code
+        /// </summary>
+        /// <param name="Id">The Id of the product</param>
+        /// <returns>
+        /// The result is a string.
+        /// </returns>
         private string GetProductCode(int Id)
         {
             string result = "";
@@ -217,6 +241,14 @@ namespace MCPackServer.Pages.ProjectsModule
             return result;
         }
 
+        /// <summary>
+        /// If the Id is not zero, then find the first product in the list that matches the Id and
+        /// return the description
+        /// </summary>
+        /// <param name="Id">The Id of the product</param>
+        /// <returns>
+        /// The result of the FirstOrDefault method.
+        /// </returns>
         private string GetProductDescription(int Id)
         {
             string result = "";

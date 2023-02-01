@@ -16,7 +16,7 @@ VIEW `mcpackdb`.`articlestopurchaseview` AS
         `mcpackdb`.`article`.`Model` AS `Model`,
         `mcpackdb`.`quote`.`SKU` AS `SKU`,
         `mcpackdb`.`article`.`Unit` AS `Unit`,
-        `mcpackdb`.`quote`.`DateUpdated` AS `DateUpdated`,
+        `mcpackdb`.`quote`.`DateUpdated` AS `QuoteDate`,
         `poarticle`.`PurchaseOrderId` AS `PurchaseOrderId`,
         `poarticle`.`Quantity` AS `Quantity`,
         `poarticle`.`EntryDate` AS `EntryDate`,

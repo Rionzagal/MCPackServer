@@ -89,13 +89,17 @@
         <MudTabs @ref="ProjectsInformationTabs" Elevation="2" Rounded
                  ApplyEffectsToContainer Color="Color.Primary">
             <Header>
-                <MudTooltip Text="Cerrar Producto">
+                <MudTooltip Text="Cerrar">
                     <MudIconButton Icon="@Icons.Material.Filled.Close" Color="Color.Warning"
                                    OnClick="() => 
                                             { 
                                                 SelectedProject = new();
                                                 VisibleProjectInformation = false;
                                             }" />
+                </MudTooltip>
+                <MudTooltip Text="Más detalles">
+                    <MudIconButton Icon="@Icons.Material.Filled.Info" Color="Color.Tertiary"
+                        OnClick="GoToProjectDetails" />
                 </MudTooltip>
                 @if (CanEditProjects)
                 {
@@ -179,7 +183,7 @@
                         </MudItem>
                         <MudItem xs="6">
                             <MudText Typo="Typo.subtitle1">Estatus</MudText>
-                            <MudTextField Value="@(SelectedProject.RealDeliveryDate.HasValue ? "Entregado" : "En proceso")" ReadOnly Variant="Variant.Outlined" />
+                            <MudTextField Value="@ProjectStatus(SelectedProject)" ReadOnly Variant="Variant.Outlined" />
                         </MudItem>
                         <MudItem xs="6">
                             <MudText Typo="Typo.subtitle1">Fecha de entrega real</MudText>

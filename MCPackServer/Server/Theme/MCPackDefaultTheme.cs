@@ -10,7 +10,7 @@ namespace MCPackServer.Theme
             {
                 Primary = Colors.Indigo.Default,
                 Secondary = Colors.Amber.Default,
-                Tertiary = Colors.DeepPurple.Accent4,
+                Tertiary = Colors.Blue.Default,
                 AppbarBackground = "223ba1",
                 DrawerBackground = "f2f2f2",
                 DrawerText = "rgba(0, 0, 0, 0.7)"
