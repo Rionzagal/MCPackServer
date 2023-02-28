@@ -38,7 +38,7 @@ namespace MCPackServer.Pages.ArticlesModule
         private string FamilyCode = string.Empty;
         #endregion
 
-        protected override async Task OnInitializedAsync()
+        protected override async Task  OnInitializedAsync()
         {
             if (States.Add == State) //representing an Add dialog
             {

@@ -26,14 +26,15 @@ namespace MCPackServer.Pages.ProjectsModule
         private ProjectsView CurrentProject = new();
         private Clients ProjectClient = new();
         private List<ProjectProductsView> SelectedProducts = new();
-        private List<PurchaseOrdersView> ProjectPOs = new();
 
         // Mud Components
         private MudTable<ProjectProductsView> ProductsTable = new();
         private MudTable<PurchaseOrdersView> POTable = new();
+        private List<ArticlesToPurchaseView> ProjectATPs = new();
+        private HashSet<int> _selectedPurchaseOrderIds = new();
 
         // Temporal variables
-        private int? _selectedProductId;
+
 
         protected override async Task OnInitializedAsync()
         {
@@ -88,7 +89,6 @@ namespace MCPackServer.Pages.ProjectsModule
             if (!SelectedProducts.Any(p => selectedId == p.ProductId))
             {
                 SelectedProducts.Add(args.Item);
-                _selectedProductId = selectedId;
             }
         }
         #endregion
@@ -96,6 +96,7 @@ namespace MCPackServer.Pages.ProjectsModule
         #region Purchase orders
         private async Task<TableData<PurchaseOrdersView>> POServerReload(TableState state)
         {
+            // * Reload the Purchase Orders associated to the current project.
             DataManagerRequest request = new()
             {
                 Take = state.PageSize,
@@ -109,12 +110,38 @@ namespace MCPackServer.Pages.ProjectsModule
             string order = state.SortDirection == SortDirection.Ascending ? "ASC" : "DESC";
             var items = await _service.GetForGridAsync<PurchaseOrdersView>(request, field, order);
             int? count = await _service.GetTotalCountAsync<PurchaseOrdersView>(request);
+
+            // * Reload the Articles of each Purchase Order in the list of Purchase Orders.
+            foreach (var id in items.Select(x => x.Id))
+            {
+                try
+                {
+                    DataManagerRequest ATPrequest = new()
+                    {
+                        Where = new List<WhereFilter>()
+                        {
+                            new WhereFilter { Field=nameof(ArticlesToPurchaseView.PurchaseOrderId), Value=id, Operator=Operators.Equal }
+                        }
+                    };
+                    // ATPrequest.Take = (await _service.GetTotalCountAsync<ArticlesToPurchaseView>(ATPrequest)) ?? 0;
+                    ProjectATPs.AddRange(await _service.GetForGridAsync<ArticlesToPurchaseView>(ATPrequest, sortField: nameof(ArticlesToPurchaseView.Quantity), getAll: true));
+                }
+                catch (System.Exception ex)
+                {
+                    Snackbar.Add("Algo salió mal al recuperar los artículos de las órdenes de compra.", Severity.Error);
+                    Console.WriteLine(ex.ToString());
+                }
+            }
+
             return new TableData<PurchaseOrdersView>
             {
                 Items = items ?? new List<PurchaseOrdersView>(),
                 TotalItems = count ?? 0
             };
         }
+
+        private void OnSelectedPO(TableRowClickEventArgs<PurchaseOrdersView> args) => _selectedPurchaseOrderIds.Add(args.Item.Id);
+
         #endregion
     }
 }
