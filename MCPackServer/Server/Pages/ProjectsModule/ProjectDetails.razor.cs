@@ -33,8 +33,6 @@ namespace MCPackServer.Pages.ProjectsModule
         private List<ArticlesToPurchaseView> ProjectATPs = new();
         private HashSet<int> _selectedPurchaseOrderIds = new();
 
-        // Temporal variables
-
 
         protected override async Task OnInitializedAsync()
         {
@@ -141,7 +139,11 @@ namespace MCPackServer.Pages.ProjectsModule
         }
 
         private void OnSelectedPO(TableRowClickEventArgs<PurchaseOrdersView> args) => _selectedPurchaseOrderIds.Add(args.Item.Id);
-
         #endregion
+
+        private void ReturnToGrid()
+        {
+            _navigationManager?.NavigateTo("Projects/Consultations");
+        }
     }
 }

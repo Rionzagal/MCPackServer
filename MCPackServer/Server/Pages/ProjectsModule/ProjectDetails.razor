@@ -1,7 +1,11 @@
-@page "/Projects/{Number}"
+@page "/Projects/Consultations/{Number}"
 @attribute [Authorize (policy: @Constants.Permissions.Projects.View)]
 
 
+<MudButton Variant="Variant.Filled" Color="Color.Primary" Class="m-3"
+    OnClick="ReturnToGrid">
+    Regresar
+</MudButton>
 
 <MudText Typo="Typo.h3" Align="Align.Center">PROYECTO @Number</MudText>
 
