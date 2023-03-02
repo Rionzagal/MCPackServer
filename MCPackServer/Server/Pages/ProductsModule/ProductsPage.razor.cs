@@ -76,28 +76,28 @@ namespace MCPackServer.Pages.ProductsModule
                     {
                         Field = "Type",
                         Value = TypeFilter,
-                        Operator = Operators.StartsWith,
+                        Operator = Operators.Contains,
                         Condition = Conditions.And
                     },
                     new WhereFilter
                     {
                         Field = "Code",
                         Value = CodeFilter,
-                        Operator = Operators.StartsWith,
+                        Operator = Operators.Contains,
                         Condition = Conditions.And
                     },
                     new WhereFilter
                     {
                         Field = "Description",
                         Value = DescriptionFilter,
-                        Operator = Operators.StartsWith,
+                        Operator = Operators.Contains,
                         Condition = Conditions.And
                     },
                     new WhereFilter
                     {
                         Field = "Currency",
                         Value = CurrencyFilter,
-                        Operator = Operators.StartsWith,
+                        Operator = Operators.Contains,
                         Condition = Conditions.And
                     }
                 }

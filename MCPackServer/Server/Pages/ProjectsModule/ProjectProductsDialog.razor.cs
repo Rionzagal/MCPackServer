@@ -170,7 +170,7 @@ namespace MCPackServer.Pages.ProjectsModule
                 {
                     Field = UseCode ? "Code" : "Description",
                     Value = filter,
-                    Operator = Operators.StartsWith
+                    Operator = Operators.Contains
                 }
             };
             DataManagerRequest dm = new()
