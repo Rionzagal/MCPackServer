@@ -235,7 +235,7 @@ namespace MCPackServer.Pages.ProvidersModule
                 TotalItems = count ?? 0
             };
         }
-        private async Task OnSelectedContactRow(TableRowClickEventArgs<Contacts> args)
+        private void OnSelectedContactRow(TableRowClickEventArgs<Contacts> args)
         {
             var selectedId = args.Item.Id;
             if (!SelectedContacts.Any(c => selectedId == c.Id))

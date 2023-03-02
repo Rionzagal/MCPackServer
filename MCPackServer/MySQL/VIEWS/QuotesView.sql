@@ -10,6 +10,9 @@ VIEW `mcpackdb`.`quotesview` AS
         `provider`.`LegalName` AS `ProviderLegalName`,
         `quote`.`ArticleId` AS `ArticleId`,
         `mcpackdb`.`article`.`Name` AS `ArticleName`,
+        `mcpackdb`.`article`.`Description` AS `ArticleDescription`,
+        `mcpackdb`.`article`.`TradeMark` AS `TradeMark`,
+        `mcpackdb`.`article`.`Model` AS `Model`,
         `mcpackdb`.`article`.`GroupId` AS `GroupId`,
         `mcpackdb`.`article`.`GroupName` AS `GroupName`,
         `mcpackdb`.`article`.`FamilyId` AS `FamilyId`,
@@ -20,6 +23,7 @@ VIEW `mcpackdb`.`quotesview` AS
         `quote`.`Price` AS `Price`,
         `quote`.`Currency` AS `Currency`,
         `quote`.`DateUpdated` AS `DateUpdated`,
+        `mcpackdb`.`article`.`Unit` AS `Unit`,
         `provider`.`Discount` AS `ProviderDiscount`
     FROM
         ((`mcpackdb`.`quotes` `quote`

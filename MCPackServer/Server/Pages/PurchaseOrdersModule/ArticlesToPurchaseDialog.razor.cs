@@ -74,7 +74,7 @@ namespace MCPackServer.Pages.PurchaseOrdersModule
             #endregion
         }
 
-        protected override async Task OnInitializedAsync()
+        protected override void OnInitialized()
         {
             if (States.Add == State) //representing an Add dialog
             {

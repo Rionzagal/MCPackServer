@@ -302,11 +302,11 @@
                                         </MudItem>
                                         <MudItem xs="6">
                                             <MudText Typo="Typo.subtitle1" Align="Align.Left">Precio sugerido</MudText>
-                                            <MudTextField Value="@($"${quote.Price.ToString("n2")} {quote.Currency}")" Variant="Variant.Outlined" ReadOnly />
+                                            <MudTextField Value="@($"${quote.Price.ToString("n4")} {quote.Currency}")" Variant="Variant.Outlined" ReadOnly />
                                         </MudItem>
                                         <MudItem xs="6">
                                             <MudText Typo="Typo.subtitle1" Align="Align.Left">Precio con descuento</MudText>
-                                            <MudTextField Value="@($"${(quote.Price*(1 - quote.ProviderDiscount/100)).ToString("n2")} {quote.Currency}")"
+                                            <MudTextField Value="@($"${(quote.Price*(1 - quote.ProviderDiscount/100)).ToString("n4")} {quote.Currency}")"
                                                 Variant="Variant.Outlined" ReadOnly />
                                         </MudItem>
                                         <MudItem xs="12">
