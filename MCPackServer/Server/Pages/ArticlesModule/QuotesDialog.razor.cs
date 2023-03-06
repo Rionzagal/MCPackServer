@@ -64,7 +64,7 @@ namespace MCPackServer.Pages.ArticlesModule
             {
                 Dialog.Cancel();
             }
-            _ = await ProvidersServerReload(string.Empty);
+            await ProvidersServerReload(string.Empty);
             if (null != ModelView)
                 Model = await _service.GetByKeyAsync<Quotes>(ModelView.Id);
             else

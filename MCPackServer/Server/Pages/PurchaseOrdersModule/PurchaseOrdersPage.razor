@@ -164,17 +164,17 @@
                         <MudItem xs="3">
                             <MudText Typo="Typo.subtitle1">Subtotal</MudText>
                             <MudTextField @bind-Value="subtotal" AdornmentText="@(SelectedOrder.Currency + " $")"
-                            Adornment="Adornment.Start" ReadOnly Format="N2" />
+                            Adornment="Adornment.Start" ReadOnly Format="N4" />
                         </MudItem>
                         <MudItem xs="3">
                             <MudText Typo="Typo.subtitle1">I.V.A.</MudText>
                             <MudTextField @bind-Value="tax" AdornmentText="@(SelectedOrder.Currency + " $")"
-                            Adornment="Adornment.Start" ReadOnly Format="N2" />
+                            Adornment="Adornment.Start" ReadOnly Format="N4" />
                         </MudItem>
                         <MudItem xs="3">
                             <MudText Typo="Typo.subtitle1">Total</MudText>
                             <MudTextField @bind-Value="total" AdornmentText="@(SelectedOrder.Currency + " $")"
-                            Adornment="Adornment.Start" ReadOnly Format="N2" />
+                            Adornment="Adornment.Start" ReadOnly Format="N4" />
                         </MudItem>
                         <MudItem xs="12">
                             <MudText Typo="Typo.subtitle1">Observaciones</MudText>
@@ -236,7 +236,7 @@
                             <MudTd DataLabel="Nombre">@context.ArticleName</MudTd>
                             <MudTd DataLabel="SKU">@(context.SKU ?? "N/A")</MudTd>
                             <MudTd DataLabel="Fecha de cotización">@context.QuoteDate.ToShortDateString()</MudTd>
-                            <MudTd DataLabel="Precio">@($"$ {context.SalePrice.ToString("n2")} {SelectedOrder.Currency}")</MudTd>
+                            <MudTd DataLabel="Precio">@($"$ {context.SalePrice.ToString("n4")} {SelectedOrder.Currency}")</MudTd>
                             <MudTd DataLabel="Cantidad">@($"{context.Quantity} {context.Unit}")</MudTd>
                             <MudTd DataLabel="Fecha de recepción">@(context.ReceptionDate?.ToString() ?? "PENDIENTE")</MudTd>
                         </RowTemplate>
@@ -288,7 +288,7 @@
                                     </MudItem>
                                     <MudItem xs="6">
                                         <MudText Typo="Typo.subtitle1">Precio unitario</MudText>
-                                        <MudTextField Value="@($"$ {article.SalePrice.ToString("n2")} {article.Currency}")" ReadOnly />
+                                        <MudTextField Value="@($"$ {article.SalePrice.ToString("n4")} {article.Currency}")" ReadOnly />
                                     </MudItem>
                                     <MudItem xs="6">
                                         <MudText Typo="Typo.subtitle1">Cantidad</MudText>
@@ -297,17 +297,17 @@
                                 </MudGrid>
                             </MudCardContent>
                             <MudCardActions Style="height: 100px">
-                                @if (CanEdit)
-                                {
-                                    <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="mx-1"
-                                           OnClick="async () => await EditArticle(article)">
-                                        Editar
-                                    </MudButton>
-                                    <MudButton Variant="Variant.Filled" Color="Color.Error" Class="mx-1"
-                                               OnClick="async () => await DeleteArticle(article)">
-                                        Eliminar
-                                    </MudButton>
-                                }
+                            @if (CanEdit)
+                            {
+                                <MudButton Variant="Variant.Filled" Color="Color.Primary" Class="mx-1"
+                                        OnClick="async () => await EditArticle(article)">
+                                    Editar
+                                </MudButton>
+                                <MudButton Variant="Variant.Filled" Color="Color.Error" Class="mx-1"
+                                            OnClick="async () => await DeleteArticle(article)">
+                                    Eliminar
+                                </MudButton>
+                            }
                             </MudCardActions>
                         </MudCard>
                     </MudTabPanel>

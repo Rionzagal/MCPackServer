@@ -62,7 +62,7 @@
                 <MudTd DataLabel="Código">@context.ArticleCode</MudTd>
                 <MudTd DataLabel="Nombre">@context.ArticleName</MudTd>
                 <MudTd DataLabel="SKU">@(context.SKU ?? "N/A")</MudTd>
-                <MudTd DataLabel="Precio">@($"${context.Price.ToString("n2")} {Reference?.Currency}")</MudTd>
+                <MudTd DataLabel="Precio">@($"${context.Price.ToString("n4")} {Reference?.Currency}")</MudTd>
                 <MudTd DataLabel="Cantidad">@($"{context.Quantity} {context.Unit}")</MudTd>
                 <MudTd DataLabel="Fecha de cotización">@context.DateUpdated.ToShortDateString()</MudTd>
                 <MudTd DataLabel="Actualizar cotización">
@@ -76,7 +76,7 @@
                 <MudTd DataLabel="Código">@context.ArticleCode</MudTd>
                 <MudTd DataLabel="Nombre">@context.ArticleName</MudTd>
                 <MudTd DataLabel="SKU">@(context.SKU ?? "N/A")</MudTd>
-                <MudTd DataLabel="Precio">@($"${context.Price.ToString("n2")} {Reference?.Currency}")</MudTd>
+                <MudTd DataLabel="Precio">@($"${context.Price.ToString("n4")} {Reference?.Currency}")</MudTd>
                 <MudTd DataLabel="Cantidad">
                     <MudNumericField T="int" @bind-Value="@context.Quantity" Required Min="1" 
                         Adornment="Adornment.End" AdornmentText="@context.Unit"
@@ -99,12 +99,12 @@
                                 <MudGrid Style="height:100px; overflow-y:scroll; width:inherit">
                                     <MudItem xs="6">
                                         <MudText Typo="Typo.subtitle2">Precio actual de cotización</MudText>
-                                        <MudTextField Value="@context.Price.ToString("n2")" AdornmentText="$"
+                                        <MudTextField Value="@context.Price.ToString("n4")" AdornmentText="$"
                                                         Adornment="Adornment.Start" ReadOnly />
                                     </MudItem>
                                     <MudItem xs="6">
                                         <MudText Typo="Typo.subtitle2">Nuevo precio de cotización</MudText>
-                                        <MudNumericField @bind-Value="@context.Price" Format="N2" Required AdornmentText="$"
+                                        <MudNumericField @bind-Value="@context.Price" Format="N4" Required AdornmentText="$"
                                                             Adornment="Adornment.Start" Step="1"
                                                             Culture="@CultureInfo.GetCultureInfo("en-US")" />
                                     </MudItem>
@@ -135,7 +135,7 @@
                 @foreach (var item in SelectedArticles)
                 {
                     <MudText>@item.Quantity X @(item.ArticleCode): @(item.ArticleName)</MudText>
-                    <MudText>   ---    Precio: $@((item.Quantity * item.Price).ToString("n2")) @item.Currency</MudText>
+                    <MudText>   ---    Precio: $@((item.Quantity * item.Price).ToString("n4")) @item.Currency</MudText>
                 }
             </MudExpansionPanel>
         </MudExpansionPanels>
