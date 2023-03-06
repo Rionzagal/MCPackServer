@@ -1,0 +1,179 @@
+@page "/Projects/Consultations"
+@inject NavigationManager _navigationManager
+@attribute [Authorize (policy: @Constants.Permissions.Projects.View)]
+@using Models
+
+<MudText Typo="Typo.h3" Align="Align.Center">CONSULTA DE PROYECTOS</MudText>
+
+<MudTable @ref="ProjectsTable" T="ProjectsView" Hover FixedHeader 
+          CustomHeader Striped ServerData="ProjectsServerReload">
+    <ToolBarContent>
+        <MudText Typo="Typo.h6">Proyectos registrados</MudText>
+        <MudSpacer />
+        <MudButton Variant="Variant.Filled" Class="mx-1">
+            Borrar filtros de búsqueda
+        </MudButton>
+        <MudButton Variant="Variant.Outlined" Class="ml-1"
+                   OnClick="async () => await ProjectsTable.ReloadServerData()">
+            <MudIcon Icon="@Icons.Material.Filled.Search" /> Buscar
+        </MudButton>
+    </ToolBarContent>
+    <HeaderContent>
+        <MudTHeadRow>
+            <MudTh><MudTableSortLabel SortLabel="@nameof(ProjectsView.ProjectNumber)" T="ProjectsView">Número de proyecto</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortLabel="@nameof(ProjectsView.ClientId)" T="ProjectsView">Cliente</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortLabel="@nameof(ProjectsView.AdmissionDate)" T="ProjectsView">Fecha de admisión</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortLabel="@nameof(ProjectsView.CommitmentDate)" T="ProjectsView">Fecha de compromiso</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortLabel="@nameof(ProjectsView.DeliveryDate)" T="ProjectsView">Fecha de entrega</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortLabel="@nameof(ProjectsView.Type)" T="ProjectsView">Tipo de proyecto</MudTableSortLabel></MudTh>
+            <MudTh></MudTh>
+        </MudTHeadRow>
+        <MudTHeadRow>
+            <MudTh>
+                <MudTextField @bind-Value="NumberFilter" Clearable Placeholder="Buscar por número" />
+            </MudTh>
+            <MudTh>
+                <MudAutocomplete T="int?" Label="Buscar por cliente" @bind-Value="ClientIdFilter"
+                                 SearchFunc="f => ClientsServerReload(f)" Clearable
+                                 ToStringFunc="new Func<int?, string>(GetClientName)"
+                                 OnClearButtonClick="() => ClientIdFilter = null" />
+            </MudTh>
+            <MudTh />
+            <MudTh />
+            <MudTh />
+            <MudTh>
+                <MudSelect @bind-Value="TypeFilter" T="string" Placeholder="Buscar por tipo" Clearable >
+                    <MudSelectItem T="string" Value="@("Proyecto")" />
+                    <MudSelectItem T="string" Value="@("Refacciones")" />
+                    <MudSelectItem T="string" Value="@("Servicio")" />
+                </MudSelect>
+            </MudTh>
+            <MudTh></MudTh>
+        </MudTHeadRow>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="ID">@context.ProjectNumber</MudTd>
+        <MudTd DataLabel="Cliente">@context.ClientMarketName</MudTd>
+        <MudTd DataLabel="Fecha de ingreso">
+            @(context.AdmissionDate?.Date.ToShortDateString() ?? "N/A")
+        </MudTd>
+        <MudTd DataLabel="Fecha de compromiso de entrega">
+            @(context.CommitmentDate?.Date.ToShortDateString() ?? "N/A")
+        </MudTd>
+        <MudTd DataLabel="Fecha de entrega estimada">
+            @(context.DeliveryDate?.Date.ToShortDateString() ?? "N/A")
+        </MudTd>
+        <MudTd DataLabel="Condiciones de pago">@context.Type</MudTd>
+        <MudTd>
+            <MudButton Variant="Variant.Filled" Class="mx-1" Color="Color.Primary" OnClick="() => GoToProjectDetails(context.ProjectNumber)">
+                Detalles
+            </MudButton>
+        </MudTd>
+    </RowTemplate>
+    <NoRecordsContent>
+        <MudText>Sin proyectos encontrados</MudText>
+    </NoRecordsContent>
+    <LoadingContent>
+        <MudText>Cargando proyectos...</MudText>
+    </LoadingContent>
+    <PagerContent>
+        <MudTablePager />
+    </PagerContent>
+</MudTable>
+
+@code
+{
+    MudTable<ProjectsView> ProjectsTable = new();
+    
+    #region Search filters
+    private int? ClientIdFilter = null;
+    private string? NumberFilter;
+    private string? TypeFilter;
+    #endregion
+
+    List<Clients> ClientsList = new();
+
+    private async Task<TableData<ProjectsView>> ProjectsServerReload(TableState state)
+    {
+        List<WhereFilter> filters = new()
+        {
+            new WhereFilter
+            {
+                Field = nameof(ProjectsView.ClientId),
+                Value = ClientIdFilter,
+                Operator = Operators.Equal,
+                Condition = Conditions.And
+            },
+            new WhereFilter
+            {
+                Field = nameof(ProjectsView.ProjectNumber),
+                Value = NumberFilter,
+                Operator = Operators.StartsWith,
+                Condition = Conditions.And
+            },
+            new WhereFilter
+            {
+                Field = nameof(ProjectsView.Type),
+                Value = TypeFilter,
+                Operator = Operators.Equal,
+                Condition = Conditions.And
+            }
+        };
+        DataManagerRequest request = new()
+        {
+            Take = state.PageSize,
+            Skip = state.PageSize * state.Page,
+            Where = filters,
+        };
+        string field = state.SortLabel ?? "Id";
+        string order = state.SortDirection == SortDirection.Ascending ? "ASC" : "DESC";
+        var items = await _service.GetForGridAsync<ProjectsView>(request, field, order);
+        int? count = await _service.GetTotalCountAsync<ProjectsView>(request);
+        return new TableData<ProjectsView>
+        {
+            Items = items ?? new List<ProjectsView>(),
+            TotalItems = count ?? 0
+        };
+    }
+
+    private async Task<IEnumerable<int?>> ClientsServerReload(string? filter = null)
+    {
+        List<int?> result = new();
+        DataManagerRequest dm = new()
+        {
+            Select = new List<string> { nameof(Clients.Id), nameof(Clients.MarketName) },
+            Where = new List<WhereFilter>()
+            {
+                new WhereFilter
+                {
+                    Field = nameof(Clients.MarketName),
+                    Value = filter,
+                    Operator = Operators.StartsWith
+                }
+            }
+        };
+        var response = await _service.GetForGridAsync<Clients>(dm);
+        if (null != response && response.Any())
+        {
+            ClientsList = response.ToList();
+            foreach (var client in ClientsList)
+            {
+                result.Add(client.Id);
+            }
+        }
+        return result;
+    }
+
+    private string GetClientName(int? Id)
+    {
+        string name = "";
+        if (Id.HasValue)
+        {
+            var match = ClientsList.FirstOrDefault(c => Id == c.Id);
+            if (null != match) name = match.MarketName;
+        }
+        return name;
+    }
+
+    private void GoToProjectDetails(string pNumber) => _navigationManager.NavigateTo($"Projects/Consultations/{pNumber}");
+}
