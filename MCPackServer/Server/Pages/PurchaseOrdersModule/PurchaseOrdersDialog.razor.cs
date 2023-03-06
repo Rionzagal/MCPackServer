@@ -142,7 +142,7 @@ namespace MCPackServer.Pages.PurchaseOrdersModule
                     {
                         Field = nameof(Providers.LegalName),
                         Value = filter,
-                        Operator = Operators.StartsWith
+                        Operator = Operators.Contains
                     }
                 }
             };
@@ -190,7 +190,7 @@ namespace MCPackServer.Pages.PurchaseOrdersModule
                     {
                         Field = nameof(Projects.ProjectNumber),
                         Value = filter,
-                        Operator = Operators.StartsWith
+                        Operator = Operators.Contains
                     }
                 }
             };
@@ -227,7 +227,7 @@ namespace MCPackServer.Pages.PurchaseOrdersModule
                     {
                         Field = nameof(Requisitions.RequisitionNumber),
                         Value = filter,
-                        Operator = Operators.StartsWith
+                        Operator = Operators.Contains
                     }
                 }
             };

@@ -101,42 +101,42 @@ namespace MCPackServer.Pages.ProvidersModule
                 {
                     Field = "MarketName",
                     Value = MarketNameFilter,
-                    Operator = Operators.StartsWith,
+                    Operator = Operators.Contains,
                     Condition = Conditions.And
                 },
                 new WhereFilter
                 {
                     Field = "LegalName",
                     Value = LegalNameFilter,
-                    Operator = Operators.StartsWith,
+                    Operator = Operators.Contains,
                     Condition = Conditions.And
                 },
                 new WhereFilter
                 {
                     Field = "City",
                     Value = CityFilter,
-                    Operator = Operators.StartsWith,
+                    Operator = Operators.Contains,
                     Condition = Conditions.And
                 },
                 new WhereFilter
                 {
                     Field = "Province",
                     Value = ProvinceFilter,
-                    Operator = Operators.StartsWith,
+                    Operator = Operators.Contains,
                     Condition = Conditions.And
                 },
                 new WhereFilter
                 {
                     Field = "PhoneNumber",
                     Value = PhoneNumberFilter,
-                    Operator = Operators.StartsWith,
+                    Operator = Operators.Contains,
                     Condition = Conditions.And
                 },
                 new WhereFilter
                 {
                     Field = "Website",
                     Value = WebsiteFilter,
-                    Operator = Operators.StartsWith,
+                    Operator = Operators.Contains,
                     Condition = Conditions.And
                 }
             };

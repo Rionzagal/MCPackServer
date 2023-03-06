@@ -78,7 +78,7 @@ namespace MCPackServer.Pages.ProjectsModule
                 {
                     Field = nameof(ProjectsView.ProjectNumber),
                     Value = NumberFilter,
-                    Operator = Operators.StartsWith,
+                    Operator = Operators.Contains,
                     Condition = Conditions.And
                 },
                 new WhereFilter
@@ -292,7 +292,7 @@ namespace MCPackServer.Pages.ProjectsModule
                     {
                         Field = nameof(Clients.MarketName),
                         Value = filter,
-                        Operator = Operators.StartsWith
+                        Operator = Operators.Contains
                     }
                 }
             };

@@ -164,7 +164,7 @@ namespace MCPackServer.Pages.RequisitionsModule
             List<int> result = new();
             List<WhereFilter> filters = new()
             {
-                new WhereFilter { Field = nameof(Projects.ProjectNumber), Value = filter, Operator = Operators.StartsWith }
+                new WhereFilter { Field = nameof(Projects.ProjectNumber), Value = filter, Operator = Operators.Contains }
             };
             DataManagerRequest dm = new()
             {
@@ -204,7 +204,7 @@ namespace MCPackServer.Pages.RequisitionsModule
                 Where = new List<WhereFilter>
                 {
                     new WhereFilter { Field = nameof(ArticlesView.FamilyId), Value = FamilyFilter, Operator = Operators.Equal },
-                    new WhereFilter { Field = "Name", Value = NameFilter, Operator = Operators.StartsWith }
+                    new WhereFilter { Field = "Name", Value = NameFilter, Operator = Operators.Contains }
                 }
             };
             string field = state.SortLabel ?? "Id";

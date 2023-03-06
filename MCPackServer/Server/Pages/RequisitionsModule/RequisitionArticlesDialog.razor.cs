@@ -88,7 +88,7 @@ namespace MCPackServer.Pages.RequisitionsModule
             {
                 Where = new()
                 {
-                    new WhereFilter { Field = nameof(Projects.ProjectNumber), Value = filter, Operator = Operators.StartsWith }
+                    new WhereFilter { Field = nameof(Projects.ProjectNumber), Value = filter, Operator = Operators.Contains }
                 }
             };
             var items = await _service.GetForGridAsync<Projects>(request);

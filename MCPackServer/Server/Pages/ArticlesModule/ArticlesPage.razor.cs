@@ -135,20 +135,20 @@ namespace MCPackServer.Pages.ArticlesModule
                         Field = "Name",
                         Value = NameFilter,
                         Condition = Conditions.And,
-                        Operator = Operators.StartsWith
+                        Operator = Operators.Contains
                     },
                     new WhereFilter
                     {
                         Field = "TradeMark",
                         Value = TradeMarkFilter,
-                        Operator = Operators.StartsWith,
+                        Operator = Operators.Contains,
                         Condition = Conditions.And
                     },
                     new WhereFilter
                     {
                         Field = "Code",
                         Value = CodeFilter,
-                        Operator = Operators.StartsWith,
+                        Operator = Operators.Contains,
                         Condition = Conditions.And
                     },
                     new WhereFilter
@@ -242,7 +242,7 @@ namespace MCPackServer.Pages.ArticlesModule
                     {
                         Field = "Name",
                         Value = filter,
-                        Operator = Operators.StartsWith
+                        Operator = Operators.Contains
                     }
                 }
             };
@@ -316,7 +316,7 @@ namespace MCPackServer.Pages.ArticlesModule
                     {
                         Field = "Name",
                         Value = filter,
-                        Operator = Operators.StartsWith,
+                        Operator = Operators.Contains,
                         Condition = Conditions.And
                     },
                     new WhereFilter
@@ -500,7 +500,7 @@ namespace MCPackServer.Pages.ArticlesModule
                     {
                         Field = "MarketName",
                         Value = filter,
-                        Operator = Operators.StartsWith
+                        Operator = Operators.Contains
                     }
                 }
             };

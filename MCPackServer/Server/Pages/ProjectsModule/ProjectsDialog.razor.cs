@@ -198,7 +198,7 @@ namespace MCPackServer.Pages.ProjectsModule
                 {
                     Field = "MarketName",
                     Value = filter,
-                    Operator = Operators.StartsWith
+                    Operator = Operators.Contains
                 }
             };
             DataManagerRequest Dm = new()

@@ -141,7 +141,7 @@ namespace MCPackServer.Pages.RequisitionsModule
             {
                 Where = new List<WhereFilter>
                 {
-                    new WhereFilter { Field = "UserName", Value = filter, Operator = Operators.StartsWith }
+                    new WhereFilter { Field = "UserName", Value = filter, Operator = Operators.Contains }
                 }
             };
             var items = await _service.GetForGridAsync<AspNetUsers>(dm);

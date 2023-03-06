@@ -93,7 +93,7 @@ namespace MCPackServer.Pages.RequisitionsModule
                 Skip = state.PageSize * state.Page,
                 Where = new()
                 {
-                    new WhereFilter { Field = nameof(RequisitionsView.RequisitionNumber), Value = NumberFilter, Operator = Operators.StartsWith },
+                    new WhereFilter { Field = nameof(RequisitionsView.RequisitionNumber), Value = NumberFilter, Operator = Operators.Contains },
                     new WhereFilter { Field = nameof(RequisitionsView.UserId), Value = UserIdFilter, Operator = Operators.Equal }
                 }
             };
@@ -259,7 +259,7 @@ namespace MCPackServer.Pages.RequisitionsModule
             {
                 Where = new()
                 {
-                    new WhereFilter { Field = nameof(AspNetUsers.UserName), Value = filter, Operator = Operators.StartsWith }
+                    new WhereFilter { Field = nameof(AspNetUsers.UserName), Value = filter, Operator = Operators.Contains }
                 }
             };
             var items = await _service.GetForGridAsync<UserPersonalInformationView>(dm);
