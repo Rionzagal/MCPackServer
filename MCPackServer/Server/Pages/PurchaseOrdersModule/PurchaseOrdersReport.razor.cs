@@ -80,9 +80,10 @@ namespace MCPackServer.Pages.PurchaseOrdersModule
                         MaterialNumbers.Add((i + 1).ToString());
                         Subtotal += OrderArticles[i].SalePrice * OrderArticles[i].Quantity;
                     }
+                    Subtotal = Math.Round(Subtotal, 2);
                     Discount = Subtotal * (Order.Discount / 100);
-                    Tax = OrderProvider.HasTaxes ? (Subtotal - Discount) * 0.16f : 0;
-                    Total = Subtotal - Discount + Tax;
+                    Tax = Math.Round(OrderProvider.HasTaxes ? (Subtotal - Discount) * 0.16f : 0, 2);
+                    Total = Math.Round(Subtotal - Discount + Tax, 2);
                     NumberOfPages = 1 + OrderArticles.Count / 10;
                     ArticlesPerPage = new();
                     for (int i = 0; i < NumberOfPages; i++)
