@@ -119,10 +119,10 @@ else
                                         @ArticlesInfo[j + 10 * i].Description
                                     </td>
                                     <td>
-                                        @($"${OrderArticles[j + 10 * i].SalePrice.ToString("n4")}")
+                                        @($"${OrderArticles[j + 10 * i].SalePrice.ToString("n2")}")
                                     </td>
                                     <td>
-                                        @($"${(OrderArticles[j + 10 * i].SalePrice * OrderArticles[j + 10 * i].Quantity).ToString("n4")} {Order.Currency}")
+                                        @($"${(OrderArticles[j + 10 * i].SalePrice * OrderArticles[j + 10 * i].Quantity).ToString("n2")} {Order.Currency}")
                                     </td>
                                 </tr>
                             }
@@ -172,17 +172,17 @@ else
                         </div>
                         <div>
                             <span style="color: black">
-                                $@Subtotal.ToString("n4") @Order.Currency
+                                $@Subtotal.ToString("n2") @Order.Currency
                             </span>
                         </div>
                         <div>
                             <span style="color: black">
-                                $@Tax.ToString("n4") @Order.Currency
+                                $@Tax.ToString("n2") @Order.Currency
                             </span>
                         </div>
                         <div>
                             <span style="color: black">
-                                $@Total.ToString("n4") @Order.Currency
+                                $@Total.ToString("n2") @Order.Currency
                             </span>
                         </div>
                     </div>
