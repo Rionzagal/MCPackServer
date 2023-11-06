@@ -22,9 +22,7 @@
         <MudTHeadRow>
             <MudTh><MudTableSortLabel SortLabel="@nameof(ProjectsView.ProjectNumber)" T="ProjectsView">Número de proyecto</MudTableSortLabel></MudTh>
             <MudTh><MudTableSortLabel SortLabel="@nameof(ProjectsView.ClientId)" T="ProjectsView">Cliente</MudTableSortLabel></MudTh>
-            <MudTh><MudTableSortLabel SortLabel="@nameof(ProjectsView.AdmissionDate)" T="ProjectsView">Fecha de admisión</MudTableSortLabel></MudTh>
-            <MudTh><MudTableSortLabel SortLabel="@nameof(ProjectsView.CommitmentDate)" T="ProjectsView">Fecha de compromiso</MudTableSortLabel></MudTh>
-            <MudTh><MudTableSortLabel SortLabel="@nameof(ProjectsView.DeliveryDate)" T="ProjectsView">Fecha de entrega</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortLabel="@nameof(ProjectsView.Description)" T="ProjectsView">Descripción de proyecto</MudTableSortLabel></MudTh>
             <MudTh><MudTableSortLabel SortLabel="@nameof(ProjectsView.Type)" T="ProjectsView">Tipo de proyecto</MudTableSortLabel></MudTh>
             <MudTh></MudTh>
         </MudTHeadRow>
@@ -39,8 +37,6 @@
                                  OnClearButtonClick="() => ClientIdFilter = null" />
             </MudTh>
             <MudTh />
-            <MudTh />
-            <MudTh />
             <MudTh>
                 <MudSelect @bind-Value="TypeFilter" T="string" Placeholder="Buscar por tipo" Clearable >
                     <MudSelectItem T="string" Value="@("Proyecto")" />
@@ -54,14 +50,8 @@
     <RowTemplate>
         <MudTd DataLabel="ID">@context.ProjectNumber</MudTd>
         <MudTd DataLabel="Cliente">@context.ClientMarketName</MudTd>
-        <MudTd DataLabel="Fecha de ingreso">
-            @(context.AdmissionDate?.Date.ToShortDateString() ?? "N/A")
-        </MudTd>
-        <MudTd DataLabel="Fecha de compromiso de entrega">
-            @(context.CommitmentDate?.Date.ToShortDateString() ?? "N/A")
-        </MudTd>
-        <MudTd DataLabel="Fecha de entrega estimada">
-            @(context.DeliveryDate?.Date.ToShortDateString() ?? "N/A")
+        <MudTd DataLabel="Descripción de proyecto">
+            @context.Description
         </MudTd>
         <MudTd DataLabel="Condiciones de pago">@context.Type</MudTd>
         <MudTd>

@@ -138,7 +138,7 @@ else
                         <div style="position: absolute; left: 100px; width: 75px; padding: 5px 0px 0px 5px; ">
                             @ProjectClient.MarketName
                         </div>
-                        <div style="position: absolute; left: 200px; width: 200px; padding: 5px 0px 0px 5px; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow:hidden;">
+                        <div style="position: absolute; left: 200px; width: 200px; padding: 5px 0px 0px 5px; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow:hidden; text-overflow: inherit">
                             @OrderProject.Description
                         </div>
                     </div>
@@ -166,22 +166,22 @@ else
                     </div>
                     <div style="position: absolute; left: 506px; right: 5px; top: 20%; bottom: 20%; text-align: right; vertical-align: central;">
                         <div>
-                            <span style="color: black">
+                            <span style="color: black; font-size: 12pt;">
                                 $@Discount.ToString("n2") @Order.Currency
                             </span>
                         </div>
                         <div>
-                            <span style="color: black">
+                            <span style="color: black; font-size: 12pt;">
                                 $@Subtotal.ToString("n2") @Order.Currency
                             </span>
                         </div>
                         <div>
-                            <span style="color: black">
+                            <span style="color: black; font-size: 12pt;">
                                 $@Tax.ToString("n2") @Order.Currency
                             </span>
                         </div>
                         <div>
-                            <span style="color: black">
+                            <span style="color: black; font-size: 12pt;">
                                 $@Total.ToString("n2") @Order.Currency
                             </span>
                         </div>

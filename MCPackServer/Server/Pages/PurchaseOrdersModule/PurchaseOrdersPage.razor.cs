@@ -4,7 +4,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using MudBlazor;
+using System.Linq;
 using Newtonsoft.Json.Linq;
+using Org.BouncyCastle.Asn1.Pkcs;
 using System.Text.Json;
 
 namespace MCPackServer.Pages.PurchaseOrdersModule
@@ -45,7 +47,16 @@ namespace MCPackServer.Pages.PurchaseOrdersModule
 
         #region API elements
         #region Search Filters
+        private string OrderNumberFilter = string.Empty;
+        private string StatusFilter = string.Empty;
+        private string ProviderIdFilter = string.Empty;
+        private string ProjectIdFilter = string.Empty;
+        private string IssuedDateFilter = string.Empty;
+        #endregion
 
+        #region Autocomplete filters
+        private List<Providers> ProvidersList = new();
+        private List<Projects> ProjectsList = new();
         #endregion
         #endregion
 
@@ -87,10 +98,49 @@ namespace MCPackServer.Pages.PurchaseOrdersModule
         #region OrdersTable methods
         private async Task<TableData<PurchaseOrdersView>> PurchaseOrdersServerReload(TableState state)
         {
+            List<WhereFilter> filters = new()
+            { 
+                new WhereFilter
+                {
+                    Field = "OrderNumber",
+                    Value = OrderNumberFilter,
+                    Operator = Operators.Contains,
+                    Condition = Conditions.And
+                },
+                new WhereFilter
+                {
+                    Field = nameof(PurchaseOrders.ProjectId),
+                    Value = ProjectIdFilter,
+                    Operator = Operators.Contains,
+                    Condition = Conditions.And
+                },
+                new WhereFilter
+                {
+                    Field = nameof(PurchaseOrders.ProviderId),
+                    Value = ProviderIdFilter,
+                    Operator = Operators.Contains,
+                    Condition = Conditions.And
+                },
+                new WhereFilter
+                {
+                    Field = nameof(PurchaseOrders.IssuedDate),
+                    Value = IssuedDateFilter,
+                    Operator = Operators.Contains,
+                    Condition = Conditions.And
+                },
+                new WhereFilter
+                {
+                    Field = "Status",
+                    Value = StatusFilter,
+                    Operator = Operators.Contains,
+                    Condition = Conditions.And
+                }   
+            };
             DataManagerRequest request = new()
             {
                 Take = state.PageSize,
-                Skip = state.PageSize * state.Page
+                Skip = state.PageSize * state.Page,
+                Where = filters
             };
             string field = state.SortLabel ?? "IssuedDate";
             string order = state.SortDirection == SortDirection.Ascending ? "ASC" : "DESC";
@@ -296,6 +346,67 @@ namespace MCPackServer.Pages.PurchaseOrdersModule
             int? id = (null != tabPanel) ? (int)tabPanel.Tag : null;
             var selectedArticle = article ?? SelectedArticles.FirstOrDefault(p => id == p.QuoteId);
             if (null != selectedArticle) SelectedArticles.Remove(selectedArticle);
+        }
+
+        private async Task<List<string>> ProvidersServerReload(string filter)
+        {
+            List<string> result = new();
+            DataManagerRequest dm = new()
+            {
+                Where = new()
+                {
+                    new WhereFilter { Field = nameof(Providers.LegalName), Operator = Operators.Contains, Value = filter }
+                }
+            };
+            var items = await _service.GetForGridAsync<Providers>(dm);
+            if (null != items)
+            {
+                ProvidersList = items.ToList();
+                ProvidersList.ForEach(p => result.Add(p.Id.ToString()));
+            }
+            return result;
+        }
+
+        private async Task<List<string>> ProjectsServerReload(string filter)
+        {
+            List<string> result = new();
+            DataManagerRequest dm = new()
+            {
+                Where = new()
+                {
+                    new WhereFilter
+                    { Field = nameof(Projects.ProjectNumber), Operator = Operators.Contains, Value=filter }
+                }
+            };
+            var items = await _service.GetForGridAsync<Projects>(dm);
+            if (null != items)
+            {
+                ProjectsList = items.ToList();
+                ProjectsList.ForEach(p => result.Add(p.Id.ToString()));
+            }
+            return result;
+        }
+
+        private string GetProviderLegalName(string Id)
+        {
+            string result = string.Empty;
+            if (!string.IsNullOrEmpty(Id)) 
+            {
+                var match = ProvidersList.FirstOrDefault(p => Id == p.Id.ToString());
+                if (null != match) result = match.LegalName;
+            }
+            return result;
+        }
+
+        private string GetProjectNumber(string Id)
+        {
+            string result = string.Empty;
+            if (!string.IsNullOrEmpty(Id))
+            {
+                var match = ProjectsList.FirstOrDefault(p => Id == p.Id.ToString());
+                if (null != match) result = match.ProjectNumber;
+            }
+            return result;
         }
     }
 }

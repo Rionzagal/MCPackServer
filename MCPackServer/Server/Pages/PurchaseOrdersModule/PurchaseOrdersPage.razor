@@ -1,4 +1,4 @@
-﻿@page "/PurchaseOrders"
+﻿   @page "/PurchaseOrders"
 
 @attribute [Authorize (Policy = @Constants.Permissions.PurchaseOrders.View)]
 
@@ -26,30 +26,33 @@
     </ToolBarContent>
     <HeaderContent>
         <MudTHeadRow>
+            <MudTh><MudTableSortLabel SortLabel="OrderNumber" T="PurchaseOrdersView">Número de órden</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortLabel="IssuedDate" T="PurchaseOrdersView">Fecha de emisión</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortLabel="ProviderLegalName" T="PurchaseOrdersView">Proveedor</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortLabel="ProjectNumber" T="PurchaseOrdersView">Proyecto</MudTableSortLabel></MudTh>
+            <MudTh><MudTableSortLabel SortLabel="Status" T="PurchaseOrdersView">Estatus</MudTableSortLabel></MudTh>
+            <MudTh />
+        </MudTHeadRow>
+        <MudTHeadRow>
             <MudTh>
-                <MudTableSortLabel SortLabel="@nameof(PurchaseOrdersView.OrderNumber)" T="PurchaseOrdersView">
-                    Número de órden
-                </MudTableSortLabel>
+                <MudTextField T="string" @bind-Value="OrderNumberFilter" Clearable Placeholder="Buscar por número de orden" />
+            </MudTh>
+            <MudTh />
+            <MudTh>
+                <MudAutocomplete T="string" @bind-Value="ProviderIdFilter" SearchFunc="async (f) => await ProvidersServerReload(f)" 
+                    ToStringFunc="new Func<string, string>(GetProviderLegalName)" Clearable OnClearButtonClick="() => ProviderIdFilter = string.Empty" 
+                        Placeholder="Buscar por proveedor" />
             </MudTh>
             <MudTh>
-                <MudTableSortLabel SortLabel="@nameof(PurchaseOrdersView.IssuedDate)" T="PurchaseOrdersView">
-                    Fecha de emisión
-                </MudTableSortLabel>
+                <MudAutocomplete T="string" @bind-Value="ProjectIdFilter" SearchFunc="async (f) => await ProjectsServerReload(f)"
+                    ToStringFunc="new Func<string, string>(GetProjectNumber)" Clearable OnClearButtonClick="() => ProjectIdFilter = string.Empty"
+                    Placeholder="Buscar por proyecto" />
             </MudTh>
             <MudTh>
-                <MudTableSortLabel SortLabel="@nameof(PurchaseOrdersView.ProviderId)" T="PurchaseOrdersView">
-                    Proveedor
-                </MudTableSortLabel>
-            </MudTh>
-            <MudTh>
-                <MudTableSortLabel SortLabel="@nameof(PurchaseOrdersView.ProjectId)" T="PurchaseOrdersView">
-                    Proyecto
-                </MudTableSortLabel>
-            </MudTh>
-            <MudTh>
-                <MudTableSortLabel SortLabel="@nameof(PurchaseOrdersView.Status)" T="PurchaseOrdersView">
-                    Estatus
-                </MudTableSortLabel>
+                <MudSelect T="string" @bind-Value="StatusFilter" Clearable Placeholder="Buscar por estatus">
+                        <MudSelectItem T="string" Value="@("Pendiente")" />
+                        <MudSelectItem T="string" Value="@("RECIBIDA")" />
+                </MudSelect>
             </MudTh>
             <MudTh />
         </MudTHeadRow>

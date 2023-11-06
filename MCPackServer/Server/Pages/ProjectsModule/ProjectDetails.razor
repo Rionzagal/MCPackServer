@@ -33,8 +33,10 @@
 
 <div class="m-3">
     <MudText Typo="Typo.h4" Align="Align.Start">PRODUCTOS DE PROYECTO</MudText>
+    @*DETAIL: This MudTable has a provisional "OnRowClick="OnSelectedProject""*@
     <MudTable @ref="ProductsTable" T="ProjectProductsView" Dense Hover FixedHeader
-                CustomHeader Striped OnRowClick="OnSelectedProduct" ServerData="ProductsServerReload" >
+                CustomHeader Striped 
+                ServerData="ProductsServerReload" >
         <ColGroup>
             <col style="width: 15%" />
             <col style="width: 50%" />
@@ -44,10 +46,10 @@
         <ToolBarContent>
             <MudText Typo="Typo.h6">Productos del proyecto</MudText>
             <MudSpacer />
-            <MudButton Variant="Variant.Outlined" Class="ml-1"
+            @*<MudButton Variant="Variant.Outlined" Class="ml-1"
                         OnClick="() => SelectedProducts.Clear()">
                 Contraer todo
-            </MudButton>
+            </MudButton>*@
             <MudButton Variant="Variant.Outlined" Class="ml-1"
                         OnClick="async () => await ProductsTable.ReloadServerData()">
                 <MudIcon Icon="@Icons.Material.Filled.Search" /> Buscar
@@ -65,7 +67,7 @@
             <MudTd DataLabel="Descripción">@context.ProductDescription</MudTd>
             <MudTd DataLabel="Cantidad">@context.Quantity</MudTd>
         </RowTemplate>
-        <ChildRowContent>
+        @*<ChildRowContent>
             @if (SelectedProducts.Any(x => x.ProductId == context.ProductId))
             {
                 <MudTr>
@@ -99,7 +101,7 @@
                     </td>
                 </MudTr>
             }
-        </ChildRowContent>
+        </ChildRowContent>*@
         <NoRecordsContent>
             <MudText>Sin productos encontrados para el proyecto</MudText>
         </NoRecordsContent>
